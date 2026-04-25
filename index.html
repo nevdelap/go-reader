@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#000000" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  <meta name="apple-mobile-web-app-title" content="語 Reader" />
+  <meta name="description" content="A Japanese reader for learners. Paste Japanese text and tap any word to see its reading and English meaning." />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <title>語 Reader — Japanese Reader For Learners</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      height: 100%;
+      background: #000;
+      color: #fff;
+      font-family: 'Noto Sans JP', sans-serif;
+      -webkit-text-size-adjust: 100%;
+    }
+
+    #app {
+      min-height: 100vh;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      background: #000;
+      transition: padding-bottom 0.2s ease-out;
+    }
+
+    #app.panel-open { padding-bottom: var(--panel-height, 130px); }
+
+    header {
+      border-bottom: 1px solid #111;
+      padding: 20px 24px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      flex-shrink: 0;
+    }
+
+    .logo {
+      font-family: 'Inter', sans-serif;
+      font-size: 22px;
+      font-weight: 600;
+      color: #fff;
+      letter-spacing: 0.02em;
+    }
+    .logo span { color: #2563eb; }
+
+    .subtitle {
+      font-family: 'Inter', sans-serif;
+      font-size: 10px;
+      color: #888;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    main {
+      padding: 22px 24px;
+      max-width: 800px;
+      width: 100%;
+      margin: 0 auto;
+      flex: 1;
+    }
+
+    .input-wrap { margin-bottom: 14px; }
+
+    textarea {
+      font-family: 'Noto Sans JP', sans-serif;
+      font-size: 18px;
+      line-height: 1.8;
+      background: #0a0a0a;
+      border: 1px solid #222;
+      border-radius: 4px;
+      color: #fff;
+      padding: 16px 20px;
+      width: 100%;
+      resize: vertical;
+      outline: none;
+      transition: border-color 0.2s;
+      min-height: 90px;
+    }
+    textarea:focus { border-color: #2563eb; }
+    textarea::placeholder { color: #888; }
+
+    .status-box {
+      border-radius: 4px;
+      padding: 12px 16px;
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      margin-bottom: 14px;
+    }
+    .status-box.info {
+      background: #0a0a0a;
+      border: 1px solid #1e3a5f;
+      color: #60a5fa;
+    }
+    .status-box.error {
+      background: #0a0a0a;
+      border: 1px solid #7f1d1d;
+      color: #f87171;
+    }
+
+    .legend {
+      display: flex;
+      gap: 18px;
+      margin-bottom: 18px;
+      font-family: 'Inter', sans-serif;
+      font-size: 10px;
+      color: #888;
+      letter-spacing: 0.06em;
+      align-items: center;
+    }
+
+    .legend-item { display: flex; align-items: center; gap: 5px; }
+
+    .dot {
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+    }
+    .dot.content { background: #fff; }
+    .dot.grammar { background: #444; }
+
+    .legend-hint { margin-left: auto; }
+
+    .token-area {
+      background: #000;
+      border: 1px solid #111;
+      border-radius: 6px;
+      padding: 26px 30px;
+      font-size: 18px;
+      line-height: 1.5;
+      letter-spacing: 0.04em;
+    }
+
+    .token {
+      display: inline-block;
+      cursor: pointer;
+      padding: 3px 2px;
+      border-radius: 3px;
+      transition: background 0.12s, color 0.12s;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      scroll-margin-bottom: var(--panel-height, 130px);
+    }
+    .token:hover  { background: rgba(37,99,235,0.2); }
+    .token:focus  { outline: 2px solid #2563eb; outline-offset: 1px; }
+    .token.active { background: rgba(37,99,235,0.35) !important; color: #fff !important; }
+    .token.grammar { color: #aaa; }
+
+    .token-count {
+      margin-top: 10px;
+      font-family: 'Inter', sans-serif;
+      font-size: 10px;
+      color: #888;
+      text-align: center;
+      letter-spacing: 0.06em;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 70px 0;
+      color: #333;
+    }
+
+    .empty-kanji { font-family: 'Noto Sans JP', sans-serif; font-size: 60px; margin-bottom: 14px; }
+    .empty-label { font-family: 'Inter', sans-serif; font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: #888; }
+
+    footer {
+      padding: 16px 24px;
+      text-align: center;
+      font-family: 'Inter', sans-serif;
+      font-size: 9px;
+      color: #888;
+      letter-spacing: 0.06em;
+      border-top: 1px solid #0a0a0a;
+    }
+    footer a { color: #888; text-decoration: none; }
+    footer a:hover { color: #999; }
+
+    .panel {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      background: #000;
+      border-top: 1px solid #2563eb;
+      padding: 18px 24px calc(26px + env(safe-area-inset-bottom));
+      z-index: 9999;
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      box-shadow: 0 -12px 40px rgba(37,99,235,0.15);
+      animation: panelUp 0.2s ease-out both;
+    }
+
+    @keyframes panelUp {
+      from { transform: translateY(100%); }
+      to   { transform: translateY(0); }
+    }
+
+    .panel-word { display: flex; flex-direction: column; gap: 3px; min-width: 70px; }
+    .panel-surface { font-family: 'Noto Sans JP', sans-serif; font-size: 18px; color: #fff; line-height: 1; }
+    .panel-reading { font-family: 'Noto Sans JP', sans-serif; font-size: 13px; color: #2563eb; letter-spacing: 0.06em; }
+    .panel-divider { width: 1px; align-self: stretch; background: #111; flex-shrink: 0; }
+    .panel-info { display: flex; flex-direction: column; gap: 4px; flex: 1; min-width: 0; }
+    .panel-pos { font-family: 'Inter', sans-serif; font-size: 9px; color: #2563eb; text-transform: uppercase; letter-spacing: 0.12em; }
+    .panel-english { font-family: 'Inter', sans-serif; font-size: 18px; color: #ccc; line-height: 1.4; }
+
+    .panel-close {
+      background: none;
+      border: 1px solid #222;
+      border-radius: 3px;
+      color: #999;
+      font-size: 13px;
+      cursor: pointer;
+      padding: 6px 10px;
+      flex-shrink: 0;
+      line-height: 1;
+    }
+
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+<div id="app">
+  <header>
+    <div class="logo">語 <span>Reader</span></div>
+    <div class="subtitle">Japanese Reader For Learners · v1.0</div>
+  </header>
+
+  <main>
+    <div class="input-wrap">
+      <textarea id="inputText"
+        placeholder="日本語のテキストを貼り付けてください。"
+        rows="3"
+        aria-label="Japanese text input"></textarea>
+      <div style="display:flex; justify-content:flex-end; margin-top:8px;">
+        <button id="exampleBtn" style="background:none; border:1px solid #444; border-radius:3px; color:#888; font-family:'Inter',sans-serif; font-size:10px; letter-spacing:0.08em; text-transform:uppercase; cursor:pointer; padding:6px 12px; transition:border-color 0.2s, color 0.2s;">Example</button>
+      </div>
+    </div>
+
+    <div class="status-box info hidden" id="statusBox" role="status" aria-live="polite"></div>
+
+    <div id="tokenView" class="hidden">
+      <div class="legend" aria-hidden="true">
+        <span class="legend-item"><span class="dot content"></span> content</span>
+        <span class="legend-item"><span class="dot grammar"></span> grammar</span>
+        <span class="legend-hint">click or tap to inspect</span>
+      </div>
+      <div class="token-area"
+        id="tokenArea"
+        role="list"
+        aria-label="Tokenized Japanese text"></div>
+      <div class="token-count" id="tokenCount"></div>
+    </div>
+
+    <div class="empty-state" id="emptyState">
+      <div class="empty-kanji">語</div>
+      <div class="empty-label">type or paste japanese text above to begin</div>
+    </div>
+  </main>
+
+  <footer>
+    This site uses the <a href="https://www.edrdg.org/wiki/index.php/JMdict-EDICT_Dictionary_Project" target="_blank" rel="noopener noreferrer">JMdict/EDICT</a> dictionary files. These files are the property of the <a href="https://www.edrdg.org/" target="_blank" rel="noopener noreferrer">Electronic Dictionary Research and Development Group</a>, and are used in conformance with the Group's <a href="https://www.edrdg.org/edrdg/licence.html" target="_blank" rel="noopener noreferrer">licence</a>.
+  </footer>
+</div>
+
+<div class="panel hidden"
+  id="panel"
+  role="dialog"
+  aria-modal="false"
+  aria-label="Word details">
+  <div class="panel-word">
+    <div class="panel-surface" id="panelSurface" lang="ja"></div>
+    <div class="panel-reading hidden" id="panelReading" lang="ja"></div>
+  </div>
+  <div class="panel-divider"></div>
+  <div class="panel-info">
+    <div class="panel-pos" id="panelPos"></div>
+    <div class="panel-english" id="panelEnglish"></div>
+  </div>
+  <button class="panel-close" id="panelClose" aria-label="Close word details">✕</button>
+</div>
+
+<script src="kuromoji.js"></script>
+<script>
+// ── Katakana → Hiragana ──────────────────────────────────────────────────────
+function toHiragana(str) {
+  return (str || '').replace(/[\u30A1-\u30FA]/g, c =>
+    String.fromCharCode(c.charCodeAt(0) - 0x60)
+  );
+}
+
+// ── POS mapping (Japanese → English) ────────────────────────────────────────
+const POS_MAP = {
+  '名詞': 'noun', '動詞': 'verb', '助詞': 'particle',
+  '助動詞': 'auxiliary verb', '形容詞': 'adjective', '形容動詞': 'adjective',
+  '副詞': 'adverb', '接続詞': 'conjunction', '感動詞': 'interjection',
+  '接頭詞': 'prefix', '接尾辞': 'suffix', '記号': 'symbol',
+  '補助記号': 'punctuation', '空白': 'whitespace', 'フィラー': 'filler',
+  'その他': 'other',
+};
+
+const GRAMMAR_POS = new Set(['助詞', '助動詞', '記号', '補助記号', '空白', 'フィラー']);
+
+function getPOS(token) {
+  return POS_MAP[token.pos] || token.pos || 'unknown';
+}
+
+function isGrammar(token) {
+  return GRAMMAR_POS.has(token.pos);
+}
+
+// ── Strip non-Japanese ───────────────────────────────────────────────────────
+function stripNonJapanese(text) {
+  return text
+    .replace(/[^\u3000-\u303f\u3040-\u309f\u30a0-\u30ff\u4e00-\u9fff\u3400-\u4dbf\uff00-\uffef\u300c\u300d\u300e\u300f\u3010\u3011\u30fb\u30fc\u2015\u2014\n]/g, '').trim();
+}
+
+// ── JMdict lookup ────────────────────────────────────────────────────────────
+let jmdict = null;
+let jmdictLoaded = false;
+let jmdictPromise = null;
+
+async function loadJMdict() {
+  const res = await fetch('jmdict-compact.json.gz?v=3');
+  if (!res.ok) throw new Error(`JMdict fetch failed: ${res.status}`);
+  if (res.headers.get('Content-Encoding') === 'gzip') {
+    // Server decompressed automatically (e.g. local dev server)
+    jmdict = await res.json();
+  } else {
+    // Raw gzip bytes — decompress manually (e.g. GitHub Pages)
+    const buf = await res.arrayBuffer();
+    const ds = new DecompressionStream('gzip');
+    const decompressed = new Response(new Blob([buf]).stream().pipeThrough(ds));
+    jmdict = JSON.parse(await decompressed.text());
+  }
+  jmdictLoaded = true;
+}
+
+function lookupWord(surface, basicForm) {
+  if (!jmdict) return null;
+  // Avoid Set construction on every tap — manual dedup
+  const candidates = (basicForm && basicForm !== '*' && basicForm !== surface)
+    ? [surface, basicForm]
+    : [surface];
+  for (const word of candidates) {
+    const entry = jmdict[word];
+    if (Array.isArray(entry)) return entry.join(', ');
+  }
+  return null;
+}
+
+// ── DOM helpers ──────────────────────────────────────────────────────────────
+const $ = id => document.getElementById(id);
+function show(el) { el.classList.remove('hidden'); el.removeAttribute('aria-hidden'); }
+function hide(el) { el.classList.add('hidden'); el.setAttribute('aria-hidden', 'true'); }
+
+function setStatus(msg, type) {
+  const box = $('statusBox');
+  if (!type) { hide(box); return; }
+  box.textContent = msg;
+  box.className = `status-box ${type}`;
+  show(box);
+}
+
+// ── Panel height tracking via ResizeObserver ─────────────────────────────────
+function setPanelHeightVar() {
+  const h = $('panel').offsetHeight;
+  if (h > 0) document.documentElement.style.setProperty('--panel-height', h + 'px');
+}
+
+const panelResizeObserver = new ResizeObserver(setPanelHeightVar);
+
+// ── State ────────────────────────────────────────────────────────────────────
+let tokens = [];
+let selectedIndex = null;
+let tokenizer = null;
+let lastRawInput = null;
+
+// ── Init — track kuromoji and JMdict independently ───────────────────────────
+const MAX_RETRIES = 5;
+
+async function initWithRetry(attempt = 1) {
+  try {
+    setStatus(
+      attempt === 1 ? 'Loading dictionaries…' : `Loading dictionaries… (attempt ${attempt}/${MAX_RETRIES})`,
+      'info'
+    );
+    hide($('emptyState'));
+
+    // Only reload what hasn't succeeded yet
+    const kuromojiTask = tokenizer
+      ? Promise.resolve(tokenizer)
+      : new Promise((resolve, reject) => {
+          kuromoji.builder({ dicPath: 'dict/' }).build((err, t) => {
+            if (err) { console.error('kuromoji error:', err); reject(err); }
+            else resolve(t);
+          });
+        });
+
+    if (!jmdictLoaded && !jmdictPromise) {
+      jmdictPromise = loadJMdict();
+    }
+    const jmdictTask = jmdictLoaded ? Promise.resolve() : jmdictPromise;
+
+    const [t] = await Promise.all([kuromojiTask, jmdictTask]);
+    tokenizer = t;
+
+    setStatus(null);
+    show($('emptyState'));
+    if ($('inputText').value.trim()) analyze();
+
+  } catch (e) {
+    // Reset failed jmdictPromise so next retry can re-fetch
+    if (!jmdictLoaded) jmdictPromise = null;
+
+    if (attempt < MAX_RETRIES) {
+      const delay = attempt * 2000;
+      setStatus(`Load failed. Retrying in ${delay / 1000}s… (${attempt}/${MAX_RETRIES})`, 'error');
+      setTimeout(() => initWithRetry(attempt + 1), delay);
+    } else {
+      setStatus('Failed to load dictionaries. Please refresh the page.', 'error');
+      show($('emptyState'));
+    }
+  }
+}
+
+initWithRetry();
+
+// ── Panel ────────────────────────────────────────────────────────────────────
+function closePanel() {
+  selectedIndex = null;
+  hide($('panel'));
+  panelResizeObserver.disconnect();
+  $('tokenArea').querySelectorAll('.token').forEach(t => t.classList.remove('active'));
+  $('app').classList.remove('panel-open');
+}
+
+function openPanel(token, index) {
+  selectedIndex = index;
+
+  $('panelSurface').textContent = token.surface_form;
+
+  const reading = $('panelReading');
+  const hira = toHiragana(token.reading || '');
+  if (hira && hira !== token.surface_form) {
+    reading.textContent = hira;
+    show(reading);
+  } else {
+    hide(reading);
+  }
+
+  $('panelPos').textContent = getPOS(token);
+
+  const eng = $('panelEnglish');
+  if (isGrammar(token) || token.pos === '記号') {
+    eng.textContent = POS_MAP[token.pos] || token.pos;
+  } else {
+    const result = lookupWord(token.surface_form, token.basic_form);
+    eng.textContent = result || (token.basic_form && token.basic_form !== '*' ? token.basic_form : token.surface_form);
+  }
+
+  // Measure height synchronously before showing to avoid jump on first open
+  show($('panel'));
+  setPanelHeightVar();
+  $('app').classList.add('panel-open');
+
+  // Watch for subsequent height changes (font load, reflow, resize)
+  panelResizeObserver.observe($('panel'));
+}
+
+// ── Render tokens ────────────────────────────────────────────────────────────
+function renderTokens() {
+  const area = $('tokenArea');
+  // Replace with a clone to drop all previously stacked event listeners
+  const fresh = area.cloneNode(false);
+  area.parentNode.replaceChild(fresh, area);
+
+  tokens.forEach((token, i) => {
+    const span = document.createElement('span');
+    span.className = 'token' + (isGrammar(token) ? ' grammar' : '');
+    span.textContent = token.surface_form;
+    span.setAttribute('role', 'listitem');
+    span.setAttribute('tabindex', '0');
+    span.setAttribute('lang', 'ja');
+    span.setAttribute('aria-label', `${token.surface_form}, ${getPOS(token)}`);
+
+    const activate = () => {
+      if (selectedIndex === i) {
+        closePanel();
+      } else {
+        $('tokenArea').querySelectorAll('.token').forEach(t => t.classList.remove('active'));
+        span.classList.add('active');
+        openPanel(token, i);
+      }
+    };
+
+    span.addEventListener('click', e => { e.stopPropagation(); activate(); });
+    span.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); activate(); }
+      if (e.key === 'Escape') closePanel();
+    });
+
+    fresh.appendChild(span);
+  });
+
+  const content = tokens.filter(t => !isGrammar(t)).length;
+  $('tokenCount').textContent = `${tokens.length} tokens · ${content} content words`;
+  fresh.addEventListener('click', closePanel);
+}
+
+// ── Analyze ──────────────────────────────────────────────────────────────────
+function analyze() {
+  if (!tokenizer) return;
+
+  const raw = $('inputText').value;
+  const text = stripNonJapanese(raw);
+
+  if (!text) {
+    hide($('tokenView'));
+    show($('emptyState'));
+    closePanel();
+    lastRawInput = null;
+    tokens = [];
+    return;
+  }
+
+  // Skip re-tokenizing if the raw input hasn't changed
+  if (raw === lastRawInput) {
+    show($('tokenView'));
+    return;
+  }
+
+  hide($('emptyState'));
+
+  try {
+    tokens = tokenizer.tokenize(text);
+    lastRawInput = raw;
+    closePanel();
+    renderTokens();
+    show($('tokenView'));
+  } catch (e) {
+    console.error('Tokenization error:', e);
+    tokens = [];
+    lastRawInput = null;
+    setStatus('Tokenization failed. Please try again.', 'error');
+    show($('emptyState'));
+  }
+}
+
+// ── Events ───────────────────────────────────────────────────────────────────
+let debounceTimer = null;
+
+$('inputText').addEventListener('input', () => {
+  clearTimeout(debounceTimer);
+  debounceTimer = setTimeout(analyze, 300);
+});
+
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) clearTimeout(debounceTimer);
+});
+
+$('panelClose').addEventListener('click', closePanel);
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closePanel();
+});
+
+// ── Example text ─────────────────────────────────────────────────────────────
+const EXAMPLE_TEXT = `「その会社には、三つの"重要な（じゅうような）データベース"がありました。」 "In that company, there were three 'crucial' databases."
+「それは会社の未来を決める、とても重要なシステムでした。」 "They were systems that would decide the company's future, extremely important in an objective sense."
+「しかしある日、たいへんな事故が起きました。」 "But one day, a serious incident occurred."
+「サーバールームにコーヒーを持ち込んだ新人が、全部にこぼしてしまったのです。」 "A new employee brought coffee into the server room and spilled it everywhere."
+「"これはたいへんなことになった…"と皆が叫びました。」 "Everyone shouted, 'This has become a terrible situation…'"
+「一方で、社長は落ち着いて言いました。」 "Meanwhile, the director calmly said:"
+「"そのデータは会社にとって重要な資産だ。すぐに復旧しなさい。"」 "'That data is a critical asset for the company. Restore it immediately.'"
+「その時、システム担当のエンジニアは、自分の大事なノートを見つめていました。」 "At that moment, the system engineer was staring at his personal notebook."
+「そこには、大事な（だいじな）設定メモが全部書いてあったのです。」 "All his personally important configuration notes were written in it."
+「彼は心の中で思いました。」 "He thought to himself:"
+「"重要なシステムはサーバーにある。でも、大事な知識はこのノートだ…"」 "'The critical system is on the server. But my personally important knowledge is in this notebook…'"
+「そして彼は気づきました。」 "And then he realised:"
+「たいへんなのはサーバーだけではなく、自分の人生の整理も同じくらい大変だと。」 "The problem wasn't just the server—it was that organising his own life was just as difficult."
+「その後、会社は復旧し、誰もが重要な教訓を得ました。」 "Afterwards, the company recovered, and everyone gained an important lesson."
+「コーヒーはサーバーに持ち込まない。そして、大事なノートは二重バックアップする。」 "Don't bring coffee into the server room. And always back up what matters to you personally."
+「それがその日、たいへんな事故から学んだ最も重要なことでした。」 "That was the most important thing learned from that difficult incident."`;
+
+$('exampleBtn').addEventListener('click', () => {
+  $('inputText').value = EXAMPLE_TEXT;
+  $('inputText').dispatchEvent(new Event('input'));
+});
+
+$('exampleBtn').addEventListener('mouseover', () => {
+  $('exampleBtn').style.borderColor = '#444';
+  $('exampleBtn').style.color = '#888';
+});
+$('exampleBtn').addEventListener('mouseout', () => {
+  $('exampleBtn').style.borderColor = '#222';
+  $('exampleBtn').style.color = '#888';
+});
+</script>
+</body>
+</html>
