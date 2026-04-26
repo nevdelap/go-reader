@@ -246,7 +246,7 @@
 <div id="app">
   <header>
     <div class="logo">語 <span>Reader</span></div>
-    <div class="subtitle">Japanese Reader For Learners · v1.1.1</div>
+    <div class="subtitle">Japanese Reader For Learners · v1.1.2</div>
   </header>
 
   <main>
@@ -267,7 +267,7 @@
       <div class="legend" aria-hidden="true">
         <span class="legend-item"><span class="dot content"></span> content</span>
         <span class="legend-item"><span class="dot grammar"></span> grammar</span>
-        <span class="legend-hint">click or tap to inspect</span>
+        <span class="legend-hint">Click or tap words to see translations.</span>
       </div>
       <div class="token-area"
         id="tokenArea"
@@ -613,10 +613,12 @@ $('clearBtn').addEventListener('click', () => {
   $('inputText').focus();
 });
 $('clearBtn').addEventListener('mouseover', () => {
-  $('clearBtn').style.borderColor = '#444';
-  $('clearBtn').style.color = '#888';
+  $('clearBtn').style.background = 'rgba(37,99,235,0.4)';
+  $('clearBtn').style.borderColor = '#2563eb';
+  $('clearBtn').style.color = '#fff';
 });
 $('clearBtn').addEventListener('mouseout', () => {
+  $('clearBtn').style.background = 'none';
   $('clearBtn').style.borderColor = '#222';
   $('clearBtn').style.color = '#888';
 });
@@ -630,11 +632,13 @@ $('exampleBtn').addEventListener('click', () => {
 });
 
 $('exampleBtn').addEventListener('mouseover', () => {
-  $('exampleBtn').style.borderColor = '#444';
-  $('exampleBtn').style.color = '#888';
+  $('exampleBtn').style.background = 'rgba(37,99,235,0.4)';
+  $('exampleBtn').style.borderColor = '#2563eb';
+  $('exampleBtn').style.color = '#fff';
 });
 $('exampleBtn').addEventListener('mouseout', () => {
-  $('exampleBtn').style.borderColor = '#222';
+  $('exampleBtn').style.background = 'none';
+  $('exampleBtn').style.borderColor = '#444';
   $('exampleBtn').style.color = '#888';
 });
 </script>
