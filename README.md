@@ -10,6 +10,8 @@ A Japanese reader for learners. Type or paste Japanese text and tap any word to 
 - **Dictionary lookups** — [JMdict](https://www.edrdg.org/jmdict/j_jmdict.html), the Electronic Dictionary Research and Development Group's Japanese-English dictionary, bundled as a compact gzipped JSON file
 - Everything runs in the browser — no server, no API calls, no cost
 
+See [docs/architecture.md](docs/architecture.md) for a detailed breakdown.
+
 ## Licences
 
 - App code: [MIT](LICENSE)
