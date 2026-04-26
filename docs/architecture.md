@@ -4,16 +4,16 @@ A single-file static Japanese reader. No server, no build step — deploys anywh
 
 ## Files
 
-| File                            | Purpose                                                                 |
-| ------------------------------- | ----------------------------------------------------------------------- |
-| `index.html`                    | Entire app — HTML, CSS, and JavaScript                                  |
-| `kuromoji.js`                   | Japanese morphological analyser (runs in the browser)                   |
-| `jmdict-compact.json.gz`        | Compact gzipped dictionary (word → English glosses)                     |
-| `dict/`                         | Binary dictionary files loaded by kuromoji at runtime                   |
-| `compact_jmdict.py`             | Build script: preprocesses full JMdict JSON into compact form           |
-| `compact_repo.sh`               | Maintenance script: rewrites git history to remove old dictionary blobs |
-| `local_serve.py`                | Local dev server                                                        |
-| `manifest.json` / `favicon.svg` | PWA manifest and icon                                                   |
+| File                                | Purpose                                                                                                                |
+| ----------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| `index.html`                        | Entire app — HTML, CSS, and JavaScript                                                                                 |
+| `kuromoji.js`                       | Japanese morphological analyser (runs in the browser)                                                                  |
+| `jmdict-compact.json.gz`            | Compact gzipped dictionary (word → English glosses)                                                                    |
+| `dict/`                             | Binary dictionary files loaded by kuromoji at runtime                                                                  |
+| `compact_jmdict.py`                 | Build script: preprocesses full JMdict JSON into compact form                                                          |
+| `update_jmdict_and_compact_repo.sh` | Checks for a new JMdict release, downloads it, rebuilds the compact dict, and rewrites git history to remove old blobs |
+| `local_serve.py`                    | Local dev server                                                                                                       |
+| `manifest.json` / `favicon.svg`     | PWA manifest and icon                                                                                                  |
 
 ______________________________________________________________________
 
@@ -36,7 +36,7 @@ ______________________________________________________________________
 User pastes text
        │
        ▼  (300ms debounce)
-stripNonJapanese()          — strips Latin, numbers, punctuation
+stripNonJapanese()          — strips Latin, numbers, and non-Japanese punctuation
        │
        ▼
 kuromoji.tokenize()         — produces morpheme tokens:
@@ -51,7 +51,7 @@ renderTokens()              — builds clickable <span> elements (display: inlin
 openPanel()                 — bottom panel shows:
                               • surface form + hiragana reading
                               • part of speech (mapped JP → EN)
-                              • English gloss from JMdict
+                              • English gloss(es) from JMdict (up to two results, joined with ;)
 ```
 
 ______________________________________________________________________
@@ -81,17 +81,21 @@ At startup, kuromoji and JMdict are loaded in parallel. The browser decompresses
 
 Up to 5 retry attempts with increasing delays (2s, 4s, 6s…) if either load fails.
 
+The dictionary URL includes a `?v=N` cache-bust parameter; increment `N` after each rebuild to force clients
+past the browser cache.
+
 ______________________________________________________________________
 
 ## Lookup Logic
 
 When a token is tapped, `lookupWord(surface_form, basic_form)` tries:
 
-1. `surface_form` — the exact text as it appears (e.g. `食べました`)
-2. `basic_form` — the dictionary/base form (e.g. `食べる`), skipped if it equals `surface_form` or `*`
+1. `basic_form` — the dictionary/base form (e.g. `食べる`), skipped if it equals `surface_form` or `*`
+2. `surface_form` — the exact text as it appears (e.g. `食べました`)
 
-This handles conjugated verbs and adjectives. If neither is found in JMdict, the display falls back to the `basic_form`
-string from kuromoji.
+Both results are returned when found, joined with `; ` (semicolon-space). This handles conjugated verbs and adjectives, and
+surfaces homograph disambiguation (e.g. `ある` returns both the verb and the existential senses). If neither
+is found in JMdict, the display falls back to the `basic_form` string from kuromoji.
 
 Katakana readings from kuromoji are converted to hiragana for display (`toHiragana()`).
 
@@ -102,9 +106,12 @@ ______________________________________________________________________
 - **Token rendering** — tokens use `display: inline` so letter-spacing and glyph metrics behave consistently with the textarea input
 - **Token area rebuild** — on re-tokenization, the token area DOM node is replaced with a clone to avoid accumulating event listeners
 - **Panel height tracking** — a `ResizeObserver` keeps `--panel-height` in sync so the token area scrolls far enough to keep the active token visible above the bottom panel
+- **Input buttons** — Clear empties the textarea, Paste reads from the clipboard, Example loads a sample text;
+  all return focus to the textarea
 - **Input deduplication** — if the raw input hasn't changed since last tokenization, rendering is skipped
 - **Debounce** — 300ms after last keypress before `analyze()` fires
-- **Grammar classification** — particles (`助詞`), auxiliary verbs (`助動詞`), symbols, punctuation, and whitespace tokens are styled gray and show their POS label rather than a dictionary lookup
+- **Grammar classification** — particles (`助詞`), auxiliary verbs (`助動詞`), symbols, punctuation, whitespace, and filler (`フィラー`) tokens are styled
+  gray and show their POS label rather than a dictionary lookup
 
 ______________________________________________________________________
 

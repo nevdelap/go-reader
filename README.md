@@ -30,10 +30,10 @@ just format   # format
 just lint     # format then lint
 ```
 
-## Compacting the repository
+## Maintaining the repository
 
-Each dictionary update adds a new 6.5MB binary blob to git history. Periodically
-rewrite history to keep the repo lean.
+Periodically update the dictionary in compliance with its licence and rewrite
+history to keep the repo lean.
 
 Install `git-filter-repo` if not already installed using your package manager,
 e.g.:
@@ -49,18 +49,13 @@ brew install git-filter-repo
 Then run:
 
 ```bash
-./compact_repo.sh
+./update_jmdict_and_compact_repo.sh
 ```
+
+The script checks for a new JMdict release, downloads it if one is available,
+rebuilds the compact dictionary, rewrites git history to remove old dictionary
+blobs, and prompts before force-pushing.
 
 Note: GitHub will also periodically run its own garbage collection on the server
 side, which helps over time, but won't rewrite history to remove old blobs —
 that requires the steps above.
-
-## Building the dictionary
-
-To regenerate `jmdict-compact.json.gz` when there are new releases:
-
-1. Download `jmdict-eng-x.x.x.json` from [jmdict-simplified
-   releases](https://github.com/scriptin/jmdict-simplified/releases/latest)
-2. Run `./compact_jmdict.py` from the same directory
-3. Commit and push `jmdict-compact.json.gz`

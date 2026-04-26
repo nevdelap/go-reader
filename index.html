@@ -81,6 +81,7 @@
       line-height: 1.8;
       letter-spacing: 0.04em;
       -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
       background: #0a0a0a;
       border: 1px solid #222;
       border-radius: 4px;
@@ -91,6 +92,8 @@
       outline: none;
       transition: border-color 0.2s;
       min-height: 90px;
+      scrollbar-width: auto;
+      scrollbar-color: #1e3a5f #0a0a0a;
     }
     textarea:focus { border-color: #2563eb; }
     textarea::placeholder { color: #888; }
@@ -98,7 +101,25 @@
     textarea::-webkit-scrollbar-track { background: #0a0a0a; border-radius: 3px; }
     textarea::-webkit-scrollbar-thumb { background: #1e3a5f; border-radius: 3px; }
     textarea::-webkit-scrollbar-thumb:hover { background: #2563eb; }
-    textarea { scrollbar-width: auto; scrollbar-color: #1e3a5f #0a0a0a; }
+
+    .toolbar-btn {
+      background: none;
+      border: 1px solid #222;
+      border-radius: 3px;
+      color: #888;
+      font-family: 'Inter', sans-serif;
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      cursor: pointer;
+      padding: 6px 12px;
+      transition: background 0.2s, border-color 0.2s, color 0.2s;
+    }
+    .toolbar-btn:hover, .toolbar-btn:focus-visible {
+      background: rgba(37,99,235,0.4);
+      border-color: #2563eb;
+      color: #fff;
+    }
 
     .status-box {
       border-radius: 4px;
@@ -153,6 +174,7 @@
       line-height: 1.5;
       letter-spacing: 0.04em;
       -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
     }
 
     .token {
@@ -163,6 +185,7 @@
       transition: background 0.12s, color 0.12s;
       user-select: none;
       -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
       scroll-margin-bottom: var(--panel-height, 130px);
     }
     .token:hover  { background: rgba(37,99,235,0.4); }
@@ -260,8 +283,9 @@
         rows="3"
         aria-label="Japanese text input"></textarea>
       <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:8px;">
-        <button id="clearBtn" style="background:none; border:1px solid #222; border-radius:3px; color:#888; font-family:'Inter',sans-serif; font-size:10px; letter-spacing:0.08em; text-transform:uppercase; cursor:pointer; padding:6px 12px; transition:border-color 0.2s, color 0.2s;">Clear</button>
-        <button id="exampleBtn" style="background:none; border:1px solid #444; border-radius:3px; color:#888; font-family:'Inter',sans-serif; font-size:10px; letter-spacing:0.08em; text-transform:uppercase; cursor:pointer; padding:6px 12px; transition:border-color 0.2s, color 0.2s;">Example</button>
+        <button type="button" id="clearBtn" class="toolbar-btn">Clear</button>
+        <button type="button" id="pasteBtn" class="toolbar-btn">Paste</button>
+        <button type="button" id="exampleBtn" class="toolbar-btn">Example</button>
       </div>
     </div>
 
@@ -351,6 +375,31 @@ function isGrammar(token) {
   return GRAMMAR_POS.has(token.pos);
 }
 
+// ── JMdict POS mapping ───────────────────────────────────────────────────────
+const JMDICT_POS_MAP = {
+  'n': 'noun', 'n-pref': 'prefix', 'n-suf': 'suffix',
+  'adv': 'adverb', 'adv-to': 'adverb',
+  'prt': 'particle',
+  'conj': 'conjunction',
+  'int': 'interjection',
+  'pref': 'prefix',
+  'suf': 'suffix',
+  'aux': 'auxiliary', 'aux-v': 'auxiliary verb', 'aux-adj': 'auxiliary adjective',
+  'ctr': 'counter',
+  'pn': 'pronoun',
+  'num': 'numeral',
+  'exp': 'expression',
+  'cop': 'copula',
+};
+
+function jmdictPOS(tags) {
+  if (!tags || !tags.length) return null;
+  const tag = tags[0];
+  if (tag.startsWith('v')) return 'verb';
+  if (tag.startsWith('adj')) return 'adjective';
+  return JMDICT_POS_MAP[tag] || null;
+}
+
 // ── Strip non-Japanese ───────────────────────────────────────────────────────
 function stripNonJapanese(text) {
   return text
@@ -363,7 +412,7 @@ let jmdictLoaded = false;
 let jmdictPromise = null;
 
 async function loadJMdict() {
-  const res = await fetch('jmdict-compact.json.gz?v=4');
+  const res = await fetch('jmdict-compact.json.gz?v=5');
   if (!res.ok) throw new Error(`JMdict fetch failed: ${res.status}`);
   if (res.headers.get('Content-Encoding') === 'gzip') {
     // Server decompressed automatically (e.g. local dev server)
@@ -383,18 +432,23 @@ function lookupWord(surface, basicForm) {
   const candidates = (basicForm && basicForm !== '*' && basicForm !== surface)
     ? [basicForm, surface]
     : [surface];
-  const results = [];
+  const engParts = [];
+  const posLabels = [];
   for (const word of candidates) {
     const entry = jmdict[word];
-    if (Array.isArray(entry)) results.push(entry.join(', '));
+    if (!entry) continue;
+    engParts.push(entry.g.join(', '));
+    const label = jmdictPOS(entry.p);
+    if (label && !posLabels.includes(label)) posLabels.push(label);
   }
-  return results.length ? results.join(' / ') : null;
+  if (!engParts.length) return null;
+  return { eng: engParts.join('; '), pos: posLabels.join('; ') || null };
 }
 
 // ── DOM helpers ──────────────────────────────────────────────────────────────
 const $ = id => document.getElementById(id);
-function show(el) { el.classList.remove('hidden'); el.removeAttribute('aria-hidden'); }
-function hide(el) { el.classList.add('hidden'); el.setAttribute('aria-hidden', 'true'); }
+function show(el) { el.classList.remove('hidden'); }
+function hide(el) { el.classList.add('hidden'); }
 
 function setStatus(msg, type) {
   const box = $('statusBox');
@@ -491,14 +545,14 @@ function openPanel(token, index) {
     hide(reading);
   }
 
-  $('panelPos').textContent = getPOS(token);
-
   const eng = $('panelEnglish');
-  if (isGrammar(token) || token.pos === '記号') {
+  if (isGrammar(token)) {
+    $('panelPos').textContent = getPOS(token);
     eng.textContent = POS_MAP[token.pos] || token.pos;
   } else {
     const result = lookupWord(token.surface_form, token.basic_form);
-    eng.textContent = result || (token.basic_form && token.basic_form !== '*' ? token.basic_form : token.surface_form);
+    $('panelPos').textContent = (result && result.pos) || getPOS(token);
+    eng.textContent = result ? result.eng : (token.basic_form && token.basic_form !== '*' ? token.basic_form : token.surface_form);
   }
 
   // Measure height synchronously before showing to avoid jump on first open
@@ -539,7 +593,6 @@ function renderTokens() {
     span.addEventListener('click', e => { e.stopPropagation(); activate(); });
     span.addEventListener('keydown', e => {
       if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); activate(); }
-      if (e.key === 'Escape') closePanel();
     });
 
     fresh.appendChild(span);
@@ -575,7 +628,7 @@ function analyze() {
   hide($('emptyState'));
 
   try {
-    tokens = tokenizer.tokenize(text);
+    tokens = tokenizer.tokenize(text).filter(t => t.surface_form.trim() !== '');
     lastRawInput = raw;
     closePanel();
     renderTokens();
@@ -630,34 +683,24 @@ $('clearBtn').addEventListener('click', () => {
   $('inputText').dispatchEvent(new Event('input'));
   $('inputText').focus();
 });
-$('clearBtn').addEventListener('mouseover', () => {
-  $('clearBtn').style.background = 'rgba(37,99,235,0.4)';
-  $('clearBtn').style.borderColor = '#2563eb';
-  $('clearBtn').style.color = '#fff';
+$('pasteBtn').addEventListener('click', async () => {
+  try {
+    const text = await navigator.clipboard.readText();
+    $('inputText').value = text;
+    $('inputText').dispatchEvent(new Event('input'));
+    $('inputText').focus();
+    $('inputText').setSelectionRange(0, 0);
+    $('inputText').scrollTop = 0;
+  } catch {
+    $('inputText').focus();
+  }
 });
-$('clearBtn').addEventListener('mouseout', () => {
-  $('clearBtn').style.background = 'none';
-  $('clearBtn').style.borderColor = '#222';
-  $('clearBtn').style.color = '#888';
-});
-
 $('exampleBtn').addEventListener('click', () => {
   $('inputText').value = EXAMPLE_TEXT;
   $('inputText').dispatchEvent(new Event('input'));
   $('inputText').focus();
   $('inputText').setSelectionRange(0, 0);
   $('inputText').scrollTop = 0;
-});
-
-$('exampleBtn').addEventListener('mouseover', () => {
-  $('exampleBtn').style.background = 'rgba(37,99,235,0.4)';
-  $('exampleBtn').style.borderColor = '#2563eb';
-  $('exampleBtn').style.color = '#fff';
-});
-$('exampleBtn').addEventListener('mouseout', () => {
-  $('exampleBtn').style.background = 'none';
-  $('exampleBtn').style.borderColor = '#444';
-  $('exampleBtn').style.color = '#888';
 });
 </script>
 </body>

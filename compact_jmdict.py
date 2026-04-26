@@ -14,7 +14,7 @@ print(f"Loading {source}...")
 with open(source) as f:
     d = json.load(f)
 
-out = {}       # word → glosses
+out = {}       # word → {p: pos_tags, g: glosses}
 common = {}    # word → bool (is this entry marked common?)
 
 for entry in d['words']:
@@ -35,7 +35,7 @@ for entry in d['words']:
         word = k['text']
         # Only overwrite if this entry is common and the existing one isn't
         if word not in out or (is_common and not common.get(word, False)):
-            out[word] = glosses
+            out[word] = {'p': first_sense.get('partOfSpeech', []), 'g': glosses}
             common[word] = is_common
 
 data = json.dumps(out, ensure_ascii=False, separators=(',', ':'))
