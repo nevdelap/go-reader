@@ -11,6 +11,8 @@ A single-file static Japanese reader. No server, no build step — deploys anywh
 | `jmdict-compact.json.gz` | Compact gzipped dictionary (word → English glosses) |
 | `dict/` | Binary dictionary files loaded by kuromoji at runtime |
 | `compact_jmdict.py` | Build script: preprocesses full JMdict JSON into compact form |
+| `compact_repo.sh` | Maintenance script: rewrites git history to remove old dictionary blobs |
+| `local_serve.py` | Local dev server |
 | `manifest.json` / `favicon.svg` | PWA manifest and icon |
 
 ---
@@ -22,9 +24,15 @@ A single-file static Japanese reader. No server, no build step — deploys anywh
 
 ---
 
+## Analytics
+
+[GoatCounter](https://www.goatcounter.com/) is used for privacy-friendly page view tracking. No cookies, no personal data. The script tag in `index.html` points to `go-reader.goatcounter.com`.
+
+---
+
 ## Data Flow
 
-```
+```text
 User pastes text
        │
        ▼  (300ms debounce)
@@ -35,7 +43,7 @@ kuromoji.tokenize()         — produces morpheme tokens:
                               surface_form, reading, basic_form, pos
        │
        ▼
-renderTokens()              — builds clickable <span> elements
+renderTokens()              — builds clickable <span> elements (display: inline)
                               content words: white
                               grammar/particles: gray
        │
@@ -53,16 +61,14 @@ openPanel()                 — bottom panel shows:
 The full JMdict JSON is ~50 MB — too large to load in a browser. `compact_jmdict.py` reduces it to a flat map containing only what the app needs:
 
 ```json
-{ "word": ["gloss1", "gloss2"], ... }
+{ "word": ["gloss1", "gloss2", ...], ... }
 ```
 
-- Only the first two English glosses from the first sense are kept
+- All English glosses from the first sense are kept
 - Common entries win over uncommon ones on key collision
-- Output: `jmdict-compact.json.gz` (~3 MB gzipped)
+- Output: `jmdict-compact.json.gz` (~6.5 MB gzipped)
 
-To regenerate:
-1. Download `jmdict-eng-x.x.x.json` from [jmdict-simplified releases](https://github.com/scriptin/jmdict-simplified/releases/latest)
-2. Run `./compact_jmdict.py` from the project root
+To regenerate, see [Building the dictionary](../README.md#building-the-dictionary) in the README.
 
 ---
 
@@ -88,6 +94,7 @@ Katakana readings from kuromoji are converted to hiragana for display (`toHiraga
 
 ## UI Details
 
+- **Token rendering** — tokens use `display: inline` so letter-spacing and glyph metrics behave consistently with the textarea input
 - **Token area rebuild** — on re-tokenization, the token area DOM node is replaced with a clone to avoid accumulating event listeners
 - **Panel height tracking** — a `ResizeObserver` keeps `--panel-height` in sync so the token area scrolls far enough to keep the active token visible above the bottom panel
 - **Input deduplication** — if the raw input hasn't changed since last tokenization, rendering is skipped
