@@ -131,7 +131,7 @@
       flex: 1;
     }
 
-    .input-wrap { margin-bottom: 14px; }
+    .input-wrap { margin-bottom: 10px; }
 
     textarea {
       font-family: 'Noto Sans JP', sans-serif;
@@ -230,6 +230,16 @@
       color: var(--text-muted);
       letter-spacing: 0.06em;
       text-wrap: balance;
+    }
+
+    .legend-hint-mobile { display: none; }
+
+    @media (max-width: 600px) {
+      .legend-hint-desktop { display: none; }
+      .legend-hint-mobile { display: inline; }
+      .input-toolbar { flex-wrap: wrap; row-gap: 4px; }
+      .input-toolbar .legend-hint { order: 1; width: 100%; }
+      .input-toolbar #clearBtn { margin-left: auto; }
     }
 
     .token-area {
@@ -361,7 +371,7 @@
   <header>
     <div class="header-left">
       <div class="logo">語 <span>Reader</span></div>
-      <div class="subtitle">Japanese Reader For Learners · v1.5.0</div>
+      <div class="subtitle">Japanese Reader For Learners · v1.5.1</div>
     </div>
     <button type="button" id="themeBtn" class="toolbar-btn"></button>
   </header>
@@ -372,8 +382,9 @@
         placeholder="日本語のテキストを貼り付けてください。"
         rows="3"
         aria-label="Japanese text input"></textarea>
-      <div style="display:flex; align-items:center; gap:8px; margin-top:8px;">
-        <span class="legend-hint">Click or tap words, or navigate with Tab/Shift-Tab and press Space, to see translations.</span>
+      <div class="input-toolbar" style="display:flex; align-items:center; gap:8px; margin-top:8px;">
+        <span class="legend-hint legend-hint-desktop">Click words, or navigate with Tab/Shift-Tab and press Space, to see translations.</span>
+        <span class="legend-hint legend-hint-mobile">Tap words to see translations.</span>
         <button type="button" id="clearBtn" class="toolbar-btn" style="margin-left:auto;">Clear</button>
         <button type="button" id="pasteBtn" class="toolbar-btn" title="Paste (Ctrl+V)">Paste</button>
         <button type="button" id="exampleBtn" class="toolbar-btn">Example</button>
