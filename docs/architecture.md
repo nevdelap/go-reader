@@ -93,7 +93,7 @@ When a token is tapped, `lookupWord(surface_form, basic_form)` tries:
 1. `basic_form` — the dictionary/base form (e.g. `食べる`), skipped if it equals `surface_form` or `*`
 2. `surface_form` — the exact text as it appears (e.g. `食べました`)
 
-Both results are returned when found, joined with `; ` (semicolon-space). This handles conjugated verbs and adjectives, and
+Both results are returned when found, joined with a semicolon and space. This handles conjugated verbs and adjectives, and
 surfaces homograph disambiguation (e.g. `ある` returns both the verb and the existential senses). If neither
 is found in JMdict, the display falls back to the `basic_form` string from kuromoji.
 
@@ -112,6 +112,10 @@ ______________________________________________________________________
 - **Debounce** — 300ms after last keypress before `analyze()` fires
 - **Grammar classification** — particles (`助詞`), auxiliary verbs (`助動詞`), symbols, punctuation, whitespace, and filler (`フィラー`) tokens are styled
   gray and show their POS label rather than a dictionary lookup
+- **Vertical reading mode** — a toggle button in the legend bar switches the token area between horizontal (default) and
+  `writing-mode: vertical-rl` (top-to-bottom, right-to-left columns). The button label reflects the action to take:
+  "Read top to bottom" when horizontal, "Read left to right" when vertical. On entering vertical mode the scroll position
+  is snapped to `scrollLeft = scrollWidth` so the first column (rightmost) is visible immediately.
 
 ______________________________________________________________________
 

@@ -121,6 +121,7 @@
       color: #fff;
     }
 
+
     .status-box {
       border-radius: 4px;
       padding: 12px 16px;
@@ -176,6 +177,21 @@
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
     }
+    .token-area.vertical {
+      writing-mode: vertical-rl;
+      width: 100%;
+      height: 60vh;
+      overflow-x: auto;
+      overflow-y: hidden;
+    }
+    #app.panel-open .token-area.vertical {
+      height: calc(60vh - var(--panel-height, 130px));
+    }
+    .token-area.vertical::-webkit-scrollbar { height: 20px; width: 0; }
+    .token-area.vertical::-webkit-scrollbar-track { background: #0a0a0a; border-radius: 3px; }
+    .token-area.vertical::-webkit-scrollbar-thumb { background: #1e3a5f; border-radius: 3px; }
+    .token-area.vertical::-webkit-scrollbar-thumb:hover { background: #2563eb; }
+    .token-area.vertical .token { scroll-margin-bottom: 0; }
 
     .token {
       display: inline;
@@ -273,7 +289,7 @@
 <div id="app">
   <header>
     <div class="logo">語 <span>Reader</span></div>
-    <div class="subtitle">Japanese Reader For Learners · v1.2.0</div>
+    <div class="subtitle">Japanese Reader For Learners · v1.3.0</div>
   </header>
 
   <main>
@@ -292,10 +308,11 @@
     <div class="status-box info hidden" id="statusBox" role="status" aria-live="polite"></div>
 
     <div id="tokenView" class="hidden">
-      <div class="legend" aria-hidden="true">
-        <span class="legend-item"><span class="dot content"></span> content</span>
-        <span class="legend-item"><span class="dot grammar"></span> grammar</span>
-        <span class="legend-hint">Click or tap words to see translations.</span>
+      <div class="legend">
+        <span class="legend-item" aria-hidden="true"><span class="dot content"></span> content</span>
+        <span class="legend-item" aria-hidden="true"><span class="dot grammar"></span> grammar</span>
+        <span class="legend-hint" aria-hidden="true">Click or tap words to see translations.</span>
+        <button type="button" id="verticalBtn" class="toolbar-btn" aria-pressed="false">Read top to bottom</button>
       </div>
       <div class="token-area"
         id="tokenArea"
@@ -314,7 +331,7 @@
     <div class="feedback">Found a bug or have a suggestion? <a href="https://github.com/nevdelap/go-reader/issues" target="_blank" rel="noopener noreferrer">Let me know.</a></div>
     This site uses the <a href="https://www.edrdg.org/wiki/index.php/JMdict-EDICT_Dictionary_Project" target="_blank" rel="noopener noreferrer">JMdict/EDICT</a> dictionary files. These files are the property of the <a href="https://www.edrdg.org/" target="_blank" rel="noopener noreferrer">Electronic Dictionary Research and Development Group</a>, and are used in conformance with the Group's <a href="https://www.edrdg.org/edrdg/licence.html" target="_blank" rel="noopener noreferrer">licence</a>.
     <strong>Please note</strong> that translations are matched to individual morphemes and may not always reflect the word's meaning in context.
-    <br><br>© 2026 nevdelap. Released under the <a href="https://github.com/nevdelap/go-reader/blob/main/LICENSE" target="_blank" rel="noopener noreferrer">MIT licence</a>.
+    <br><br>© 2026 Nev Delap. Released under the <a href="https://github.com/nevdelap/go-reader/blob/main/LICENSE" target="_blank" rel="noopener noreferrer">MIT licence</a>.
   </footer>
 </div>
 
@@ -562,6 +579,9 @@ function openPanel(token, index) {
 
   // Watch for subsequent height changes (font load, reflow, resize)
   panelResizeObserver.observe($('panel'));
+
+  // Scroll active token into view (essential in vertical mode)
+  $('tokenArea').querySelector('.token.active')?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
 }
 
 // ── Render tokens ────────────────────────────────────────────────────────────
@@ -601,6 +621,7 @@ function renderTokens() {
   const content = tokens.filter(t => !isGrammar(t)).length;
   $('tokenCount').textContent = `${tokens.length} total morphemes · ${content} content morphemes`;
   fresh.addEventListener('click', closePanel);
+  if (isVertical) requestAnimationFrame(() => { fresh.scrollLeft = fresh.scrollWidth; });
 }
 
 // ── Analyze ──────────────────────────────────────────────────────────────────
@@ -655,6 +676,17 @@ document.addEventListener('visibilitychange', () => {
 });
 
 $('panelClose').addEventListener('click', closePanel);
+
+// ── Vertical reading toggle ───────────────────────────────────────────────────
+let isVertical = false;
+$('verticalBtn').addEventListener('click', () => {
+  isVertical = !isVertical;
+  const area = $('tokenArea');
+  area.classList.toggle('vertical', isVertical);
+  $('verticalBtn').textContent = isVertical ? 'Read left to right' : 'Read top to bottom';
+  $('verticalBtn').setAttribute('aria-pressed', isVertical ? 'true' : 'false');
+  if (isVertical) requestAnimationFrame(() => { area.scrollLeft = area.scrollWidth; });
+});
 
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape') closePanel();
