@@ -89,7 +89,6 @@
       transition: padding-bottom 0.2s ease-out;
     }
 
-    #app.panel-open { padding-bottom: var(--panel-height, 130px); }
 
     header {
       border-bottom: 1px solid var(--border-subtle);
@@ -246,9 +245,6 @@
       height: 60vh;
       overflow-x: auto;
       overflow-y: hidden;
-    }
-    #app.panel-open .token-area.vertical {
-      height: calc(60vh - var(--panel-height, 130px));
     }
     .token-area.vertical::-webkit-scrollbar { height: 20px; width: 0; }
     .token-area.vertical::-webkit-scrollbar-track { background: var(--bg-surface); border-radius: 3px; }
@@ -637,7 +633,6 @@ function closePanel() {
   hide($('panel'));
   panelResizeObserver.disconnect();
   $('tokenArea').querySelectorAll('.token').forEach(t => t.classList.remove('active'));
-  $('app').classList.remove('panel-open');
 }
 
 function openPanel(token, index) {
@@ -667,8 +662,6 @@ function openPanel(token, index) {
   // Measure height synchronously before showing to avoid jump on first open
   show($('panel'));
   setPanelHeightVar();
-  $('app').classList.add('panel-open');
-
   // Watch for subsequent height changes (font load, reflow, resize)
   panelResizeObserver.observe($('panel'));
 
