@@ -57,9 +57,9 @@
       --text-dim: #333;
       --text-muted: #666;
       --text-faint: #888;
-      --text-grammar: #999;
+      --text-grammar: #888;
       --text-empty: #ccc;
-      --accent-dim: #bfdbfe;
+      --accent-dim: #60a5fa;
       --accent-light: #1d4ed8;
       --accent-lighter: #1e40af;
       --scrollbar-thumb: #60a5fa;
@@ -174,7 +174,11 @@
       cursor: pointer;
       padding: 6px 12px;
       transition: background 0.2s, border-color 0.2s, color 0.2s;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
     }
+    #themeBtn { padding: 7px 9px; border-color: transparent; }
     .toolbar-btn:hover, .toolbar-btn:focus-visible {
       background: rgba(37,99,235,0.4);
       border-color: var(--accent);
@@ -385,7 +389,7 @@
       <div class="token-area"
         id="tokenArea"
         role="list"
-        aria-label="Analysed Japanese text"></div>
+        aria-label="Analyzed Japanese text"></div>
       <div class="token-count" id="tokenCount"></div>
     </div>
 
@@ -397,9 +401,9 @@
 
   <footer>
     <div class="feedback">Found a bug or have a suggestion? <a href="https://github.com/nevdelap/go-reader/issues" target="_blank" rel="noopener noreferrer">Let me know.</a></div>
-    This site uses the <a href="https://www.edrdg.org/wiki/index.php/JMdict-EDICT_Dictionary_Project" target="_blank" rel="noopener noreferrer">JMdict/EDICT</a> dictionary files. These files are the property of the <a href="https://www.edrdg.org/" target="_blank" rel="noopener noreferrer">Electronic Dictionary Research and Development Group</a>, and are used in conformance with the Group's <a href="https://www.edrdg.org/edrdg/licence.html" target="_blank" rel="noopener noreferrer">licence</a>.
+    This site uses the <a href="https://www.edrdg.org/wiki/index.php/JMdict-EDICT_Dictionary_Project" target="_blank" rel="noopener noreferrer">JMdict/EDICT</a> dictionary files. These files are the property of the <a href="https://www.edrdg.org/" target="_blank" rel="noopener noreferrer">Electronic Dictionary Research and Development Group</a>, and are used in conformance with the Group's <a href="https://www.edrdg.org/edrdg/licence.html" target="_blank" rel="noopener noreferrer">license</a>.
     <strong>Please note</strong> that translations are matched to individual morphemes and may not always reflect the word's meaning in context.
-    <br><br>© 2026 Nev Delap. Released under the <a href="https://github.com/nevdelap/go-reader/blob/main/LICENSE" target="_blank" rel="noopener noreferrer">MIT licence</a>.
+    <br><br>© 2026 Nev Delap. Released under the <a href="https://github.com/nevdelap/go-reader/blob/main/LICENSE" target="_blank" rel="noopener noreferrer">MIT license</a>.
   </footer>
 </div>
 
@@ -544,9 +548,13 @@ function setStatus(msg, type) {
 }
 
 // ── Theme ────────────────────────────────────────────────────────────────────
+const ICON_SUN = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>`;
+const ICON_MOON = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>`;
+
 function applyTheme(dark) {
   document.documentElement.dataset.theme = dark ? 'dark' : 'light';
-  $('themeBtn').textContent = dark ? 'Light' : 'Dark';
+  $('themeBtn').innerHTML = dark ? ICON_SUN : ICON_MOON;
+  $('themeBtn').setAttribute('aria-label', dark ? 'Switch to light theme' : 'Switch to dark theme');
   $('themeColor').content = dark ? '#000000' : '#f5f5f5';
 }
 

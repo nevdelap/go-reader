@@ -8,20 +8,21 @@ no API calls, no cost to run.
 
 ## How it works
 
-- **Tokenisation** — [kuromoji.js](https://github.com/takuyaa/kuromoji.js), a
-  pure JavaScript Japanese morphological analyser
+- **Tokenization** — [kuromoji.js](https://github.com/takuyaa/kuromoji.js), a
+  pure JavaScript Japanese morphological analyzer
 - **Dictionary lookups** — [JMdict](https://www.edrdg.org/jmdict/j_jmdict.html),
   the Electronic Dictionary Research and Development Group's Japanese-English
   dictionary, bundled as a compact gzipped JSON file
 
 See [docs/architecture.md](docs/architecture.md) for a detailed breakdown.
 
-## Licences
+## Licenses
 
 - App code: [MIT](LICENSE)
 - Dictionary data: [CC BY-SA 4.0](LICENSE-JMDICT) — © Electronic Dictionary
   Research and Development Group
 - kuromoji.js: [Apache 2.0](https://www.apache.org/licenses/LICENSE-2.0)
+- Lucide icons: [ISC](https://github.com/lucide-icons/lucide/blob/main/LICENSE)
 
 ## Markdown
 
@@ -32,7 +33,7 @@ just lint     # format then lint
 
 ## Maintaining the repository
 
-Periodically update the dictionary in compliance with its licence and rewrite
+Periodically update the dictionary in compliance with its license and rewrite
 history to keep the repo lean.
 
 Install `git-filter-repo` if not already installed using your package manager,

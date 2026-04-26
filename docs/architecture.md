@@ -7,7 +7,7 @@ A single-file static Japanese reader. No server, no build step — deploys anywh
 | File                                | Purpose                                                                                                                |
 | ----------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
 | `index.html`                        | Entire app — HTML, CSS, and JavaScript                                                                                 |
-| `kuromoji.js`                       | Japanese morphological analyser (runs in the browser)                                                                  |
+| `kuromoji.js`                       | Japanese morphological analyzer (runs in the browser)                                                                  |
 | `jmdict-compact.json.gz`            | Compact gzipped dictionary (word → English glosses)                                                                    |
 | `dict/`                             | Binary dictionary files loaded by kuromoji at runtime                                                                  |
 | `compact_jmdict.py`                 | Build script: preprocesses full JMdict JSON into compact form                                                          |
@@ -19,8 +19,9 @@ ______________________________________________________________________
 
 ## Libraries
 
-- **[kuromoji.js](https://github.com/takuyaa/kuromoji.js)** — Pure JavaScript Japanese morphological analyser. Loads binary dictionary files from `dict/` at startup, then tokenizes text entirely in-browser.
+- **[kuromoji.js](https://github.com/takuyaa/kuromoji.js)** — Pure JavaScript Japanese morphological analyzer. Loads binary dictionary files from `dict/` at startup, then tokenizes text entirely in-browser.
 - **[JMdict](https://www.edrdg.org/jmdict/j_jmdict.html)** — Japanese-English dictionary from EDRDG, bundled as a compact gzipped JSON lookup table.
+- **[Lucide](https://lucide.dev/)** — ISC-licensed icon set. The sun and moon icons are inlined as SVG in `index.html` for the theme toggle; no external dependency.
 
 ______________________________________________________________________
 
@@ -44,8 +45,8 @@ kuromoji.tokenize()         — produces morpheme tokens:
        │
        ▼
 renderTokens()              — builds clickable <span> elements (display: inline)
-                              content words: foreground colour
-                              grammar/particles: muted colour
+                              content words: foreground color
+                              grammar/particles: muted color
        │
        ▼  (tap/click)
 openPanel()                 — bottom panel shows:
