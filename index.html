@@ -91,6 +91,11 @@
     }
     textarea:focus { border-color: #2563eb; }
     textarea::placeholder { color: #888; }
+    textarea::-webkit-scrollbar { width: 20px; }
+    textarea::-webkit-scrollbar-track { background: #0a0a0a; border-radius: 3px; }
+    textarea::-webkit-scrollbar-thumb { background: #1e3a5f; border-radius: 3px; }
+    textarea::-webkit-scrollbar-thumb:hover { background: #2563eb; }
+    textarea { scrollbar-width: auto; scrollbar-color: #1e3a5f #0a0a0a; }
 
     .status-box {
       border-radius: 4px;
@@ -235,7 +240,7 @@
 <div id="app">
   <header>
     <div class="logo">語 <span>Reader</span></div>
-    <div class="subtitle">Japanese Reader For Learners · v1.0.3</div>
+    <div class="subtitle">Japanese Reader For Learners · v1.1.0</div>
   </header>
 
   <main>
@@ -244,7 +249,8 @@
         placeholder="日本語のテキストを貼り付けてください。"
         rows="3"
         aria-label="Japanese text input"></textarea>
-      <div style="display:flex; justify-content:flex-end; margin-top:8px;">
+      <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:8px;">
+        <button id="clearBtn" style="background:none; border:1px solid #222; border-radius:3px; color:#888; font-family:'Inter',sans-serif; font-size:10px; letter-spacing:0.08em; text-transform:uppercase; cursor:pointer; padding:6px 12px; transition:border-color 0.2s, color 0.2s;">Clear</button>
         <button id="exampleBtn" style="background:none; border:1px solid #444; border-radius:3px; color:#888; font-family:'Inter',sans-serif; font-size:10px; letter-spacing:0.08em; text-transform:uppercase; cursor:pointer; padding:6px 12px; transition:border-color 0.2s, color 0.2s;">Example</button>
       </div>
     </div>
@@ -595,9 +601,26 @@ const EXAMPLE_TEXT = `「その会社には、三つの"重要な（じゅうよ
 「コーヒーはサーバーに持ち込まない。そして、大事なノートは二重バックアップする。」 "Don't bring coffee into the server room. And always back up what matters to you personally."
 「それがその日、たいへんな事故から学んだ最も重要なことでした。」 "That was the most important thing learned from that difficult incident."`;
 
+$('clearBtn').addEventListener('click', () => {
+  $('inputText').value = '';
+  $('inputText').dispatchEvent(new Event('input'));
+  $('inputText').focus();
+});
+$('clearBtn').addEventListener('mouseover', () => {
+  $('clearBtn').style.borderColor = '#444';
+  $('clearBtn').style.color = '#888';
+});
+$('clearBtn').addEventListener('mouseout', () => {
+  $('clearBtn').style.borderColor = '#222';
+  $('clearBtn').style.color = '#888';
+});
+
 $('exampleBtn').addEventListener('click', () => {
   $('inputText').value = EXAMPLE_TEXT;
   $('inputText').dispatchEvent(new Event('input'));
+  $('inputText').focus();
+  $('inputText').setSelectionRange(0, 0);
+  $('inputText').scrollTop = 0;
 });
 
 $('exampleBtn').addEventListener('mouseover', () => {
