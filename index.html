@@ -196,6 +196,7 @@
       color: #888;
       letter-spacing: 0.06em;
       border-top: 1px solid #0a0a0a;
+      text-wrap: balance;
     }
     footer a { color: #888; text-decoration: none; }
     footer a:hover { color: #999; }
@@ -249,7 +250,7 @@
 <div id="app">
   <header>
     <div class="logo">語 <span>Reader</span></div>
-    <div class="subtitle">Japanese Reader For Learners · v1.1.6</div>
+    <div class="subtitle">Japanese Reader For Learners · v1.1.7</div>
   </header>
 
   <main>
@@ -275,7 +276,7 @@
       <div class="token-area"
         id="tokenArea"
         role="list"
-        aria-label="Tokenized Japanese text"></div>
+        aria-label="Analysed Japanese text"></div>
       <div class="token-count" id="tokenCount"></div>
     </div>
 
@@ -288,6 +289,7 @@
   <footer>
     <div class="feedback">Found a bug or have a suggestion? <a href="https://github.com/nevdelap/go-reader/issues" target="_blank" rel="noopener noreferrer">Let me know.</a></div>
     This site uses the <a href="https://www.edrdg.org/wiki/index.php/JMdict-EDICT_Dictionary_Project" target="_blank" rel="noopener noreferrer">JMdict/EDICT</a> dictionary files. These files are the property of the <a href="https://www.edrdg.org/" target="_blank" rel="noopener noreferrer">Electronic Dictionary Research and Development Group</a>, and are used in conformance with the Group's <a href="https://www.edrdg.org/edrdg/licence.html" target="_blank" rel="noopener noreferrer">licence</a>.
+    <strong>Please note</strong> that translations are matched to individual morphemes and may not always reflect the word's meaning in context — for example, あります is split into あり ("ant") and ます, rather than being translated as "there is".
     <br><br>© 2026 nevdelap. Released under the <a href="https://github.com/nevdelap/go-reader/blob/main/LICENSE" target="_blank" rel="noopener noreferrer">MIT licence</a>.
   </footer>
 </div>
@@ -544,7 +546,7 @@ function renderTokens() {
   });
 
   const content = tokens.filter(t => !isGrammar(t)).length;
-  $('tokenCount').textContent = `${tokens.length} tokens · ${content} content words`;
+  $('tokenCount').textContent = `${tokens.length} total morphemes · ${content} content morphemes`;
   fresh.addEventListener('click', closePanel);
 }
 
@@ -582,7 +584,7 @@ function analyze() {
     console.error('Tokenization error:', e);
     tokens = [];
     lastRawInput = null;
-    setStatus('Tokenization failed. Please try again.', 'error');
+    setStatus('Analysis failed. Please try again.', 'error');
     show($('emptyState'));
   }
 }
