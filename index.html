@@ -135,7 +135,7 @@
 
     textarea {
       font-family: 'Noto Sans JP', sans-serif;
-      font-size: 18px;
+      font-size: 16px;
       font-weight: 400;
       line-height: 1.8;
       letter-spacing: 0.04em;
@@ -224,7 +224,13 @@
     .dot.content { background: var(--dot-content); }
     .dot.grammar { background: var(--dot-grammar); }
 
-    .legend-hint { margin-left: auto; }
+    .legend-hint {
+      font-family: 'Inter', sans-serif;
+      font-size: 10px;
+      color: var(--text-muted);
+      letter-spacing: 0.06em;
+      text-wrap: balance;
+    }
 
     .token-area {
       background: var(--bg);
@@ -232,7 +238,7 @@
       border-radius: 6px;
       padding: 26px 30px;
       font-family: 'Noto Sans JP', sans-serif;
-      font-size: 18px;
+      font-size: 16px;
       font-weight: 400;
       line-height: 1.5;
       letter-spacing: 0.04em;
@@ -327,7 +333,7 @@
     .panel-divider { width: 1px; align-self: stretch; background: var(--border-subtle); flex-shrink: 0; }
     .panel-info { display: flex; flex-direction: column; gap: 4px; flex: 1; min-width: 0; }
     .panel-pos { font-family: 'Inter', sans-serif; font-size: 9px; color: var(--accent); text-transform: uppercase; letter-spacing: 0.12em; }
-    .panel-english { font-family: 'Inter', sans-serif; font-size: 18px; color: var(--text-dim); line-height: 1.4; }
+    .panel-english { font-family: 'Inter', sans-serif; font-size: 16px; color: var(--text-dim); line-height: 1.4; }
 
     .panel-close {
       background: none;
@@ -355,7 +361,7 @@
   <header>
     <div class="header-left">
       <div class="logo">語 <span>Reader</span></div>
-      <div class="subtitle">Japanese Reader For Learners · v1.4.0</div>
+      <div class="subtitle">Japanese Reader For Learners · v1.5.0</div>
     </div>
     <button type="button" id="themeBtn" class="toolbar-btn"></button>
   </header>
@@ -366,9 +372,10 @@
         placeholder="日本語のテキストを貼り付けてください。"
         rows="3"
         aria-label="Japanese text input"></textarea>
-      <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:8px;">
-        <button type="button" id="clearBtn" class="toolbar-btn">Clear</button>
-        <button type="button" id="pasteBtn" class="toolbar-btn">Paste</button>
+      <div style="display:flex; align-items:center; gap:8px; margin-top:8px;">
+        <span class="legend-hint">Click or tap words, or navigate with Tab/Shift-Tab and press Space, to see translations.</span>
+        <button type="button" id="clearBtn" class="toolbar-btn" style="margin-left:auto;">Clear</button>
+        <button type="button" id="pasteBtn" class="toolbar-btn" title="Paste (Ctrl+V)">Paste</button>
         <button type="button" id="exampleBtn" class="toolbar-btn">Example</button>
       </div>
     </div>
@@ -379,8 +386,7 @@
       <div class="legend">
         <span class="legend-item" aria-hidden="true"><span class="dot content"></span> content</span>
         <span class="legend-item" aria-hidden="true"><span class="dot grammar"></span> grammar</span>
-        <span class="legend-hint" aria-hidden="true">Click or tap words to see translations.</span>
-        <button type="button" id="verticalBtn" class="toolbar-btn" aria-pressed="false">Read top to bottom</button>
+        <button type="button" id="verticalBtn" class="toolbar-btn" aria-pressed="false" title="Reading direction (Alt+D)" style="margin-left:auto;">Read top to bottom</button>
       </div>
       <div class="token-area"
         id="tokenArea"
@@ -417,7 +423,7 @@
     <div class="panel-pos" id="panelPos"></div>
     <div class="panel-english" id="panelEnglish"></div>
   </div>
-  <button class="panel-close" id="panelClose" aria-label="Close word details">✕</button>
+  <button class="panel-close" id="panelClose" aria-label="Close word details" title="Close (Esc)">✕</button>
 </div>
 
 <script src="kuromoji.js"></script>
@@ -781,25 +787,44 @@ $('verticalBtn').addEventListener('click', () => {
 
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape') closePanel();
+  if (e.key === 'd' && e.altKey) { e.preventDefault(); $('verticalBtn').click(); return; }
+  if (document.activeElement === $('inputText')) return;
+  if (e.key === 'v' && e.ctrlKey) { e.preventDefault(); $('pasteBtn').click(); }
 });
 
 // ── Example text ─────────────────────────────────────────────────────────────
-const EXAMPLE_TEXT = `「その会社には、三つの"重要なデータベース"がありました。」 "In that company, there were three 'crucial' databases."
-「それは会社の未来を決める、とても重要なシステムでした。」 "They were systems that would decide the company's future, extremely important in an objective sense."
-「しかしある日、たいへんな事故が起きました。」 "But one day, a serious incident occurred."
-「サーバールームにコーヒーを持ち込んだ新人が、全部にこぼしてしまったのです。」 "A new employee brought coffee into the server room and spilled it everywhere."
-「"これはたいへんなことになった…"と皆が叫びました。」 "Everyone shouted, 'This has become a terrible situation…'"
-「一方で、社長は落ち着いて言いました。」 "Meanwhile, the director calmly said:"
-「"そのデータは会社にとって重要な資産だ。すぐに復旧しなさい。"」 "'That data is a critical asset for the company. Restore it immediately.'"
-「その時、システム担当のエンジニアは、自分の大事なノートを見つめていました。」 "At that moment, the system engineer was staring at his personal notebook."
-「そこには、大事な（だいじな）設定メモが全部書いてあったのです。」 "All his personally important configuration notes were written in it."
-「彼は心の中で思いました。」 "He thought to himself:"
-「"重要なシステムはサーバーにある。でも、大事な知識はこのノートだ…"」 "'The critical system is on the server. But my personally important knowledge is in this notebook…'"
-「そして彼は気づきました。」 "And then he realised:"
-「たいへんなのはサーバーだけではなく、自分の人生の整理も同じくらい大変だと。」 "The problem wasn't just the server—it was that organising his own life was just as difficult."
-「その後、会社は復旧し、誰もが重要な教訓を得ました。」 "Afterwards, the company recovered, and everyone gained an important lesson."
-「コーヒーはサーバーに持ち込まない。そして、大事なノートは二重バックアップする。」 "Don't bring coffee into the server room. And always back up what matters to you personally."
-「それがその日、たいへんな事故から学んだ最も重要なことでした。」 "That was the most important thing learned from that difficult incident."`;
+const EXAMPLE_TEXT = `「その会社には、三つの"重要なデータベース"がありました。」
+"In that company, there were three 'crucial' databases."
+「それは会社の未来を決める、とても重要なシステムでした。」
+"They were systems that would decide the company's future, extremely important in an objective sense."
+「しかしある日、たいへんな事故が起きました。」
+"But one day, a serious incident occurred."
+「サーバールームにコーヒーを持ち込んだ新人が、全部にこぼしてしまったのです。」
+"A new employee brought coffee into the server room and spilled it everywhere."
+「"これはたいへんなことになった…"と皆が叫びました。」
+"Everyone shouted, 'This has become a terrible situation…'"
+「一方で、社長は落ち着いて言いました。」
+"Meanwhile, the director calmly said:"
+「"そのデータは会社にとって重要な資産だ。すぐに復旧しなさい。"」
+"'That data is a critical asset for the company. Restore it immediately.'"
+「その時、システム担当のエンジニアは、自分の大事なノートを見つめていました。」
+"At that moment, the system engineer was staring at his personal notebook."
+「そこには、大事な（だいじな）設定メモが全部書いてあったのです。」
+"All his personally important configuration notes were written in it."
+「彼は心の中で思いました。」
+"He thought to himself:"
+「"重要なシステムはサーバーにある。でも、大事な知識はこのノートだ…"」
+"'The critical system is on the server. But my personally important knowledge is in this notebook…'"
+「そして彼は気づきました。」
+"And then he realised:"
+「たいへんなのはサーバーだけではなく、自分の人生の整理も同じくらい大変だと。」
+"The problem wasn't just the server—it was that organising his own life was just as difficult."
+「その後、会社は復旧し、誰もが重要な教訓を得ました。」
+"Afterwards, the company recovered, and everyone gained an important lesson."
+「コーヒーはサーバーに持ち込まない。そして、大事なノートは二重バックアップする。」
+"Don't bring coffee into the server room. And always back up what matters to you personally."
+「それがその日、たいへんな事故から学んだ最も重要なことでした。」
+"That was the most important thing learned from that difficult incident."`;
 
 $('clearBtn').addEventListener('click', () => {
   $('inputText').value = '';
@@ -812,8 +837,6 @@ $('pasteBtn').addEventListener('click', async () => {
     $('inputText').value = text;
     $('inputText').dispatchEvent(new Event('input'));
     $('inputText').focus();
-    $('inputText').setSelectionRange(0, 0);
-    $('inputText').scrollTop = 0;
   } catch {
     $('inputText').focus();
   }
