@@ -23,6 +23,13 @@ See [docs/architecture.md](docs/architecture.md) for a detailed breakdown.
   Research and Development Group
 - kuromoji.js: [Apache 2.0](https://www.apache.org/licenses/LICENSE-2.0)
 
+## Markdown
+
+```bash
+just format   # format
+just lint     # format then lint
+```
+
 ## Compacting the repository
 
 Each dictionary update adds a new 6.5MB binary blob to git history. Periodically

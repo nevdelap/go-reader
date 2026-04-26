@@ -4,31 +4,31 @@ A single-file static Japanese reader. No server, no build step — deploys anywh
 
 ## Files
 
-| File | Purpose |
-|---|---|
-| `index.html` | Entire app — HTML, CSS, and JavaScript |
-| `kuromoji.js` | Japanese morphological analyser (runs in the browser) |
-| `jmdict-compact.json.gz` | Compact gzipped dictionary (word → English glosses) |
-| `dict/` | Binary dictionary files loaded by kuromoji at runtime |
-| `compact_jmdict.py` | Build script: preprocesses full JMdict JSON into compact form |
-| `compact_repo.sh` | Maintenance script: rewrites git history to remove old dictionary blobs |
-| `local_serve.py` | Local dev server |
-| `manifest.json` / `favicon.svg` | PWA manifest and icon |
+| File                            | Purpose                                                                 |
+| ------------------------------- | ----------------------------------------------------------------------- |
+| `index.html`                    | Entire app — HTML, CSS, and JavaScript                                  |
+| `kuromoji.js`                   | Japanese morphological analyser (runs in the browser)                   |
+| `jmdict-compact.json.gz`        | Compact gzipped dictionary (word → English glosses)                     |
+| `dict/`                         | Binary dictionary files loaded by kuromoji at runtime                   |
+| `compact_jmdict.py`             | Build script: preprocesses full JMdict JSON into compact form           |
+| `compact_repo.sh`               | Maintenance script: rewrites git history to remove old dictionary blobs |
+| `local_serve.py`                | Local dev server                                                        |
+| `manifest.json` / `favicon.svg` | PWA manifest and icon                                                   |
 
----
+______________________________________________________________________
 
 ## Libraries
 
 - **[kuromoji.js](https://github.com/takuyaa/kuromoji.js)** — Pure JavaScript Japanese morphological analyser. Loads binary dictionary files from `dict/` at startup, then tokenizes text entirely in-browser.
 - **[JMdict](https://www.edrdg.org/jmdict/j_jmdict.html)** — Japanese-English dictionary from EDRDG, bundled as a compact gzipped JSON lookup table.
 
----
+______________________________________________________________________
 
 ## Analytics
 
 [GoatCounter](https://www.goatcounter.com/) is used for privacy-friendly page view tracking. No cookies, no personal data. The script tag in `index.html` points to `go-reader.goatcounter.com`.
 
----
+______________________________________________________________________
 
 ## Data Flow
 
@@ -54,7 +54,7 @@ openPanel()                 — bottom panel shows:
                               • English gloss from JMdict
 ```
 
----
+______________________________________________________________________
 
 ## Dictionary Build
 
@@ -64,33 +64,38 @@ The full JMdict JSON is ~50 MB — too large to load in a browser. `compact_jmdi
 { "word": ["gloss1", "gloss2", ...], ... }
 ```
 
-- All English glosses from the first sense are kept
-- Common entries win over uncommon ones on key collision
+- Only the first sense that has English glosses is used — secondary senses are discarded
+- All English glosses from that sense are kept
+- On key collision (multiple entries share the same kanji/kana form), the common entry's glosses
+  overwrite an uncommon entry's, but uncommon entries are still included if there is no collision
 - Output: `jmdict-compact.json.gz` (~6.5 MB gzipped)
 
 To regenerate, see [Building the dictionary](../README.md#building-the-dictionary) in the README.
 
----
+______________________________________________________________________
 
 ## Dictionary Loading
 
-At startup, kuromoji and JMdict are loaded in parallel. The browser decompresses `jmdict-compact.json.gz` using the native `DecompressionStream` API (falls back to server-decompressed response when a local dev server handles gzip automatically).
+At startup, kuromoji and JMdict are loaded in parallel. The browser decompresses `jmdict-compact.json.gz` using the native
+`DecompressionStream` API (falls back to server-decompressed response when a local dev server handles gzip automatically).
 
 Up to 5 retry attempts with increasing delays (2s, 4s, 6s…) if either load fails.
 
----
+______________________________________________________________________
 
 ## Lookup Logic
 
 When a token is tapped, `lookupWord(surface_form, basic_form)` tries:
-1. `surface_form` — the exact text as it appears (e.g. `食べました`)
-2. `basic_form` — the dictionary/base form (e.g. `食べる`)
 
-This handles conjugated verbs and adjectives. If neither is found in JMdict, the display falls back to the `basic_form` string from kuromoji.
+1. `surface_form` — the exact text as it appears (e.g. `食べました`)
+2. `basic_form` — the dictionary/base form (e.g. `食べる`), skipped if it equals `surface_form` or `*`
+
+This handles conjugated verbs and adjectives. If neither is found in JMdict, the display falls back to the `basic_form`
+string from kuromoji.
 
 Katakana readings from kuromoji are converted to hiragana for display (`toHiragana()`).
 
----
+______________________________________________________________________
 
 ## UI Details
 
@@ -101,8 +106,9 @@ Katakana readings from kuromoji are converted to hiragana for display (`toHiraga
 - **Debounce** — 300ms after last keypress before `analyze()` fires
 - **Grammar classification** — particles (`助詞`), auxiliary verbs (`助動詞`), symbols, punctuation, and whitespace tokens are styled gray and show their POS label rather than a dictionary lookup
 
----
+______________________________________________________________________
 
 ## Deployment
 
-The app is fully static — serve `index.html` and the supporting files from any static host. On first load, the browser fetches Google Fonts, `jmdict-compact.json.gz`, and the kuromoji binary dictionary files in `dict/`.
+The app is fully static — serve `index.html` and the supporting files from any static host. On first load, the browser
+fetches Google Fonts, `jmdict-compact.json.gz`, and the kuromoji binary dictionary files in `dict/`.

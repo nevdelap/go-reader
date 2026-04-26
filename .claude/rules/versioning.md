@@ -4,7 +4,8 @@ description: Bump the semver version number on non-documentation changes
 
 # Versioning
 
-Bump the semver version in the subtitle line of `index.html` whenever a non-documentation change is made. Only bump once per logical change — do not bump again if the same piece of functionality is being refined within the same conversation.
+Bump the semver version in the subtitle line of `index.html` whenever a non-documentation change is made.
+Only bump once per logical change — do not bump again if the same piece of functionality is being refined within the same conversation.
 
 ```html
 <div class="subtitle">Japanese Reader For Learners · v1.0.2</div>
