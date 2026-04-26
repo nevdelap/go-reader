@@ -44,8 +44,8 @@ kuromoji.tokenize()         — produces morpheme tokens:
        │
        ▼
 renderTokens()              — builds clickable <span> elements (display: inline)
-                              content words: white
-                              grammar/particles: gray
+                              content words: foreground colour
+                              grammar/particles: muted colour
        │
        ▼  (tap/click)
 openPanel()                 — bottom panel shows:
@@ -61,7 +61,7 @@ ______________________________________________________________________
 The full JMdict JSON is ~50 MB — too large to load in a browser. `compact_jmdict.py` reduces it to a flat map containing only what the app needs:
 
 ```json
-{ "word": ["gloss1", "gloss2", ...], ... }
+{ "word": {"p": ["n", ...], "g": ["gloss1", "gloss2", ...]}, ... }
 ```
 
 - Only the first sense that has English glosses is used — secondary senses are discarded
@@ -70,7 +70,7 @@ The full JMdict JSON is ~50 MB — too large to load in a browser. `compact_jmdi
   overwrite an uncommon entry's, but uncommon entries are still included if there is no collision
 - Output: `jmdict-compact.json.gz` (~6.5 MB gzipped)
 
-To regenerate, see [Building the dictionary](../README.md#building-the-dictionary) in the README.
+To regenerate, see [Maintaining the repository](../README.md#maintaining-the-repository) in the README.
 
 ______________________________________________________________________
 
@@ -116,6 +116,9 @@ ______________________________________________________________________
   `writing-mode: vertical-rl` (top-to-bottom, right-to-left columns). The button label reflects the action to take:
   "Read top to bottom" when horizontal, "Read left to right" when vertical. On entering vertical mode the scroll position
   is snapped to `scrollLeft = scrollWidth` so the first column (rightmost) is visible immediately.
+- **Light/dark theme** — a toggle button in the header switches between light (default) and dark themes using CSS custom
+  properties on `:root`. An inline `<script>` in `<head>` applies the saved theme before first paint to avoid a flash.
+- **Persistence** — theme choice and reading direction are stored in `localStorage` and restored on load.
 
 ______________________________________________________________________
 
