@@ -250,7 +250,7 @@
 <div id="app">
   <header>
     <div class="logo">語 <span>Reader</span></div>
-    <div class="subtitle">Japanese Reader For Learners · v1.1.7</div>
+    <div class="subtitle">Japanese Reader For Learners · v1.2.0</div>
   </header>
 
   <main>
@@ -289,7 +289,7 @@
   <footer>
     <div class="feedback">Found a bug or have a suggestion? <a href="https://github.com/nevdelap/go-reader/issues" target="_blank" rel="noopener noreferrer">Let me know.</a></div>
     This site uses the <a href="https://www.edrdg.org/wiki/index.php/JMdict-EDICT_Dictionary_Project" target="_blank" rel="noopener noreferrer">JMdict/EDICT</a> dictionary files. These files are the property of the <a href="https://www.edrdg.org/" target="_blank" rel="noopener noreferrer">Electronic Dictionary Research and Development Group</a>, and are used in conformance with the Group's <a href="https://www.edrdg.org/edrdg/licence.html" target="_blank" rel="noopener noreferrer">licence</a>.
-    <strong>Please note</strong> that translations are matched to individual morphemes and may not always reflect the word's meaning in context — for example, あります is split into あり ("ant") and ます, rather than being translated as "there is".
+    <strong>Please note</strong> that translations are matched to individual morphemes and may not always reflect the word's meaning in context.
     <br><br>© 2026 nevdelap. Released under the <a href="https://github.com/nevdelap/go-reader/blob/main/LICENSE" target="_blank" rel="noopener noreferrer">MIT licence</a>.
   </footer>
 </div>
@@ -380,15 +380,15 @@ async function loadJMdict() {
 
 function lookupWord(surface, basicForm) {
   if (!jmdict) return null;
-  // Avoid Set construction on every tap — manual dedup
   const candidates = (basicForm && basicForm !== '*' && basicForm !== surface)
-    ? [surface, basicForm]
+    ? [basicForm, surface]
     : [surface];
+  const results = [];
   for (const word of candidates) {
     const entry = jmdict[word];
-    if (Array.isArray(entry)) return entry.join(', ');
+    if (Array.isArray(entry)) results.push(entry.join(', '));
   }
-  return null;
+  return results.length ? results.join(' / ') : null;
 }
 
 // ── DOM helpers ──────────────────────────────────────────────────────────────
