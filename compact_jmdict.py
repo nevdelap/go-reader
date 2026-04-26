@@ -29,14 +29,13 @@ for entry in d['words']:
     if not glosses:
         continue
 
-    val = glosses[:2]
     is_common = any(k.get('common', False) for k in entry['kanji'] + entry['kana'])
 
     for k in entry['kanji'] + entry['kana']:
         word = k['text']
         # Only overwrite if this entry is common and the existing one isn't
         if word not in out or (is_common and not common.get(word, False)):
-            out[word] = val
+            out[word] = glosses
             common[word] = is_common
 
 data = json.dumps(out, ensure_ascii=False, separators=(',', ':'))

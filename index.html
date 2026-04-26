@@ -249,7 +249,7 @@
 <div id="app">
   <header>
     <div class="logo">語 <span>Reader</span></div>
-    <div class="subtitle">Japanese Reader For Learners · v1.1.4</div>
+    <div class="subtitle">Japanese Reader For Learners · v1.1.5</div>
   </header>
 
   <main>
@@ -361,7 +361,7 @@ let jmdictLoaded = false;
 let jmdictPromise = null;
 
 async function loadJMdict() {
-  const res = await fetch('jmdict-compact.json.gz?v=3');
+  const res = await fetch('jmdict-compact.json.gz?v=4');
   if (!res.ok) throw new Error(`JMdict fetch failed: ${res.status}`);
   if (res.headers.get('Content-Encoding') === 'gzip') {
     // Server decompressed automatically (e.g. local dev server)
