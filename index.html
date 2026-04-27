@@ -178,10 +178,17 @@
       justify-content: center;
     }
     #themeBtn { padding: 7px 9px; border-color: transparent; }
-    .toolbar-btn:hover, .toolbar-btn:focus-visible {
+    .toolbar-btn:focus-visible, .toolbar-btn:active {
       background: rgba(37,99,235,0.4);
       border-color: var(--accent);
       color: var(--hover-text);
+    }
+    @media (hover: hover) {
+      .toolbar-btn:hover {
+        background: rgba(37,99,235,0.4);
+        border-color: var(--accent);
+        color: var(--hover-text);
+      }
     }
 
     .status-box {
@@ -265,7 +272,9 @@
       touch-action: manipulation;
       scroll-margin-bottom: var(--panel-height, 130px);
     }
-    .token:hover  { background: rgba(37,99,235,0.4); }
+    @media (hover: hover) {
+      .token:hover { background: rgba(37,99,235,0.4); }
+    }
     .token:focus  { outline: 2px solid var(--accent); outline-offset: 1px; }
     .token.active { background: rgba(37,99,235,0.35) !important; color: var(--hover-text) !important; }
     .token.grammar { color: var(--text-grammar); }
@@ -300,10 +309,12 @@
       text-wrap: balance;
     }
     footer a { color: var(--text-muted); text-decoration: none; }
-    footer a:hover { color: var(--text-faint); }
     footer .feedback { font-size: 11px; letter-spacing: 0.06em; margin-bottom: 10px; }
     footer .feedback a { color: var(--accent-light); }
-    footer .feedback a:hover { color: var(--accent-lighter); }
+    @media (hover: hover) {
+      footer a:hover { color: var(--text-faint); }
+      footer .feedback a:hover { color: var(--accent-lighter); }
+    }
 
     .panel {
       position: fixed;
@@ -344,10 +355,17 @@
       line-height: 1;
       transition: background 0.2s, border-color 0.2s, color 0.2s;
     }
-    .panel-close:hover, .panel-close:focus-visible {
+    .panel-close:focus-visible, .panel-close:active {
       background: rgba(37,99,235,0.4);
       border-color: var(--accent);
       color: var(--hover-text);
+    }
+    @media (hover: hover) {
+      .panel-close:hover {
+        background: rgba(37,99,235,0.4);
+        border-color: var(--accent);
+        color: var(--hover-text);
+      }
     }
 
     .hidden { display: none; }
@@ -358,7 +376,7 @@
   <header>
     <div class="header-left">
       <div class="logo">語 <span>Reader</span></div>
-      <div class="subtitle">Japanese Reader For Learners · v1.7.0</div>
+      <div class="subtitle">Japanese Reader For Learners · v1.7.1</div>
     </div>
     <button type="button" id="themeBtn" class="toolbar-btn"></button>
   </header>
