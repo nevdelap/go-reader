@@ -4,16 +4,16 @@ A single-file static Japanese reader. No server, no build step — deploys anywh
 
 ## Files
 
-| File                                | Purpose                                                                                                                |
-| ----------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
-| `index.html`                        | Entire app — HTML, CSS, and JavaScript                                                                                 |
-| `kuromoji.js`                       | Japanese morphological analyzer (runs in the browser)                                                                  |
-| `jmdict-compact.json.gz`            | Compact gzipped dictionary (word → English glosses)                                                                    |
-| `dict/`                             | Binary dictionary files loaded by kuromoji at runtime                                                                  |
-| `compact_jmdict.py`                 | Build script: preprocesses full JMdict JSON into compact form                                                          |
-| `update_jmdict_and_compact_repo.sh` | Checks for a new JMdict release, downloads it, rebuilds the compact dict, and rewrites git history to remove old blobs |
-| `local_serve.py`                    | Local dev server                                                                                                       |
-| `manifest.json` / `favicon.svg`     | PWA manifest and icon                                                                                                  |
+| File                                        | Purpose                                                                                                                |
+| ------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| `index.html`                                | Entire app — HTML, CSS, and JavaScript                                                                                 |
+| `kuromoji.js`                               | Japanese morphological analyzer (runs in the browser)                                                                  |
+| `jmdict-compact.json.gz`                    | Compact gzipped dictionary (word → English glosses)                                                                    |
+| `dict/`                                     | Binary dictionary files loaded by kuromoji at runtime                                                                  |
+| `scripts/compact_jmdict.py`                 | Build script: preprocesses full JMdict JSON into compact form                                                          |
+| `scripts/update_jmdict_and_compact_repo.sh` | Checks for a new JMdict release, downloads it, rebuilds the compact dict, and rewrites git history to remove old blobs |
+| `scripts/local_serve.py`                    | Local dev server                                                                                                       |
+| `manifest.json` / `favicon.svg`             | PWA manifest and icon                                                                                                  |
 
 ______________________________________________________________________
 
@@ -59,17 +59,20 @@ ______________________________________________________________________
 
 ## Dictionary Build
 
-The full JMdict JSON is ~50 MB — too large to load in a browser. `compact_jmdict.py` reduces it to a flat map containing only what the app needs:
+The full JMdict JSON is ~50 MB — too large to load in a browser. `scripts/compact_jmdict.py` reduces it to a flat map containing only what the app needs:
 
 ```json
-{ "word": {"p": ["n", ...], "g": ["gloss1", "gloss2", ...]}, ... }
+{ "word": {"p": ["n", ...], "g": [["gloss1", "gloss2", ...], ...]}, ... }
 ```
 
 - Only the first sense that has English glosses is used — secondary senses are discarded
 - All English glosses from that sense are kept
-- On key collision (multiple entries share the same kanji/kana form), the common entry's glosses
-  overwrite an uncommon entry's, but uncommon entries are still included if there is no collision
-- Output: `jmdict-compact.json.gz` (~6.5 MB gzipped)
+- `g` is a list of gloss groups — one inner list per JMdict entry; groups are displayed joined
+  with `,` within a group and `;` between groups
+- On key collision (multiple entries share the same kanji/kana form), the common entry wins over
+  an uncommon entry; entries of equal priority are merged (glosses appended as a new group, POS
+  tags combined)
+- Output: `jmdict-compact.json.gz` (~6.9 MB gzipped)
 
 To regenerate, see [Maintaining the repository](../README.md#maintaining-the-repository) in the README.
 

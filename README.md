@@ -50,7 +50,7 @@ brew install git-filter-repo
 Then run:
 
 ```bash
-./update_jmdict_and_compact_repo.sh
+scripts/update_jmdict_and_compact_repo.sh
 ```
 
 The script checks for a new JMdict release, downloads it if one is available,

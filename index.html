@@ -358,7 +358,7 @@
   <header>
     <div class="header-left">
       <div class="logo">語 <span>Reader</span></div>
-      <div class="subtitle">Japanese Reader For Learners · v1.5.2</div>
+      <div class="subtitle">Japanese Reader For Learners · v1.6.0</div>
     </div>
     <button type="button" id="themeBtn" class="toolbar-btn"></button>
   </header>
@@ -480,11 +480,17 @@ const JMDICT_POS_MAP = {
 };
 
 function jmdictPOS(tags) {
-  if (!tags || !tags.length) return null;
-  const tag = tags[0];
-  if (tag.startsWith('v')) return 'verb';
-  if (tag.startsWith('adj')) return 'adjective';
-  return JMDICT_POS_MAP[tag] || null;
+  if (!tags || !tags.length) return [];
+  const seen = new Set();
+  const labels = [];
+  for (const tag of tags) {
+    let label;
+    if (tag.startsWith('v')) label = 'verb';
+    else if (tag.startsWith('adj')) label = 'adjective';
+    else label = JMDICT_POS_MAP[tag] || null;
+    if (label && !seen.has(label)) { seen.add(label); labels.push(label); }
+  }
+  return labels;
 }
 
 // ── Strip non-Japanese ───────────────────────────────────────────────────────
@@ -499,7 +505,7 @@ let jmdictLoaded = false;
 let jmdictPromise = null;
 
 async function loadJMdict() {
-  const res = await fetch('jmdict-compact.json.gz?v=5');
+  const res = await fetch('jmdict-compact.json.gz?v=8');
   if (!res.ok) throw new Error(`JMdict fetch failed: ${res.status}`);
   if (res.headers.get('Content-Encoding') === 'gzip') {
     // Server decompressed automatically (e.g. local dev server)
@@ -520,16 +526,15 @@ function lookupWord(surface, basicForm) {
     ? [basicForm, surface]
     : [surface];
   const engParts = [];
-  const posLabels = [];
+  const posLabels = new Set();
   for (const word of candidates) {
     const entry = jmdict[word];
     if (!entry) continue;
-    engParts.push(entry.g.join(', '));
-    const label = jmdictPOS(entry.p);
-    if (label && !posLabels.includes(label)) posLabels.push(label);
+    engParts.push(entry.g.map(group => group.join(', ')).join('; '));
+    for (const label of jmdictPOS(entry.p)) posLabels.add(label);
   }
   if (!engParts.length) return null;
-  return { eng: engParts.join('; '), pos: posLabels.join('; ') || null };
+  return { eng: engParts.join('; '), pos: [...posLabels].join('; ') || null };
 }
 
 // ── DOM helpers ──────────────────────────────────────────────────────────────
