@@ -358,7 +358,7 @@
   <header>
     <div class="header-left">
       <div class="logo">語 <span>Reader</span></div>
-      <div class="subtitle">Japanese Reader For Learners · v1.6.0</div>
+      <div class="subtitle">Japanese Reader For Learners · v1.7.0</div>
     </div>
     <button type="button" id="themeBtn" class="toolbar-btn"></button>
   </header>
@@ -759,6 +759,7 @@ function analyze() {
 let debounceTimer = null;
 
 $('inputText').addEventListener('input', () => {
+  localStorage.setItem('inputText', $('inputText').value);
   clearTimeout(debounceTimer);
   debounceTimer = setTimeout(analyze, 300);
 });
@@ -770,6 +771,9 @@ document.addEventListener('visibilitychange', () => {
 $('panelClose').addEventListener('click', closePanel);
 
 // ── Vertical reading toggle ───────────────────────────────────────────────────
+const savedInputText = localStorage.getItem('inputText');
+if (savedInputText) $('inputText').value = savedInputText;
+
 let isVertical = localStorage.getItem('readingDirection') === 'vertical';
 if (isVertical) {
   $('tokenArea').classList.add('vertical');
