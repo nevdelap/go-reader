@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://nevdelap.github.io/go-reader/sitemap.xml
