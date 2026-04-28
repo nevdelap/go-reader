@@ -9,6 +9,16 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   <meta name="apple-mobile-web-app-title" content="語 Reader" />
   <meta name="description" content="A Japanese reader for learners. Paste Japanese text and tap any word to see its reading and English meaning." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://nevdelap.github.io/go-reader/" />
+  <meta property="og:title" content="語 Reader — Japanese Reader For Learners" />
+  <meta property="og:description" content="Paste Japanese text and tap any word to instantly see its reading and English meaning. A free tool for Japanese learners." />
+  <meta property="og:image" content="https://nevdelap.github.io/go-reader/og-image.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="語 Reader — Japanese Reader For Learners" />
+  <meta name="twitter:description" content="Paste Japanese text and tap any word to instantly see its reading and English meaning. A free tool for Japanese learners." />
+  <meta name="twitter:image" content="https://nevdelap.github.io/go-reader/og-image.png" />
+  <link rel="canonical" href="https://nevdelap.github.io/go-reader/" />
   <link rel="manifest" href="manifest.json" />
   <link rel="sitemap" type="application/xml" href="sitemap.xml" />
   <link rel="icon" type="image/svg+xml" href="favicon.svg" />
@@ -16,7 +26,36 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet" />
-  <script data-goatcounter="https://go-reader.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "語 Reader",
+    "url": "https://nevdelap.github.io/go-reader/",
+    "description": "Paste Japanese text and tap any word to instantly see its reading and English meaning. A free tool for Japanese learners.",
+    "applicationCategory": "EducationApplication",
+    "operatingSystem": "Any",
+    "offers": {
+      "@type": "Offer",
+      "price": "0"
+    },
+    "inLanguage": "ja",
+    "author": {
+      "@type": "Person",
+      "name": "Nev Delap",
+      "url": "https://github.com/nevdelap"
+    }
+  }
+  </script>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-G7TXQ86GYJ"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-G7TXQ86GYJ');
+  </script>
   <!-- Set theme before first paint to avoid flash -->
   <script>!function(){var t=localStorage.getItem('theme')||'light';document.documentElement.dataset.theme=t;document.getElementById('themeColor').content=t==='dark'?'#000000':'#f5f5f5'}()</script>
   <style>
