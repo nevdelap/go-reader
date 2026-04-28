@@ -4,7 +4,7 @@ A free Japanese reading tool for learners. Type or paste Japanese text and tap
 any word to instantly see its hiragana reading and English meaning.
 Look up kanji, vocabulary, and grammar while reading native Japanese content.
 
-Everything runs in the browser — no account, no server, no API calls.
+Everything runs in the browser — no account, no server, no API calls, **no AI**.
 
 **[https://nevdelap.github.io/go-reader/](https://nevdelap.github.io/go-reader/)**
 
@@ -12,7 +12,7 @@ Everything runs in the browser — no account, no server, no API calls.
 
 - **Instant word lookup** — tap any word in Japanese text to see its reading and English definition
 - **Hiragana readings** — see how any word is pronounced
-- **Offline-capable** — works without an internet connection once loaded
+- **Offline-capable** — works without an internet connection
 - **Mobile-friendly** — works on phones and tablets
 - **Free and open source** — no sign-up, no ads, no tracking beyond basic analytics
 
