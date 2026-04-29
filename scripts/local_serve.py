@@ -34,18 +34,23 @@ class ReuseAddrServer(http.server.HTTPServer):
     allow_reuse_address = True
 
 def lan_ip():
-    with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
-        s.connect(("8.8.8.8", 80))
-        return s.getsockname()[0]
+    try:
+        with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
+            s.connect(("8.8.8.8", 80))
+            return s.getsockname()[0]
+    except OSError:
+        return None
 
 local_url = f"http://localhost:{PORT}"
-lan_url   = f"http://{lan_ip()}:{PORT}"
+ip = lan_ip()
+lan_url   = f"http://{ip}:{PORT}" if ip else None
 print(f"Serving 語 Reader")
 print(f"  Local:  {local_url}")
-print(f"  Mobile: {lan_url}")
+if lan_url:
+    print(f"  Mobile: {lan_url}")
 print("Press Ctrl+C to stop.")
 
-webbrowser.open(lan_url)
+webbrowser.open(lan_url or local_url)
 
 with ReuseAddrServer(("0.0.0.0", PORT), GzipAwareHandler) as httpd:
     httpd.serve_forever()
