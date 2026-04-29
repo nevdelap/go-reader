@@ -416,7 +416,7 @@
   <header>
     <div class="header-left">
       <div class="logo">語 <span>Reader</span></div>
-      <div class="subtitle">Japanese Reader For Learners · v1.7.1</div>
+      <div class="subtitle">Japanese Reader For Learners · v1.8.0</div>
     </div>
     <button type="button" id="themeBtn" class="toolbar-btn"></button>
   </header>
@@ -430,6 +430,7 @@
       <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:8px;">
         <button type="button" id="clearBtn" class="toolbar-btn">Clear</button>
         <button type="button" id="pasteBtn" class="toolbar-btn" title="Paste (Ctrl+V)">Paste</button>
+        <button type="button" id="copyUrlBtn" class="toolbar-btn" title="Share or copy link to this text"></button>
         <button type="button" id="exampleBtn" class="toolbar-btn">Example</button>
       </div>
     </div>
@@ -813,6 +814,41 @@ function analyze() {
   }
 }
 
+// ── URL sharing ──────────────────────────────────────────────────────────────
+async function textToHash(text) {
+  const bytes = new TextEncoder().encode(text);
+  const cs = new CompressionStream('deflate-raw');
+  const writer = cs.writable.getWriter();
+  writer.write(bytes);
+  writer.close();
+  const buf = await new Response(cs.readable).arrayBuffer();
+  let binary = '';
+  new Uint8Array(buf).forEach(b => binary += String.fromCharCode(b));
+  return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+}
+
+async function hashToText(encoded) {
+  const binary = atob(encoded.replace(/-/g, '+').replace(/_/g, '/'));
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+  const ds = new DecompressionStream('deflate-raw');
+  const writer = ds.writable.getWriter();
+  writer.write(bytes);
+  writer.close();
+  return new Response(ds.readable).text();
+}
+
+async function loadFromHash() {
+  if (!location.hash.startsWith('#t=')) return;
+  try {
+    const text = await hashToText(location.hash.slice(3));
+    $('inputText').value = text;
+    $('inputText').dispatchEvent(new Event('input'));
+  } catch (e) {
+    console.error('Failed to load text from URL:', e);
+  }
+}
+
 // ── Events ───────────────────────────────────────────────────────────────────
 let debounceTimer = null;
 
@@ -831,6 +867,7 @@ $('panelClose').addEventListener('click', closePanel);
 // ── Vertical reading toggle ───────────────────────────────────────────────────
 const savedInputText = localStorage.getItem('inputText');
 if (savedInputText) $('inputText').value = savedInputText;
+loadFromHash();
 
 let isVertical = localStorage.getItem('readingDirection') === 'vertical';
 if (isVertical) {
@@ -902,6 +939,25 @@ $('pasteBtn').addEventListener('click', async () => {
     $('inputText').focus();
   } catch {
     $('inputText').focus();
+  }
+});
+$('copyUrlBtn').textContent = ('share' in navigator) ? 'Share' : 'Copy URL';
+$('copyUrlBtn').addEventListener('click', async () => {
+  const text = $('inputText').value;
+  if (!text.trim()) return;
+  try {
+    const hash = await textToHash(text);
+    const url = location.href.split('#')[0] + '#t=' + hash;
+    if ('share' in navigator) {
+      await navigator.share({ title: '語 Reader', url });
+    } else {
+      await navigator.clipboard.writeText(url);
+      const btn = $('copyUrlBtn');
+      btn.textContent = 'Copied!';
+      setTimeout(() => { btn.textContent = 'Share'; }, 1500);
+    }
+  } catch (e) {
+    console.error('Copy URL failed:', e);
   }
 });
 $('exampleBtn').addEventListener('click', () => {
