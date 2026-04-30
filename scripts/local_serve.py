@@ -52,5 +52,8 @@ print("Press Ctrl+C to stop.")
 
 webbrowser.open(lan_url or local_url)
 
-with ReuseAddrServer(("0.0.0.0", PORT), GzipAwareHandler) as httpd:
-    httpd.serve_forever()
+try:
+    with ReuseAddrServer(("0.0.0.0", PORT), GzipAwareHandler) as httpd:
+        httpd.serve_forever()
+except KeyboardInterrupt:
+    pass
