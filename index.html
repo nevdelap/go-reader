@@ -62,7 +62,7 @@
     }
   </script>
   <!-- Set theme before first paint to avoid flash -->
-  <script>!function(){var t=localStorage.getItem('theme')||'light';document.documentElement.dataset.theme=t;document.getElementById('themeColor').content=t==='dark'?'#000000':'#f5f5f5'}()</script>
+  <script>!function(){var t=localStorage.getItem('theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.dataset.theme=t;document.getElementById('themeColor').content=t==='dark'?'#000000':'#f5f5f5'}()</script>
   <style>
     :root {
       color-scheme: dark;
@@ -464,7 +464,7 @@
   <header>
     <div class="header-left">
       <div class="logo">語 <span>Reader</span></div>
-      <div class="subtitle">Japanese Reader For Learners · v1.8.1</div>
+      <div class="subtitle">Japanese Reader For Learners · v1.9.0</div>
     </div>
     <button type="button" id="themeBtn" class="toolbar-btn"></button>
   </header>
@@ -675,6 +675,13 @@ $('themeBtn').addEventListener('click', () => {
   isDark = !isDark;
   applyTheme(isDark);
   localStorage.setItem('theme', isDark ? 'dark' : 'light');
+});
+
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+  if (!localStorage.getItem('theme')) {
+    isDark = e.matches;
+    applyTheme(isDark);
+  }
 });
 
 // ── Panel height tracking via ResizeObserver ─────────────────────────────────

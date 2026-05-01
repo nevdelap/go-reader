@@ -23,6 +23,7 @@ Everything runs in the browser — no account, no server, no API calls, **no AI*
 - **Instant word lookup** — tap any word in Japanese text to see its reading and English definition
 - **Hiragana readings** — see how any word is pronounced
 - **Offline-capable** — works without an internet connection
+- **Light and dark modes** — follows your system preference, or can be set manually
 - **Mobile-friendly** — works on phones and tablets
 - **Free and open source** — no sign-up, no ads, no tracking beyond basic analytics
 
