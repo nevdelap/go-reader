@@ -4,15 +4,11 @@ A free Japanese reading tool for learners. Type or paste Japanese text and tap
 any word to instantly see its hiragana reading and English meaning.
 Look up kanji, vocabulary, and grammar while reading native Japanese content.
 
-<figure>
-<img src="phone-image.png" width="400" alt="語 Reader on mobile">
-<figcaption>語 Reader on mobile.</figcaption>
-</figure>
+<img src="phone-image.png" width="400" alt="語 Reader on mobile"><br>
+*語 Reader on mobile.*
 
-<figure>
-<img src="og-image.png" alt="語 Reader on desktop">
-<figcaption>語 Reader on desktop.</figcaption>
-</figure>
+<img src="og-image.png" alt="語 Reader on desktop"><br>
+*語 Reader on desktop.*
 
 Everything runs in the browser — no account, no server, no API calls, **no AI**.
 
