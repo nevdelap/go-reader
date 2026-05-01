@@ -43,10 +43,11 @@ See [docs/architecture.md](docs/architecture.md) for a detailed breakdown.
   Apache 2.0, though it covers mecab-ipadic dictionary data, not kuromoji
 - Lucide icons: [ISC](LICENSE-LUCIDE)
 
-## Markdown
+## Local development
 
 ```bash
-just format   # format
+just serve    # serve locally and open in browser
+just format   # format Markdown
 just lint     # format then lint
 ```
 
