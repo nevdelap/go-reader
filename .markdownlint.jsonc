@@ -19,7 +19,10 @@
     },
     "MD033": {
         "allowed_elements": [
-            "br" // For line breaks in tables.
+            "br", // For line breaks in tables.
+            "img", // For images that need explicit dimensions.
+            "figure",
+            "figcaption"
         ]
     },
     "MD035": {
