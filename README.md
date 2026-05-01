@@ -38,8 +38,10 @@ See [docs/architecture.md](docs/architecture.md) for a detailed breakdown.
 - App code: [MIT](LICENSE)
 - Dictionary data: [CC BY-SA 4.0](LICENSE-JMDICT) — © Electronic Dictionary
   Research and Development Group
-- kuromoji.js: [Apache 2.0](https://www.apache.org/licenses/LICENSE-2.0)
-- Lucide icons: [ISC](https://github.com/lucide-icons/lucide/blob/main/LICENSE)
+- kuromoji.js: browser build from the [kuromoji npm package](https://www.npmjs.com/package/kuromoji),
+  [Apache 2.0](LICENSE-KUROMOJI) — [NOTICE.md](NOTICE.md) is included from the package as required by
+  Apache 2.0, though it covers mecab-ipadic dictionary data, not kuromoji
+- Lucide icons: [ISC](LICENSE-LUCIDE)
 
 ## Markdown
 
