@@ -8,6 +8,10 @@ RESET := '\033[0m'
 @_:
     just --list
 
+# Serve locally and open in browser.
+serve:
+    scripts/local_serve.py
+
 # Format Markdown files.
 format:
     @echo $'{{ BLUE }}Formatting Markdown files...{{ RESET }}'
