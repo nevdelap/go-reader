@@ -80,14 +80,16 @@ let jmdict = null;
 
 function lookupParticle(token) {
   if (!jmdict) return null;
-  // て and で as conjunctive particles: the JMdict "common" entry for て is the quoting
-  // particle (って), whose glosses ("you said, he said") win and fill pg — wrong for 接続助詞 use.
-  if (token.pos_detail_1 === '接続助詞' &&
-      (token.surface_form === 'て' || token.surface_form === 'で')) return null;
   const base = token.basic_form && token.basic_form !== '*' ? token.basic_form : token.surface_form;
   const entry = jmdict[base] || jmdict[token.surface_form];
-  if (!entry || !entry.pg) return null;
-  return entry.pg.slice(0, 3).join(', ');
+  if (!entry) return null;
+  // て and で as conjunctive particles: the common JMdict entry covers quoting (って),
+  // so pg has wrong senses. Use pg2, which holds the skipped non-common entry's glosses.
+  if (token.pos_detail_1 === '接続助詞' &&
+      (token.surface_form === 'て' || token.surface_form === 'で')) {
+    return entry.pg2 ? entry.pg2.slice(0, 3).join(', ') : null;
+  }
+  return entry.pg ? entry.pg.slice(0, 3).join(', ') : null;
 }
 
 function lookupWord(surface, basicForm) {
@@ -205,20 +207,16 @@ test('lookupParticle — common particles return non-null', async (t) => {
   }
 });
 
-test('lookupParticle — て as conjunctive (接続助詞) returns null', () => {
-  // conjunctive て (食べて): JMdict "common" て entry covers quoting (って) not conjunction
-  assert.equal(
-    lookupParticle({ surface_form: 'て', basic_form: 'て', pos_detail_1: '接続助詞' }),
-    null
-  );
+test('lookupParticle — て as conjunctive (接続助詞) uses pg2', () => {
+  // conjunctive て (食べて): common JMdict entry is quoting (って); pg2 holds conjunctive glosses
+  const r = lookupParticle({ surface_form: 'て', basic_form: 'て', pos_detail_1: '接続助詞' });
+  assert.ok(r, 'conjunctive て should return conjunctive glosses via pg2');
 });
 
-test('lookupParticle — で as conjunctive (接続助詞) returns null', () => {
-  // conjunctive で (読んで): JMdict pg contains locative senses, not conjunctive
-  assert.equal(
-    lookupParticle({ surface_form: 'で', basic_form: 'で', pos_detail_1: '接続助詞' }),
-    null
-  );
+test('lookupParticle — で as conjunctive (接続助詞) uses pg2', () => {
+  // conjunctive で (読んで): same entry as conjunctive て, should also use pg2
+  const r = lookupParticle({ surface_form: 'で', basic_form: 'で', pos_detail_1: '接続助詞' });
+  assert.ok(r, 'conjunctive で should return conjunctive glosses via pg2');
 });
 
 test('lookupParticle — て as non-conjunctive falls through to JMdict', () => {

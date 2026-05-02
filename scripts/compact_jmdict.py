@@ -78,8 +78,6 @@ for entry in d['words']:
             for p in first_sense.get('partOfSpeech', []):
                 if p not in existing_p:
                     existing_p.append(p)
-            # If this entry has no particle senses, leave any existing pg intact
-            # (asymmetric with the "new entry wins" branch by design — pg already accumulated).
             if particle_glosses:
                 existing_pg = out[word].get('pg', [])
                 seen = set(existing_pg)
@@ -88,6 +86,17 @@ for entry in d['words']:
                         existing_pg.append(pg)
                         seen.add(pg)
                 out[word]['pg'] = existing_pg
+        else:
+            # Uncommon entry skipped for g/p, but collect its particle glosses in pg2
+            # so callers can use them when the primary pg is for a different sense.
+            if particle_glosses:
+                existing_pg2 = out[word].get('pg2', [])
+                seen = set(existing_pg2)
+                for pg in particle_glosses:
+                    if pg not in seen:
+                        existing_pg2.append(pg)
+                        seen.add(pg)
+                out[word]['pg2'] = existing_pg2
 
 data = json.dumps(out, ensure_ascii=False, separators=(',', ':'))
 print(f'Entries: {len(out)}, JSON size: {len(data.encode()) / 1024 / 1024:.1f}MB')

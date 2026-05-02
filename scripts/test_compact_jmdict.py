@@ -52,7 +52,7 @@ class TestParticleGlosses(unittest.TestCase):
 
     def test_te_pg_is_quoting_sense(self):
         # The JMdict "common" て entry is the quoting particle (って).
-        # This test documents WHY lookupParticle excludes て when pos_detail_1=接続助詞.
+        # This documents why lookupParticle uses pg2 for 接続助詞 て.
         te_pg = pg('て')
         self.assertIsNotNone(te_pg, 'て should have a pg entry')
         self.assertTrue(
@@ -60,13 +60,31 @@ class TestParticleGlosses(unittest.TestCase):
             f'て pg should contain quoting senses ("said"), got: {te_pg[:4]}'
         )
 
+    def test_te_pg2_is_conjunctive_sense(self):
+        # pg2 holds the non-common entry's glosses — the conjunctive て (食べて).
+        te_pg2 = DICT.get('て', {}).get('pg2')
+        self.assertIsNotNone(te_pg2, 'て should have a pg2 entry')
+        self.assertTrue(
+            any('and' in g or 'then' in g for g in te_pg2),
+            f'て pg2 should contain conjunctive senses, got: {te_pg2[:4]}'
+        )
+
     def test_de_pg_is_locative_sense(self):
-        # Similarly, で pg is the locative sense, not conjunctive.
+        # で pg is the locative sense (common entry).
         de_pg = pg('で')
         self.assertIsNotNone(de_pg, 'で should have a pg entry')
         self.assertTrue(
             any(g in ('at', 'in') for g in de_pg),
             f'で pg should contain locative senses ("at"/"in"), got: {de_pg[:4]}'
+        )
+
+    def test_de_pg2_is_conjunctive_sense(self):
+        # て and で share the same non-common conjunctive entry.
+        de_pg2 = DICT.get('で', {}).get('pg2')
+        self.assertIsNotNone(de_pg2, 'で should have a pg2 entry')
+        self.assertTrue(
+            any('and' in g or 'then' in g for g in de_pg2),
+            f'で pg2 should contain conjunctive senses, got: {de_pg2[:4]}'
         )
 
     def test_zutu_has_no_pg(self):

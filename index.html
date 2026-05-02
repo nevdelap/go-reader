@@ -613,7 +613,7 @@ let jmdictLoaded = false;
 let jmdictPromise = null;
 
 async function loadJMdict() {
-  const res = await fetch('jmdict-compact.json.gz?v=9');
+  const res = await fetch('jmdict-compact.json.gz?v=10');
   if (!res.ok) throw new Error(`JMdict fetch failed: ${res.status}`);
   if (res.headers.get('Content-Encoding') === 'gzip') {
     // Server decompressed automatically (e.g. local dev server)
@@ -635,14 +635,16 @@ const IMPERATIVE_E_TO_U = {え:'う',け:'く',げ:'ぐ',せ:'す',て:'つ',ね
 
 function lookupParticle(token) {
   if (!jmdict) return null;
-  // て and で as conjunctive particles: the JMdict "common" entry for て is the quoting
-  // particle (って), whose glosses ("you said, he said") win and fill pg — wrong for 接続助詞 use.
-  if (token.pos_detail_1 === '接続助詞' &&
-      (token.surface_form === 'て' || token.surface_form === 'で')) return null;
   const base = token.basic_form && token.basic_form !== '*' ? token.basic_form : token.surface_form;
   const entry = jmdict[base] || jmdict[token.surface_form];
-  if (!entry || !entry.pg) return null;
-  return entry.pg.slice(0, 3).join(', ');
+  if (!entry) return null;
+  // て and で as conjunctive particles: the common JMdict entry covers quoting (って),
+  // so pg has wrong senses. Use pg2, which holds the skipped non-common entry's glosses.
+  if (token.pos_detail_1 === '接続助詞' &&
+      (token.surface_form === 'て' || token.surface_form === 'で')) {
+    return entry.pg2 ? entry.pg2.slice(0, 3).join(', ') : null;
+  }
+  return entry.pg ? entry.pg.slice(0, 3).join(', ') : null;
 }
 
 function lookupWord(surface, basicForm) {
