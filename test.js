@@ -11,6 +11,39 @@ const { join } = require('node:path');
 
 // ── Functions under test (inlined from index.html) ───────────────────────────
 
+function toHiragana(str) {
+  return (str || '').replace(/[ァ-ヺ]/g, c =>
+    String.fromCharCode(c.charCodeAt(0) - 0x60)
+  );
+}
+
+function stripNonJapanese(text) {
+  return text
+    .replace(/[^　-〿぀-ゟ゠-ヿ一-鿿㐀-䶿＀-￯「」『』【】・ー―—\n]/g, '').trim();
+}
+
+async function textToHash(text) {
+  const bytes = new TextEncoder().encode(text);
+  const cs = new CompressionStream('deflate-raw');
+  const writer = cs.writable.getWriter();
+  writer.write(bytes);
+  writer.close();
+  const buf = await new Response(cs.readable).arrayBuffer();
+  const binary = Array.from(new Uint8Array(buf), b => String.fromCharCode(b)).join('');
+  return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+}
+
+async function hashToText(encoded) {
+  const binary = atob(encoded.replace(/-/g, '+').replace(/_/g, '/'));
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+  const ds = new DecompressionStream('deflate-raw');
+  const writer = ds.writable.getWriter();
+  writer.write(bytes);
+  writer.close();
+  return new Response(ds.readable).text();
+}
+
 const JMDICT_POS_MAP = {
   'n': 'noun', 'n-pref': 'prefix', 'n-suf': 'suffix',
   'adv': 'adverb', 'adv-to': 'adverb',
@@ -127,4 +160,78 @@ test('godan imperative fallback when basicForm equals surface', () => {
   const r = lookupWord('払え', '払え');
   assert.ok(r);
   assert.ok(r.eng.includes('pay'));
+});
+
+// ── toHiragana ───────────────────────────────────────────────────────────────
+
+test('toHiragana', async (t) => {
+  await t.test('converts katakana to hiragana', () => {
+    assert.equal(toHiragana('アイウエオ'), 'あいうえお');
+    assert.equal(toHiragana('カキクケコ'), 'かきくけこ');
+    assert.equal(toHiragana('サシスセソ'), 'さしすせそ');
+  });
+  await t.test('converts small katakana', () => {
+    assert.equal(toHiragana('ァィゥェォ'), 'ぁぃぅぇぉ');
+  });
+  await t.test('leaves hiragana and kanji unchanged', () => {
+    assert.equal(toHiragana('あいう漢字'), 'あいう漢字');
+  });
+  await t.test('handles mixed katakana and other characters', () => {
+    assert.equal(toHiragana('アBCあ'), 'あBCあ');
+  });
+  await t.test('handles empty string', () => {
+    assert.equal(toHiragana(''), '');
+  });
+  await t.test('handles null/undefined', () => {
+    assert.equal(toHiragana(null), '');
+    assert.equal(toHiragana(undefined), '');
+  });
+});
+
+// ── stripNonJapanese ─────────────────────────────────────────────────────────
+
+test('stripNonJapanese', async (t) => {
+  await t.test('strips ASCII letters and numbers', () => {
+    assert.equal(stripNonJapanese('abc 123'), '');
+  });
+  await t.test('preserves hiragana, katakana, and kanji', () => {
+    assert.equal(stripNonJapanese('あいうアイウ漢字'), 'あいうアイウ漢字');
+  });
+  await t.test('strips English from mixed text, keeping Japanese', () => {
+    assert.equal(stripNonJapanese('日本語 Japanese'), '日本語');
+  });
+  await t.test('preserves Japanese punctuation', () => {
+    assert.equal(stripNonJapanese('「こんにちは」'), '「こんにちは」');
+    assert.equal(stripNonJapanese('『本』'), '『本』');
+    assert.equal(stripNonJapanese('【見出し】'), '【見出し】');
+  });
+  await t.test('preserves newlines', () => {
+    assert.equal(stripNonJapanese('日本語\n英語'), '日本語\n英語');
+  });
+  await t.test('trims leading and trailing whitespace', () => {
+    assert.equal(stripNonJapanese('  日本語  '), '日本語');
+  });
+  await t.test('returns empty string for pure English', () => {
+    assert.equal(stripNonJapanese('Hello, world!'), '');
+  });
+});
+
+// ── textToHash / hashToText ───────────────────────────────────────────────────
+
+test('textToHash / hashToText round-trip', async (t) => {
+  await t.test('round-trips ASCII text', async () => {
+    const text = 'hello world';
+    assert.equal(await hashToText(await textToHash(text)), text);
+  });
+  await t.test('round-trips Japanese text', async () => {
+    const text = '日本語のテキスト';
+    assert.equal(await hashToText(await textToHash(text)), text);
+  });
+  await t.test('round-trips empty string', async () => {
+    assert.equal(await hashToText(await textToHash('')), '');
+  });
+  await t.test('hash contains no URL-unsafe characters', async () => {
+    const hash = await textToHash('テスト test 123');
+    assert.doesNotMatch(hash, /[+/=]/);
+  });
 });
