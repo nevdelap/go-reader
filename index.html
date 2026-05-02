@@ -366,6 +366,7 @@
     .token:focus  { outline: 2px solid var(--accent); outline-offset: 1px; }
     .token.active { background: rgba(37,99,235,0.35) !important; color: var(--hover-text) !important; }
     .token.grammar { color: var(--text-grammar); }
+    .token-area.uniform .token.grammar { color: var(--text); }
 
     .token-count {
       margin-top: 10px;
@@ -464,7 +465,7 @@
   <header>
     <div class="header-left">
       <div class="logo">語 <span>Reader</span></div>
-      <div class="subtitle">Japanese Reader For Learners · v1.9.1</div>
+      <div class="subtitle">Japanese Reader For Learners · v1.10.0</div>
     </div>
     <button type="button" id="themeBtn" class="toolbar-btn"></button>
   </header>
@@ -476,10 +477,9 @@
         rows="3"
         aria-label="Japanese text input"></textarea>
       <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:8px;">
-        <button type="button" id="clearBtn" class="toolbar-btn">Clear</button>
-        <button type="button" id="pasteBtn" class="toolbar-btn" title="Paste (Ctrl+V)">Paste</button>
+        <button type="button" id="pasteBtn" class="toolbar-btn" title="Ctrl+V">Clear and paste</button>
         <button type="button" id="copyUrlBtn" class="toolbar-btn" title="Share or copy link to this text"></button>
-        <button type="button" id="exampleBtn" class="toolbar-btn">Example</button>
+        <button type="button" id="exampleBtn" class="toolbar-btn" title="Load example text to see the app in action without having to find your own Japanese content first">Example</button>
       </div>
     </div>
 
@@ -489,7 +489,8 @@
       <div class="legend">
         <span class="legend-hint legend-hint-desktop">Click words, or navigate with Tab/Shift-Tab and press Space, to see translations.</span>
         <span class="legend-hint legend-hint-mobile">Tap words to see translations.</span>
-        <button type="button" id="verticalBtn" class="toolbar-btn" aria-pressed="false" title="Reading direction (Alt+D)" style="margin-left:auto;">Read top to bottom</button>
+        <button type="button" id="verticalBtn" class="toolbar-btn" aria-pressed="false" title="Alt+D" style="margin-left:auto;">Read top to bottom</button>
+        <button type="button" id="dimGrammarBtn" class="toolbar-btn" aria-pressed="false"></button>
       </div>
       <div class="token-area"
         id="tokenArea"
@@ -955,6 +956,20 @@ $('verticalBtn').addEventListener('click', () => {
   localStorage.setItem('readingDirection', isVertical ? 'vertical' : 'horizontal');
 });
 
+function applyDimGrammar(dim) {
+  $('tokenArea').classList.toggle('uniform', !dim);
+  $('dimGrammarBtn').textContent = dim ? 'Undim grammar' : 'Dim grammar';
+  $('dimGrammarBtn').setAttribute('aria-pressed', dim ? 'true' : 'false');
+}
+
+let isDimGrammar = localStorage.getItem('dimGrammar') !== 'false';
+applyDimGrammar(isDimGrammar);
+$('dimGrammarBtn').addEventListener('click', () => {
+  isDimGrammar = !isDimGrammar;
+  applyDimGrammar(isDimGrammar);
+  localStorage.setItem('dimGrammar', isDimGrammar ? 'true' : 'false');
+});
+
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape') closePanel();
   if (e.key === 'd' && e.altKey) { e.preventDefault(); $('verticalBtn').click(); return; }
@@ -996,11 +1011,6 @@ const EXAMPLE_TEXT = `「その会社には、三つの"重要なデータベー
 「それがその日、たいへんな事故から学んだ最も重要なことでした。」
 "That was the most important thing learned from that difficult incident."`;
 
-$('clearBtn').addEventListener('click', () => {
-  $('inputText').value = '';
-  $('inputText').dispatchEvent(new Event('input'));
-  $('inputText').focus();
-});
 $('pasteBtn').addEventListener('click', async () => {
   try {
     const text = await navigator.clipboard.readText();
@@ -1008,7 +1018,11 @@ $('pasteBtn').addEventListener('click', async () => {
     $('inputText').dispatchEvent(new Event('input'));
     $('inputText').focus();
   } catch {
+    $('inputText').value = '';
+    $('inputText').dispatchEvent(new Event('input'));
     $('inputText').focus();
+    setStatus('Clipboard access denied — use Ctrl+V to paste.', 'info');
+    setTimeout(() => setStatus(null), 3000);
   }
 });
 $('copyUrlBtn').textContent = (navigator.maxTouchPoints > 0) ? 'Share' : 'Copy URL';
