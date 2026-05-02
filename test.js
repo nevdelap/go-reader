@@ -19,7 +19,7 @@ function toHiragana(str) {
 
 function stripNonJapanese(text) {
   return text
-    .replace(/[^　-〿぀-ゟ゠-ヿ一-鿿㐀-䶿＀-￯「」『』【】・ー―—\n]/g, '').trim();
+    .replace(/[^　-〿぀-ゟ゠-ヿ一-鿿㐀-䶿＀-￯―—\n]/g, '').trim();
 }
 
 async function textToHash(text) {
@@ -76,23 +76,24 @@ function jmdictPOS(tags) {
 
 const IMPERATIVE_E_TO_U = {え:'う',け:'く',げ:'ぐ',せ:'す',て:'つ',ね:'ぬ',べ:'ぶ',め:'む',れ:'る'};
 
+function resolvedForm(token) {
+  return (token.basic_form && token.basic_form !== '*') ? token.basic_form : token.surface_form;
+}
+
 let jmdict = null;
 
 function lookupParticle(token) {
   if (!jmdict) return null;
-  const base = token.basic_form && token.basic_form !== '*' ? token.basic_form : token.surface_form;
+  const base = resolvedForm(token);
   const entry = jmdict[base] || jmdict[token.surface_form];
   if (!entry) return null;
-  // て and で as conjunctive particles: the common JMdict entry covers quoting (って),
-  // so pg has wrong senses. Use pg2, which holds the skipped non-common entry's glosses.
-  if (token.pos_detail_1 === '接続助詞' &&
-      (token.surface_form === 'て' || token.surface_form === 'で')) {
-    return entry.pg2 ? entry.pg2.slice(0, 3).join(', ') : null;
+  // When a conjunctive particle has pg2, the common JMdict entry covers a different
+  // sense (e.g. て/で: common entry is quoting/って; pg2 holds the conjunctive glosses).
+  if (token.pos_detail_1 === '接続助詞' && entry.pg2) {
+    return entry.pg2.slice(0, 3).join(', ');
   }
   if (entry.pg) return entry.pg.slice(0, 3).join(', ');
-  // Single-sense entries (e.g. compound particles tagged exp/suf) have unambiguous g[0]
-  if (entry.g?.length === 1) return entry.g[0].slice(0, 3).join(', ');
-  return null;
+  return entry.g?.[0]?.slice(0, 3).join(', ') ?? null;
 }
 
 function lookupWord(surface, basicForm) {
@@ -100,6 +101,10 @@ function lookupWord(surface, basicForm) {
   const candidates = (basicForm && basicForm !== '*' && basicForm !== surface)
     ? [basicForm, surface]
     : [surface];
+  if (!candidates.some(w => jmdict[w])) {
+    const dictKana = IMPERATIVE_E_TO_U[surface.slice(-1)];
+    if (dictKana) candidates.push(surface.slice(0, -1) + dictKana);
+  }
   const engParts = [];
   const posLabels = new Set();
   for (const word of candidates) {
@@ -107,16 +112,6 @@ function lookupWord(surface, basicForm) {
     if (!entry) continue;
     engParts.push(entry.g.map(group => group.join(', ')).join('; '));
     for (const label of jmdictPOS(entry.p)) posLabels.add(label);
-  }
-  if (!engParts.length) {
-    const dictKana = IMPERATIVE_E_TO_U[surface.slice(-1)];
-    if (dictKana) {
-      const entry = jmdict[surface.slice(0, -1) + dictKana];
-      if (entry) {
-        engParts.push(entry.g.map(group => group.join(', ')).join('; '));
-        for (const label of jmdictPOS(entry.p)) posLabels.add(label);
-      }
-    }
   }
   if (!engParts.length) return null;
   return { eng: engParts.join('; '), pos: [...posLabels].join('; ') || null };
@@ -198,7 +193,7 @@ test('lookupParticle — common particles return non-null', async (t) => {
     ['も', '係助詞'],
     ['ね', '終助詞'],
     ['だけ', '副助詞'],
-    ['ので', '接続助詞'],  // not excluded — only て/で are special-cased as 接続助詞
+    ['ので', '接続助詞'],  // no pg2 in dict, falls through to pg normally
     ['のに', '接続助詞'],
     ['けど', '接続助詞'],
   ];
@@ -232,10 +227,9 @@ test('lookupParticle — で as case particle (格助詞) falls through to JMdic
   assert.ok(r, 'locative で should return a JMdict result');
 });
 
-test('lookupParticle — single-sense entry with no pg uses g[0]', () => {
-  // ずつ: tagged suf, no pg, but single g group ["apiece", "each"] — unambiguous
+test('lookupParticle — suf-tagged particle ずつ returns result via g[0] fallback', () => {
   const r = lookupParticle({ surface_form: 'ずつ', basic_form: 'ずつ', pos_detail_1: '副助詞' });
-  assert.ok(r, 'ずつ should return a result via g[0] fallback');
+  assert.ok(r, 'ずつ has no pg but g[0] fallback should return its gloss');
 });
 
 test('lookupParticle — compound particle にとって returns result', () => {
@@ -265,6 +259,33 @@ test('lookupParticle — result is at most 3 glosses', () => {
   const r = lookupParticle({ surface_form: 'が', basic_form: 'が', pos_detail_1: '格助詞' });
   assert.ok(r);
   assert.equal(r, jmdict['が'].pg.slice(0, 3).join(', '));
+});
+
+// ── lookupParticle — auxiliary verbs ─────────────────────────────────────────
+
+test('lookupParticle — ない returns negation gloss', () => {
+  const r = lookupParticle({ surface_form: 'ない', basic_form: 'ない', pos_detail_1: '一般' });
+  assert.ok(r, 'ない should return a result');
+  assert.ok(r.includes('not'), `ない result '${r}' should include 'not'`);
+});
+
+test('lookupParticle — なく resolves via basic_form ない', () => {
+  // なく is the ku-form of ない; kuromoji gives basic_form=ない
+  const r = lookupParticle({ surface_form: 'なく', basic_form: 'ない', pos_detail_1: '一般' });
+  assert.ok(r, 'なく should resolve to ない via basic_form');
+  assert.ok(r.includes('not'), `なく result '${r}' should include 'not'`);
+});
+
+test('lookupParticle — た returns past-tense gloss', () => {
+  const r = lookupParticle({ surface_form: 'た', basic_form: 'た', pos_detail_1: '一般' });
+  assert.ok(r, 'た should return a result');
+  assert.ok(r.includes('did') || r.includes('done'), `た result '${r}' should include 'did' or 'done'`);
+});
+
+test('lookupParticle — だ returns copula gloss', () => {
+  const r = lookupParticle({ surface_form: 'だ', basic_form: 'だ', pos_detail_1: '一般' });
+  assert.ok(r, 'だ should return a result');
+  assert.ok(r.includes('be') || r.includes('is'), `だ result '${r}' should include 'be' or 'is'`);
 });
 
 // ── toHiragana ───────────────────────────────────────────────────────────────

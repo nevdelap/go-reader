@@ -87,11 +87,9 @@ class TestParticleGlosses(unittest.TestCase):
             f'で pg2 should contain conjunctive senses, got: {de_pg2[:4]}'
         )
 
-    def test_zutu_has_no_pg_but_single_g(self):
-        # ずつ is tagged suf (not prt) so no pg, but has a single unambiguous g group.
+    def test_zutu_has_no_pg(self):
+        # ずつ is tagged suf (not prt/exp/aux) — no disambiguation needed, g[0] fallback handles it.
         self.assertIsNone(pg('ずつ'), f'ずつ should have no pg, got: {pg("ずつ")}')
-        g0 = DICT.get('ずつ', {}).get('g', [])
-        self.assertEqual(len(g0), 1, 'ずつ should have exactly one g group for safe g[0] fallback')
 
     def test_nitotte_has_pg(self):
         # にとって is tagged exp; exp senses are now collected into pg.
@@ -116,9 +114,39 @@ class TestParticleGlosses(unittest.TestCase):
                 self.assertLessEqual(len(entry['pg']), 50, f'{word}: pg suspiciously long')
 
 
+class TestAuxiliaryGlosses(unittest.TestCase):
+
+    def test_nai_has_pg(self):
+        nai_pg = pg('ない')
+        self.assertIsNotNone(nai_pg, 'ない should have pg from aux-adj sense')
+        self.assertIn('not', nai_pg, f'ない pg should include "not", got: {nai_pg[:4]}')
+
+    def test_ta_has_pg(self):
+        # た common JMdict entry is a prefix/abbreviation; aux sense is in non-common entry.
+        # compact_jmdict.py merges it into pg (not pg2) because no competing pg exists.
+        ta_pg = pg('た')
+        self.assertIsNotNone(ta_pg, 'た should have pg from aux-v sense')
+        self.assertTrue(any('did' in g or 'done' in g for g in ta_pg),
+                        f'た pg should contain past-tense glosses, got: {ta_pg[:4]}')
+
+    def test_da_has_pg(self):
+        da_pg = pg('だ')
+        self.assertIsNotNone(da_pg, 'だ should have pg from copula sense')
+        self.assertTrue(any(g in ('be', 'is') for g in da_pg),
+                        f'だ pg should contain copula glosses, got: {da_pg[:4]}')
+
+    def test_rareru_has_pg(self):
+        rareru_pg = pg('られる')
+        self.assertIsNotNone(rareru_pg, 'られる should have pg from aux-v sense')
+        self.assertTrue(any('passive' in g for g in rareru_pg),
+                        f'られる pg should mention passive, got: {rareru_pg[:3]}')
+
+
 if __name__ == '__main__':
     loader = unittest.TestLoader()
-    suite = loader.loadTestsFromTestCase(TestParticleGlosses)
+    suite = unittest.TestSuite()
+    for cls in (TestParticleGlosses, TestAuxiliaryGlosses):
+        suite.addTests(loader.loadTestsFromTestCase(cls))
     runner = unittest.TextTestRunner(verbosity=2)
     result = runner.run(suite)
     sys.exit(0 if result.wasSuccessful() else 1)

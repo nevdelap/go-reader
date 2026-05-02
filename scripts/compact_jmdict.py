@@ -19,10 +19,24 @@
 #   p  — POS tags from the first English sense; merged across same-priority entries
 #   g  — list of gloss groups, one per JMdict entry; within a group glosses are
 #        joined with ", ", between groups with ";"
-#   pg — (optional) glosses from particle (prt) and expression (exp) senses
+#   pg — (optional) glosses from particle (prt), expression (exp), and auxiliary (aux/aux-v/aux-adj) senses
 
 import json, os, glob, zipfile
 import zopfli.gzip  # type: ignore[import-not-found]
+
+# JMdict POS tags that signal a grammar/particle sense suitable for pg/pg2.
+# exp covers compound particles like により, として that JMdict tags as expressions.
+# aux/aux-v/aux-adj covers auxiliary verbs like ない, た, だ, られる.
+GRAMMAR_POS = {'prt', 'exp', 'aux', 'aux-v', 'aux-adj'}
+
+def _merge(entry, key, items):
+    existing = entry.get(key, [])
+    seen = set(existing)
+    for item in items:
+        if item not in seen:
+            existing.append(item)
+            seen.add(item)
+    entry[key] = existing
 
 matches = sorted(glob.glob('jmdict-eng-*.json.zip'))
 if not matches:
@@ -49,17 +63,15 @@ for entry in d['words']:
 
     is_common = any(k.get('common', False) for k in entry['kanji'] + entry['kana'])
 
-    # Collect glosses from particle (prt) and expression (exp) senses.
-    # exp covers compound particles like により, として that JMdict tags as expressions.
-    particle_glosses = []
-    seen_pg = set()
-    for sense in entry['sense']:
-        pos = sense.get('partOfSpeech', [])
-        if 'prt' in pos or 'exp' in pos:
-            for g in sense['gloss']:
-                if g['lang'] == 'eng' and g['text'] not in seen_pg:
-                    particle_glosses.append(g['text'])
-                    seen_pg.add(g['text'])
+    # Collect glosses from grammar senses (pg is for disambiguation — words where g[0]
+    # would be wrong in particle/auxiliary context; others fall back to g[0] at runtime).
+    particle_glosses = list(dict.fromkeys(
+        g['text']
+        for sense in entry['sense']
+        if GRAMMAR_POS.intersection(sense.get('partOfSpeech', []))
+        for g in sense['gloss']
+        if g['lang'] == 'eng'
+    ))
 
     for k in entry['kanji'] + entry['kana']:
         word = k['text']
@@ -76,29 +88,15 @@ for entry in d['words']:
             # Same priority: append glosses as a new group, merge POS tags
             if glosses not in out[word]['g']:
                 out[word]['g'].append(list(glosses))
-            existing_p = out[word]['p']
-            for p in first_sense.get('partOfSpeech', []):
-                if p not in existing_p:
-                    existing_p.append(p)
+            _merge(out[word], 'p', first_sense.get('partOfSpeech', []))
             if particle_glosses:
-                existing_pg = out[word].get('pg', [])
-                seen = set(existing_pg)
-                for pg in particle_glosses:
-                    if pg not in seen:
-                        existing_pg.append(pg)
-                        seen.add(pg)
-                out[word]['pg'] = existing_pg
+                _merge(out[word], 'pg', particle_glosses)
         else:
-            # Uncommon entry skipped for g/p, but collect its particle glosses in pg2
-            # so callers can use them when the primary pg is for a different sense.
+            # Uncommon entry skipped for g/p, but collect its grammar glosses.
+            # If the common entry already has pg (competing senses, e.g. て/で), store
+            # in pg2 so callers can distinguish. Otherwise merge into pg — no conflict.
             if particle_glosses:
-                existing_pg2 = out[word].get('pg2', [])
-                seen = set(existing_pg2)
-                for pg in particle_glosses:
-                    if pg not in seen:
-                        existing_pg2.append(pg)
-                        seen.add(pg)
-                out[word]['pg2'] = existing_pg2
+                _merge(out[word], 'pg2' if 'pg' in out[word] else 'pg', particle_glosses)
 
 data = json.dumps(out, ensure_ascii=False, separators=(',', ':'))
 print(f'Entries: {len(out)}, JSON size: {len(data.encode()) / 1024 / 1024:.1f}MB')
