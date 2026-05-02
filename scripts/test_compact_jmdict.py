@@ -87,9 +87,26 @@ class TestParticleGlosses(unittest.TestCase):
             f'で pg2 should contain conjunctive senses, got: {de_pg2[:4]}'
         )
 
-    def test_zutu_has_no_pg(self):
-        # ずつ is tagged suf (not prt) in JMdict, so no pg is expected.
+    def test_zutu_has_no_pg_but_single_g(self):
+        # ずつ is tagged suf (not prt) so no pg, but has a single unambiguous g group.
         self.assertIsNone(pg('ずつ'), f'ずつ should have no pg, got: {pg("ずつ")}')
+        g0 = DICT.get('ずつ', {}).get('g', [])
+        self.assertEqual(len(g0), 1, 'ずつ should have exactly one g group for safe g[0] fallback')
+
+    def test_nitotte_has_pg(self):
+        # にとって is tagged exp; exp senses are now collected into pg.
+        nitotte_pg = pg('にとって')
+        self.assertIsNotNone(nitotte_pg, 'にとって should have pg from exp sense')
+        self.assertTrue(any('for' in g or 'standpoint' in g for g in nitotte_pg),
+                        f'にとって pg should describe its particle use, got: {nitotte_pg[:3]}')
+
+    def test_niyori_has_pg(self):
+        # により had 2 g groups (noun + exp), so g[0] fallback gave "similarity" (wrong).
+        # exp senses now go into pg, giving the correct particle meaning.
+        niyori_pg = pg('により')
+        self.assertIsNotNone(niyori_pg, 'により should have pg from exp sense')
+        self.assertTrue(any('according' in g or 'due to' in g for g in niyori_pg),
+                        f'により pg should describe its particle use, got: {niyori_pg[:3]}')
 
     def test_pg_length_reasonable(self):
         # pg entries should not be empty, and capping at a large number catches runaway merges
