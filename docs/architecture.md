@@ -20,15 +20,21 @@ ______________________________________________________________________
 
 ## Libraries
 
-- **[kuromoji.js](https://github.com/takuyaa/kuromoji.js)** — Pure JavaScript Japanese morphological analyzer. Loads binary dictionary files from `dict/` at startup, then tokenizes text entirely in-browser.
-- **[JMdict](https://www.edrdg.org/jmdict/j_jmdict.html)** — Japanese-English dictionary from EDRDG, bundled as a compact gzipped JSON lookup table.
-- **[Lucide](https://lucide.dev/)** — ISC-licensed icon set. The sun and moon icons are inlined as SVG in `index.html` for the theme toggle; no external dependency.
+- **[kuromoji.js](https://github.com/takuyaa/kuromoji.js)** — Pure JavaScript
+  Japanese morphological analyzer. Loads binary dictionary files from `dict/` at
+  startup, then tokenizes text entirely in-browser.
+- **[JMdict](https://www.edrdg.org/jmdict/j_jmdict.html)** — Japanese-English
+  dictionary from EDRDG, bundled as a compact gzipped JSON lookup table.
+- **[Lucide](https://lucide.dev/)** — ISC-licensed icon set. The sun and moon
+  icons are inlined as SVG in `index.html` for the theme toggle; no external
+  dependency.
 
 ______________________________________________________________________
 
 ## Analytics
 
-Google Analytics (gtag.js, ID `G-G7TXQ86GYJ`) is used for page view tracking. The script is loaded conditionally — skipped entirely when `navigator.doNotTrack === "1"` or `window.doNotTrack === "1"`.
+Google Analytics (gtag.js, ID `G-G7TXQ86GYJ`) is used for page view tracking.
+The script is loaded conditionally — skipped entirely when `navigator.doNotTrack === "1"` or `window.doNotTrack === "1"`.
 
 ______________________________________________________________________
 
@@ -60,34 +66,41 @@ ______________________________________________________________________
 
 ## Dictionary Build
 
-The full JMdict JSON is ~50 MB — too large to load in a browser. `scripts/compact_jmdict.py` reduces it to a flat map containing only what the app needs:
+The full JMdict JSON is ~50 MB — too large to load in a browser.
+`scripts/compact_jmdict.py` reduces it to a flat map containing only what the
+app needs:
 
 ```json
 { "word": {"p": ["n", ...], "g": [["gloss1", "gloss2", ...], ...]}, ... }
 ```
 
-- Only the first sense that has English glosses is used — secondary senses are discarded
+- Only the first sense that has English glosses is used — secondary senses are
+  discarded
 - All English glosses from that sense are kept
-- `g` is a list of gloss groups — one inner list per JMdict entry; groups are displayed joined
-  with `,` within a group and `;` between groups
-- On key collision (multiple entries share the same kanji/kana form), the common entry wins over
-  an uncommon entry; entries of equal priority are merged (glosses appended as a new group, POS
-  tags combined)
+- `g` is a list of gloss groups — one inner list per JMdict entry; groups are
+  displayed joined with `,` within a group and `;` between groups
+- On key collision (multiple entries share the same kanji/kana form), the common
+  entry wins over an uncommon entry; entries of equal priority are merged
+  (glosses appended as a new group, POS tags combined)
 - Output: `jmdict-compact.json.gz` (~6.9 MB gzipped)
 
-To regenerate, see [Maintaining the repository](../README.md#maintaining-the-repository) in the README.
+To regenerate, see [Maintaining the
+repository](../README.md#maintaining-the-repository) in the README.
 
 ______________________________________________________________________
 
 ## Dictionary Loading
 
-At startup, kuromoji and JMdict are loaded in parallel. The browser decompresses `jmdict-compact.json.gz` using the native
-`DecompressionStream` API (falls back to server-decompressed response when a local dev server handles gzip automatically).
+At startup, kuromoji and JMdict are loaded in parallel. The browser decompresses
+`jmdict-compact.json.gz` using the native `DecompressionStream` API (falls back
+to server-decompressed response when a local dev server handles gzip
+automatically).
 
-Up to 5 retry attempts with increasing delays (2s, 4s, 6s…) if either load fails.
+Up to 5 retry attempts with increasing delays (2s, 4s, 6s…) if either load
+fails.
 
-The dictionary URL includes a `?v=N` cache-bust parameter; increment `N` after each rebuild to force clients
-past the browser cache.
+The dictionary URL includes a `?v=N` cache-bust parameter; increment `N` after
+each rebuild to force clients past the browser cache.
 
 ______________________________________________________________________
 
@@ -95,58 +108,87 @@ ______________________________________________________________________
 
 When a token is tapped, `lookupWord(surface_form, basic_form)` tries:
 
-1. `basic_form` — the dictionary/base form (e.g. `食べる`), skipped if it equals `surface_form` or `*`
+1. `basic_form` — the dictionary/base form (e.g. `食べる`), skipped if it equals
+   `surface_form` or `*`
 2. `surface_form` — the exact text as it appears (e.g. `食べました`)
-3. **Godan imperative fallback** — if both lookups fail and the surface form ends in an -e row kana (え, け, げ, せ, て, ね, べ, め, れ), the final kana is replaced with its -u row equivalent to derive the dictionary form (e.g. `払え` → `払う`). This corrects a kuromoji misanalysis where godan imperatives are tagged as potential-form verbs (e.g. `払え` gets `basic_form: 払える`), whose potential form is not in the compact dictionary.
+3. **Godan imperative fallback** — if both lookups fail and the surface form
+   ends in an -e row kana (え, け, げ, せ, て, ね, べ, め, れ), the final kana
+   is replaced with its -u row equivalent to derive the dictionary form (e.g.
+   `払え` → `払う`). This corrects a kuromoji misanalysis where godan imperatives
+   are tagged as potential-form verbs (e.g. `払え` gets `basic_form: 払える`),
+   whose potential form is not in the compact dictionary.
 
-Both results from steps 1–2 are returned when found, joined with a semicolon and space. This handles conjugated verbs and adjectives, and
-surfaces homograph disambiguation (e.g. `ある` returns both the verb and the existential senses). If neither
-is found in JMdict, the display falls back to the `basic_form` string from kuromoji.
+Both results from steps 1–2 are returned when found, joined with a semicolon and
+space. This handles conjugated verbs and adjectives, and surfaces homograph
+disambiguation (e.g. `ある` returns both the verb and the existential senses).
+If neither is found in JMdict, the display falls back to the `basic_form` string
+from kuromoji.
 
-Katakana readings from kuromoji are converted to hiragana for display (`toHiragana()`).
+Katakana readings from kuromoji are converted to hiragana for display
+(`toHiragana()`).
 
 ______________________________________________________________________
 
 ## UI Details
 
-- **Token rendering** — tokens use `display: inline` so letter-spacing and glyph metrics behave consistently with the textarea input
-- **Token area rebuild** — on re-tokenization, the token area DOM node is replaced with a clone to avoid accumulating event listeners
-- **Panel height tracking** — a `ResizeObserver` keeps `--panel-height` in sync so the token area scrolls far enough to keep the active token visible above the bottom panel
-- **Input buttons** — "Clear and paste" clears the textarea then reads from the clipboard (falls back to an
-  error message on permission denial), "Copy URL" / "Share" encodes the current input as a compressed URL
-  fragment and copies it to the clipboard (or invokes the native share sheet on touch devices), "Example"
-  loads a sample text; all return focus to the textarea
-- **Input deduplication** — if the raw input hasn't changed since last tokenization, rendering is skipped
+- **Token rendering** — tokens use `display: inline` so letter-spacing and glyph
+  metrics behave consistently with the textarea input
+- **Token area rebuild** — on re-tokenization, the token area DOM node is
+  replaced with a clone to avoid accumulating event listeners
+- **Panel height tracking** — a `ResizeObserver` keeps `--panel-height` in sync
+  so the token area scrolls far enough to keep the active token visible above
+  the bottom panel
+- **Input buttons** — "Clear and paste" clears the textarea then reads from the
+  clipboard (falls back to an error message on permission denial), "Copy URL" /
+  "Share" encodes the current input as a compressed URL fragment and copies it
+  to the clipboard (or invokes the native share sheet on touch devices),
+  "Example" loads a sample text; all return focus to the textarea
+- **Input deduplication** — if the raw input hasn't changed since last
+  tokenization, rendering is skipped
 - **Debounce** — 300ms after last keypress before `analyze()` fires
-- **Grammar classification** — particles (`助詞`), auxiliary verbs (`助動詞`), symbols, punctuation, whitespace, and filler (`フィラー`) tokens are styled
+- **Grammar classification** — particles (`助詞`), auxiliary verbs (`助動詞`),
+  symbols, punctuation, whitespace, and filler (`フィラー`) tokens are styled
   gray and show their POS label rather than a dictionary lookup
-- **Vertical reading mode** — a toggle button in the legend bar switches the token area between horizontal (default) and
-  `writing-mode: vertical-rl` (top-to-bottom, right-to-left columns). The button label reflects the action to take:
-  "Read top to bottom" when horizontal, "Read left to right" when vertical. On entering vertical mode the scroll position
-  is snapped to `scrollLeft = scrollWidth` so the first column (rightmost) is visible immediately.
-- **Light/dark theme** — a toggle button in the header switches between light (default) and dark themes using CSS custom
-  properties on `:root`. An inline `<script>` in `<head>` applies the saved theme before first paint to avoid a flash.
-- **Dim grammar toggle** — a toggle button in the legend bar switches between dimmed grammar tokens (default,
-  `--text-grammar` color) and uniform coloring. The button label reflects the current state: "Dim grammar" /
-  "Undim grammar". Preference is stored in `localStorage` (`dimGrammar`).
-- **Persistence** — theme choice, reading direction, dim-grammar preference, and the raw textarea input are
-  all stored in `localStorage` and restored on load.
+- **Vertical reading mode** — a toggle button in the legend bar switches the
+  token area between horizontal (default) and `writing-mode: vertical-rl`
+  (top-to-bottom, right-to-left columns). The button label reflects the action
+  to take: "Read top to bottom" when horizontal, "Read left to right" when
+  vertical. On entering vertical mode the scroll position is snapped to
+  `scrollLeft = scrollWidth` so the first column (rightmost) is visible
+  immediately.
+- **Light/dark theme** — a toggle button in the header switches between light
+  (default) and dark themes using CSS custom properties on `:root`. An inline
+  `<script>` in `<head>` applies the saved theme before first paint to avoid a
+  flash.
+- **Dim grammar toggle** — a toggle button in the legend bar switches between
+  dimmed grammar tokens (default, `--text-grammar` color) and uniform coloring.
+  The button label reflects the current state: "Dim grammar" / "Undim grammar".
+  Preference is stored in `localStorage` (`dimGrammar`).
+- **Persistence** — theme choice, reading direction, dim-grammar preference, and
+  the raw textarea input are all stored in `localStorage` and restored on load.
 
 ______________________________________________________________________
 
 ## URL Sharing
 
-The "Copy URL" / "Share" button encodes the textarea content into the URL fragment (`#t=<encoded>`):
+The "Copy URL" / "Share" button encodes the textarea content into the URL
+fragment (`#t=<encoded>`):
 
-1. The text is UTF-8 encoded and compressed with `CompressionStream('deflate-raw')`.
-2. The compressed bytes are base64-encoded using URL-safe characters (`-` for `+`, `_` for `/`, no `=` padding).
-3. The resulting URL is copied to the clipboard or passed to `navigator.share()` on touch devices.
+1. The text is UTF-8 encoded and compressed with
+   `CompressionStream('deflate-raw')`.
+2. The compressed bytes are base64-encoded using URL-safe characters (`-` for
+   `+`, `_` for `/`, no `=` padding).
+3. The resulting URL is copied to the clipboard or passed to `navigator.share()`
+   on touch devices.
 
-On load (and on `hashchange`), `loadFromHash()` reverses the process — URL-safe base64 → `DecompressionStream('deflate-raw')` → UTF-8 text — and populates the textarea.
+On load (and on `hashchange`), `loadFromHash()` reverses the process — URL-safe
+base64 → `DecompressionStream('deflate-raw')` → UTF-8 text — and populates the
+textarea.
 
 ______________________________________________________________________
 
 ## Deployment
 
-The app is fully static — serve `index.html` and the supporting files from any static host. On first load, the browser
-fetches Google Fonts, `jmdict-compact.json.gz`, and the kuromoji binary dictionary files in `dict/`.
+The app is fully static — serve `index.html` and the supporting files from any
+static host. On first load, the browser fetches Google Fonts,
+`jmdict-compact.json.gz`, and the kuromoji binary dictionary files in `dict/`.
