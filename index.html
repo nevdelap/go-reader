@@ -465,7 +465,7 @@
   <header>
     <div class="header-left">
       <div class="logo">語 <span>Reader</span></div>
-      <div class="subtitle">Japanese Reader For Learners · v1.10.0</div>
+      <div class="subtitle">Japanese Reader For Learners · v1.11.0</div>
     </div>
     <button type="button" id="themeBtn" class="toolbar-btn"></button>
   </header>
@@ -613,7 +613,7 @@ let jmdictLoaded = false;
 let jmdictPromise = null;
 
 async function loadJMdict() {
-  const res = await fetch('jmdict-compact.json.gz?v=8');
+  const res = await fetch('jmdict-compact.json.gz?v=9');
   if (!res.ok) throw new Error(`JMdict fetch failed: ${res.status}`);
   if (res.headers.get('Content-Encoding') === 'gzip') {
     // Server decompressed automatically (e.g. local dev server)
@@ -632,6 +632,18 @@ async function loadJMdict() {
 // (e.g. 払え → basic_form: 払える, 作れ → basic_form: 作れる). Neither potential form
 // is in the compact dict, so we fall back to deriving the dict form from the surface.
 const IMPERATIVE_E_TO_U = {え:'う',け:'く',げ:'ぐ',せ:'す',て:'つ',ね:'ぬ',べ:'ぶ',め:'む',れ:'る'};
+
+function lookupParticle(token) {
+  if (!jmdict) return null;
+  // て and で as conjunctive particles: the JMdict "common" entry for て is the quoting
+  // particle (って), whose glosses ("you said, he said") win and fill pg — wrong for 接続助詞 use.
+  if (token.pos_detail_1 === '接続助詞' &&
+      (token.surface_form === 'て' || token.surface_form === 'で')) return null;
+  const base = token.basic_form && token.basic_form !== '*' ? token.basic_form : token.surface_form;
+  const entry = jmdict[base] || jmdict[token.surface_form];
+  if (!entry || !entry.pg) return null;
+  return entry.pg.slice(0, 3).join(', ');
+}
 
 function lookupWord(surface, basicForm) {
   if (!jmdict) return null;
@@ -789,7 +801,9 @@ function openPanel(token, index) {
   const eng = $('panelEnglish');
   if (isGrammar(token)) {
     $('panelPos').textContent = getPOS(token);
-    eng.textContent = POS_MAP[token.pos] || token.pos;
+    eng.textContent = token.pos === '助詞'
+      ? (lookupParticle(token) || 'particle')
+      : (POS_MAP[token.pos] || token.pos);
   } else {
     const result = lookupWord(token.surface_form, token.basic_form);
     $('panelPos').textContent = (result && result.pos) || getPOS(token);

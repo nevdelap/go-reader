@@ -30,3 +30,4 @@ lint: format
 # Run tests.
 test:
     node test.js
+    uv run scripts/test_compact_jmdict.py

@@ -15,10 +15,11 @@
 # after manually downloading the zip from:
 #   https://github.com/scriptin/jmdict-simplified/releases
 #
-# Output format: { "word": {"p": ["pos", ...], "g": [["gloss", ...], ...]}, ... }
+# Output format: { "word": {"p": ["pos", ...], "g": [["gloss", ...], ...], "pg": ["gloss", ...]}, ... }
 #   p  — POS tags from the first English sense; merged across same-priority entries
 #   g  — list of gloss groups, one per JMdict entry; within a group glosses are
 #        joined with ", ", between groups with ";"
+#   pg — (optional) glosses from particle senses only, for words that double as particles
 
 import json, os, glob, zipfile
 import zopfli.gzip  # type: ignore[import-not-found]
@@ -48,11 +49,26 @@ for entry in d['words']:
 
     is_common = any(k.get('common', False) for k in entry['kanji'] + entry['kana'])
 
+    # Collect glosses from all particle-tagged senses in this JMdict entry
+    particle_glosses = []
+    seen_pg = set()
+    for sense in entry['sense']:
+        if 'prt' in sense.get('partOfSpeech', []):
+            for g in sense['gloss']:
+                if g['lang'] == 'eng' and g['text'] not in seen_pg:
+                    particle_glosses.append(g['text'])
+                    seen_pg.add(g['text'])
+
     for k in entry['kanji'] + entry['kana']:
         word = k['text']
         if word not in out or (is_common and not common.get(word, False)):
             # New entry wins outright (first seen, or common displacing uncommon)
+            prev_pg = out.get(word, {}).get('pg')
             out[word] = {'p': list(first_sense.get('partOfSpeech', [])), 'g': [list(glosses)]}
+            if particle_glosses:
+                out[word]['pg'] = list(particle_glosses)
+            elif prev_pg:
+                out[word]['pg'] = prev_pg
             common[word] = is_common
         elif is_common == common.get(word, False):
             # Same priority: append glosses as a new group, merge POS tags
@@ -62,6 +78,16 @@ for entry in d['words']:
             for p in first_sense.get('partOfSpeech', []):
                 if p not in existing_p:
                     existing_p.append(p)
+            # If this entry has no particle senses, leave any existing pg intact
+            # (asymmetric with the "new entry wins" branch by design — pg already accumulated).
+            if particle_glosses:
+                existing_pg = out[word].get('pg', [])
+                seen = set(existing_pg)
+                for pg in particle_glosses:
+                    if pg not in seen:
+                        existing_pg.append(pg)
+                        seen.add(pg)
+                out[word]['pg'] = existing_pg
 
 data = json.dumps(out, ensure_ascii=False, separators=(',', ':'))
 print(f'Entries: {len(out)}, JSON size: {len(data.encode()) / 1024 / 1024:.1f}MB')
