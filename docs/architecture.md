@@ -13,6 +13,7 @@ A single-file static Japanese reader. No server, no build step — deploys anywh
 | `scripts/compact_jmdict.py`                 | Build script: preprocesses full JMdict JSON into compact form                                                          |
 | `scripts/update_jmdict_and_compact_repo.sh` | Checks for a new JMdict release, downloads it, rebuilds the compact dict, and rewrites git history to remove old blobs |
 | `scripts/local_serve.py`                    | Local dev server                                                                                                       |
+| `scripts/pre-push`                          | Git pre-push hook                                                                                                      |
 | `manifest.json` / `favicon.svg`             | PWA manifest and icon                                                                                                  |
 
 ______________________________________________________________________
@@ -27,7 +28,7 @@ ______________________________________________________________________
 
 ## Analytics
 
-[GoatCounter](https://www.goatcounter.com/) is used for privacy-friendly page view tracking. No cookies, no personal data. The script tag in `index.html` points to `go-reader.goatcounter.com`.
+Google Analytics (gtag.js, ID `G-G7TXQ86GYJ`) is used for page view tracking. The script is loaded conditionally — skipped entirely when `navigator.doNotTrack === "1"` or `window.doNotTrack === "1"`.
 
 ______________________________________________________________________
 
@@ -96,8 +97,9 @@ When a token is tapped, `lookupWord(surface_form, basic_form)` tries:
 
 1. `basic_form` — the dictionary/base form (e.g. `食べる`), skipped if it equals `surface_form` or `*`
 2. `surface_form` — the exact text as it appears (e.g. `食べました`)
+3. **Godan imperative fallback** — if both lookups fail and the surface form ends in an -e row kana (え, け, げ, せ, て, ね, べ, め, れ), the final kana is replaced with its -u row equivalent to derive the dictionary form (e.g. `払え` → `払う`). This corrects a kuromoji misanalysis where godan imperatives are tagged as potential-form verbs (e.g. `払え` gets `basic_form: 払える`), whose potential form is not in the compact dictionary.
 
-Both results are returned when found, joined with a semicolon and space. This handles conjugated verbs and adjectives, and
+Both results from steps 1–2 are returned when found, joined with a semicolon and space. This handles conjugated verbs and adjectives, and
 surfaces homograph disambiguation (e.g. `ある` returns both the verb and the existential senses). If neither
 is found in JMdict, the display falls back to the `basic_form` string from kuromoji.
 
@@ -110,8 +112,10 @@ ______________________________________________________________________
 - **Token rendering** — tokens use `display: inline` so letter-spacing and glyph metrics behave consistently with the textarea input
 - **Token area rebuild** — on re-tokenization, the token area DOM node is replaced with a clone to avoid accumulating event listeners
 - **Panel height tracking** — a `ResizeObserver` keeps `--panel-height` in sync so the token area scrolls far enough to keep the active token visible above the bottom panel
-- **Input buttons** — Clear empties the textarea, Paste reads from the clipboard, Example loads a sample text;
-  all return focus to the textarea
+- **Input buttons** — "Clear and paste" clears the textarea then reads from the clipboard (falls back to an
+  error message on permission denial), "Copy URL" / "Share" encodes the current input as a compressed URL
+  fragment and copies it to the clipboard (or invokes the native share sheet on touch devices), "Example"
+  loads a sample text; all return focus to the textarea
 - **Input deduplication** — if the raw input hasn't changed since last tokenization, rendering is skipped
 - **Debounce** — 300ms after last keypress before `analyze()` fires
 - **Grammar classification** — particles (`助詞`), auxiliary verbs (`助動詞`), symbols, punctuation, whitespace, and filler (`フィラー`) tokens are styled
@@ -122,7 +126,23 @@ ______________________________________________________________________
   is snapped to `scrollLeft = scrollWidth` so the first column (rightmost) is visible immediately.
 - **Light/dark theme** — a toggle button in the header switches between light (default) and dark themes using CSS custom
   properties on `:root`. An inline `<script>` in `<head>` applies the saved theme before first paint to avoid a flash.
-- **Persistence** — theme choice and reading direction are stored in `localStorage` and restored on load.
+- **Dim grammar toggle** — a toggle button in the legend bar switches between dimmed grammar tokens (default,
+  `--text-grammar` color) and uniform coloring. The button label reflects the current state: "Dim grammar" /
+  "Undim grammar". Preference is stored in `localStorage` (`dimGrammar`).
+- **Persistence** — theme choice, reading direction, dim-grammar preference, and the raw textarea input are
+  all stored in `localStorage` and restored on load.
+
+______________________________________________________________________
+
+## URL Sharing
+
+The "Copy URL" / "Share" button encodes the textarea content into the URL fragment (`#t=<encoded>`):
+
+1. The text is UTF-8 encoded and compressed with `CompressionStream('deflate-raw')`.
+2. The compressed bytes are base64-encoded using URL-safe characters (`-` for `+`, `_` for `/`, no `=` padding).
+3. The resulting URL is copied to the clipboard or passed to `navigator.share()` on touch devices.
+
+On load (and on `hashchange`), `loadFromHash()` reverses the process — URL-safe base64 → `DecompressionStream('deflate-raw')` → UTF-8 text — and populates the textarea.
 
 ______________________________________________________________________
 
