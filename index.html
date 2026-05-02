@@ -465,7 +465,7 @@
   <header>
     <div class="header-left">
       <div class="logo">語 <span>Reader</span></div>
-      <div class="subtitle">Japanese Reader For Learners · v1.12.0</div>
+      <div class="subtitle">Japanese Reader For Learners · v1.13.0</div>
     </div>
     <button type="button" id="themeBtn" class="toolbar-btn"></button>
   </header>
@@ -570,6 +570,10 @@ function isGrammar(token) {
   return GRAMMAR_POS.has(token.pos);
 }
 
+function resolvedForm(token) {
+  return (token.basic_form && token.basic_form !== '*') ? token.basic_form : token.surface_form;
+}
+
 // ── JMdict POS mapping ───────────────────────────────────────────────────────
 const JMDICT_POS_MAP = {
   'n': 'noun', 'n-pref': 'prefix', 'n-suf': 'suffix',
@@ -604,7 +608,7 @@ function jmdictPOS(tags) {
 // ── Strip non-Japanese ───────────────────────────────────────────────────────
 function stripNonJapanese(text) {
   return text
-    .replace(/[^　-〿぀-ゟ゠-ヿ一-鿿㐀-䶿＀-￯「」『』【】・ー―—\n]/g, '').trim();
+    .replace(/[^　-〿぀-ゟ゠-ヿ一-鿿㐀-䶿＀-￯―—\n]/g, '').trim();
 }
 
 // ── JMdict lookup ────────────────────────────────────────────────────────────
@@ -613,7 +617,7 @@ let jmdictLoaded = false;
 let jmdictPromise = null;
 
 async function loadJMdict() {
-  const res = await fetch('jmdict-compact.json.gz?v=11');
+  const res = await fetch('jmdict-compact.json.gz?v=12');
   if (!res.ok) throw new Error(`JMdict fetch failed: ${res.status}`);
   if (res.headers.get('Content-Encoding') === 'gzip') {
     // Server decompressed automatically (e.g. local dev server)
@@ -635,19 +639,16 @@ const IMPERATIVE_E_TO_U = {え:'う',け:'く',げ:'ぐ',せ:'す',て:'つ',ね
 
 function lookupParticle(token) {
   if (!jmdict) return null;
-  const base = token.basic_form && token.basic_form !== '*' ? token.basic_form : token.surface_form;
+  const base = resolvedForm(token);
   const entry = jmdict[base] || jmdict[token.surface_form];
   if (!entry) return null;
-  // て and で as conjunctive particles: the common JMdict entry covers quoting (って),
-  // so pg has wrong senses. Use pg2, which holds the skipped non-common entry's glosses.
-  if (token.pos_detail_1 === '接続助詞' &&
-      (token.surface_form === 'て' || token.surface_form === 'で')) {
-    return entry.pg2 ? entry.pg2.slice(0, 3).join(', ') : null;
+  // When a conjunctive particle has pg2, the common JMdict entry covers a different
+  // sense (e.g. て/で: common entry is quoting/って; pg2 holds the conjunctive glosses).
+  if (token.pos_detail_1 === '接続助詞' && entry.pg2) {
+    return entry.pg2.slice(0, 3).join(', ');
   }
   if (entry.pg) return entry.pg.slice(0, 3).join(', ');
-  // Single-sense entries (e.g. compound particles tagged exp/suf) have unambiguous g[0]
-  if (entry.g?.length === 1) return entry.g[0].slice(0, 3).join(', ');
-  return null;
+  return entry.g?.[0]?.slice(0, 3).join(', ') ?? null;
 }
 
 function lookupWord(surface, basicForm) {
@@ -655,6 +656,10 @@ function lookupWord(surface, basicForm) {
   const candidates = (basicForm && basicForm !== '*' && basicForm !== surface)
     ? [basicForm, surface]
     : [surface];
+  if (!candidates.some(w => jmdict[w])) {
+    const dictKana = IMPERATIVE_E_TO_U[surface.slice(-1)];
+    if (dictKana) candidates.push(surface.slice(0, -1) + dictKana);
+  }
   const engParts = [];
   const posLabels = new Set();
   for (const word of candidates) {
@@ -662,16 +667,6 @@ function lookupWord(surface, basicForm) {
     if (!entry) continue;
     engParts.push(entry.g.map(group => group.join(', ')).join('; '));
     for (const label of jmdictPOS(entry.p)) posLabels.add(label);
-  }
-  if (!engParts.length) {
-    const dictKana = IMPERATIVE_E_TO_U[surface.slice(-1)];
-    if (dictKana) {
-      const entry = jmdict[surface.slice(0, -1) + dictKana];
-      if (entry) {
-        engParts.push(entry.g.map(group => group.join(', ')).join('; '));
-        for (const label of jmdictPOS(entry.p)) posLabels.add(label);
-      }
-    }
   }
   if (!engParts.length) return null;
   return { eng: engParts.join('; '), pos: [...posLabels].join('; ') || null };
@@ -806,13 +801,11 @@ function openPanel(token, index) {
   const eng = $('panelEnglish');
   if (isGrammar(token)) {
     $('panelPos').textContent = getPOS(token);
-    eng.textContent = token.pos === '助詞'
-      ? (lookupParticle(token) || 'particle')
-      : (POS_MAP[token.pos] || token.pos);
+    eng.textContent = lookupParticle(token) || POS_MAP[token.pos] || token.pos;
   } else {
     const result = lookupWord(token.surface_form, token.basic_form);
     $('panelPos').textContent = (result && result.pos) || getPOS(token);
-    eng.textContent = result ? result.eng : (token.basic_form && token.basic_form !== '*' ? token.basic_form : token.surface_form);
+    eng.textContent = result ? result.eng : resolvedForm(token);
   }
 
   // Measure height synchronously before showing to avoid jump on first open
