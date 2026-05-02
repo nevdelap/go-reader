@@ -464,7 +464,7 @@
   <header>
     <div class="header-left">
       <div class="logo">語 <span>Reader</span></div>
-      <div class="subtitle">Japanese Reader For Learners · v1.9.0</div>
+      <div class="subtitle">Japanese Reader For Learners · v1.9.1</div>
     </div>
     <button type="button" id="themeBtn" class="toolbar-btn"></button>
   </header>
@@ -627,6 +627,11 @@ async function loadJMdict() {
   jmdictLoaded = true;
 }
 
+// Kuromoji sometimes misanalyses godan imperatives as a form of the potential verb
+// (e.g. 払え → basic_form: 払える, 作れ → basic_form: 作れる). Neither potential form
+// is in the compact dict, so we fall back to deriving the dict form from the surface.
+const IMPERATIVE_E_TO_U = {え:'う',け:'く',げ:'ぐ',せ:'す',て:'つ',ね:'ぬ',べ:'ぶ',め:'む',れ:'る'};
+
 function lookupWord(surface, basicForm) {
   if (!jmdict) return null;
   const candidates = (basicForm && basicForm !== '*' && basicForm !== surface)
@@ -639,6 +644,16 @@ function lookupWord(surface, basicForm) {
     if (!entry) continue;
     engParts.push(entry.g.map(group => group.join(', ')).join('; '));
     for (const label of jmdictPOS(entry.p)) posLabels.add(label);
+  }
+  if (!engParts.length) {
+    const dictKana = IMPERATIVE_E_TO_U[surface.slice(-1)];
+    if (dictKana) {
+      const entry = jmdict[surface.slice(0, -1) + dictKana];
+      if (entry) {
+        engParts.push(entry.g.map(group => group.join(', ')).join('; '));
+        for (const label of jmdictPOS(entry.p)) posLabels.add(label);
+      }
+    }
   }
   if (!engParts.length) return null;
   return { eng: engParts.join('; '), pos: [...posLabels].join('; ') || null };
