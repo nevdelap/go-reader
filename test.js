@@ -1,0 +1,130 @@
+// Tests for lookupWord and its godan imperative fallback.
+// Functions are inlined from index.html — keep in sync if those change.
+
+'use strict';
+
+const { test } = require('node:test');
+const assert = require('node:assert/strict');
+const { readFileSync } = require('node:fs');
+const { gunzipSync } = require('node:zlib');
+const { join } = require('node:path');
+
+// ── Functions under test (inlined from index.html) ───────────────────────────
+
+const JMDICT_POS_MAP = {
+  'n': 'noun', 'n-pref': 'prefix', 'n-suf': 'suffix',
+  'adv': 'adverb', 'adv-to': 'adverb',
+  'prt': 'particle',
+  'conj': 'conjunction',
+  'int': 'interjection',
+  'pref': 'prefix',
+  'suf': 'suffix',
+  'aux': 'auxiliary', 'aux-v': 'auxiliary verb', 'aux-adj': 'auxiliary adjective',
+  'ctr': 'counter',
+  'pn': 'pronoun',
+  'num': 'numeral',
+  'exp': 'expression',
+  'cop': 'copula',
+};
+
+function jmdictPOS(tags) {
+  if (!tags || !tags.length) return [];
+  const seen = new Set();
+  const labels = [];
+  for (const tag of tags) {
+    let label;
+    if (tag.startsWith('v')) label = 'verb';
+    else if (tag.startsWith('adj')) label = 'adjective';
+    else label = JMDICT_POS_MAP[tag] || null;
+    if (label && !seen.has(label)) { seen.add(label); labels.push(label); }
+  }
+  return labels;
+}
+
+const IMPERATIVE_E_TO_U = {え:'う',け:'く',げ:'ぐ',せ:'す',て:'つ',ね:'ぬ',べ:'ぶ',め:'む',れ:'る'};
+
+let jmdict = null;
+
+function lookupWord(surface, basicForm) {
+  if (!jmdict) return null;
+  const candidates = (basicForm && basicForm !== '*' && basicForm !== surface)
+    ? [basicForm, surface]
+    : [surface];
+  const engParts = [];
+  const posLabels = new Set();
+  for (const word of candidates) {
+    const entry = jmdict[word];
+    if (!entry) continue;
+    engParts.push(entry.g.map(group => group.join(', ')).join('; '));
+    for (const label of jmdictPOS(entry.p)) posLabels.add(label);
+  }
+  if (!engParts.length) {
+    const dictKana = IMPERATIVE_E_TO_U[surface.slice(-1)];
+    if (dictKana) {
+      const entry = jmdict[surface.slice(0, -1) + dictKana];
+      if (entry) {
+        engParts.push(entry.g.map(group => group.join(', ')).join('; '));
+        for (const label of jmdictPOS(entry.p)) posLabels.add(label);
+      }
+    }
+  }
+  if (!engParts.length) return null;
+  return { eng: engParts.join('; '), pos: [...posLabels].join('; ') || null };
+}
+
+// ── Load dict ────────────────────────────────────────────────────────────────
+
+jmdict = JSON.parse(gunzipSync(readFileSync(join(__dirname, 'jmdict-compact.json.gz'))).toString('utf8'));
+
+// ── Tests ────────────────────────────────────────────────────────────────────
+
+test('returns null when jmdict not loaded', () => {
+  const saved = jmdict;
+  jmdict = null;
+  assert.equal(lookupWord('払う', null), null);
+  jmdict = saved;
+});
+
+test('direct lookup', () => {
+  const r = lookupWord('払う', '払う');
+  assert.ok(r);
+  assert.ok(r.eng.includes('pay'));
+  assert.equal(r.pos, 'verb');
+});
+
+test('unknown word returns null', () => {
+  assert.equal(lookupWord('zzzzz', null), null);
+});
+
+// Kuromoji misanalyses godan imperatives as potential verbs (e.g. 払え → basic_form:
+// 払える). The potential forms are not in the compact dict, so lookupWord falls back
+// to stripping the imperative ending and looking up the dictionary form.
+// Note: ね→ぬ is omitted — 死ぬ is the only common v5n verb and 死ね has its own
+// dict entry as an interjection, so the fallback is never reached for that group.
+test('godan imperative fallback — eight groups', async (t) => {
+  const cases = [
+    // [surface, wrongBasicForm, え-col→う-col mapping, expected eng substring]
+    ['払え', '払える', 'え→う', 'pay'],
+    ['書け', '書ける', 'け→く', 'write'],
+    ['泳げ', '泳げる', 'げ→ぐ', 'swim'],
+    ['貸せ', '貸せる', 'せ→す', 'lend'],
+    ['勝て', '勝てる', 'て→つ', 'win'],
+    ['遊べ', '遊べる', 'べ→ぶ', 'play'],
+    ['住め', '住める', 'め→む', 'live'],
+    ['作れ', '作れる', 'れ→る', 'make'],
+  ];
+  for (const [surface, badBasicForm, label, expectedEng] of cases) {
+    await t.test(label, () => {
+      const r = lookupWord(surface, badBasicForm);
+      assert.ok(r, `${surface} should find a result via fallback`);
+      assert.ok(r.eng.toLowerCase().includes(expectedEng), `eng '${r.eng}' should include '${expectedEng}'`);
+      assert.equal(r.pos, 'verb');
+    });
+  }
+});
+
+test('godan imperative fallback when basicForm equals surface', () => {
+  const r = lookupWord('払え', '払え');
+  assert.ok(r);
+  assert.ok(r.eng.includes('pay'));
+});
