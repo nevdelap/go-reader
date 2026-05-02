@@ -89,7 +89,10 @@ function lookupParticle(token) {
       (token.surface_form === 'て' || token.surface_form === 'で')) {
     return entry.pg2 ? entry.pg2.slice(0, 3).join(', ') : null;
   }
-  return entry.pg ? entry.pg.slice(0, 3).join(', ') : null;
+  if (entry.pg) return entry.pg.slice(0, 3).join(', ');
+  // Single-sense entries (e.g. compound particles tagged exp/suf) have unambiguous g[0]
+  if (entry.g?.length === 1) return entry.g[0].slice(0, 3).join(', ');
+  return null;
 }
 
 function lookupWord(surface, basicForm) {
@@ -229,12 +232,15 @@ test('lookupParticle — で as case particle (格助詞) falls through to JMdic
   assert.ok(r, 'locative で should return a JMdict result');
 });
 
-test('lookupParticle — word with no pg entry returns null', () => {
-  // ずつ is tagged suf (not prt) in JMdict, so it has no pg field
-  assert.equal(
-    lookupParticle({ surface_form: 'ずつ', basic_form: 'ずつ', pos_detail_1: '副助詞' }),
-    null
-  );
+test('lookupParticle — single-sense entry with no pg uses g[0]', () => {
+  // ずつ: tagged suf, no pg, but single g group ["apiece", "each"] — unambiguous
+  const r = lookupParticle({ surface_form: 'ずつ', basic_form: 'ずつ', pos_detail_1: '副助詞' });
+  assert.ok(r, 'ずつ should return a result via g[0] fallback');
+});
+
+test('lookupParticle — compound particle にとって returns result', () => {
+  const r = lookupParticle({ surface_form: 'にとって', basic_form: 'にとって', pos_detail_1: '格助詞' });
+  assert.ok(r, 'にとって should return a result');
 });
 
 test('lookupParticle — unknown particle returns null', () => {

@@ -19,7 +19,7 @@
 #   p  — POS tags from the first English sense; merged across same-priority entries
 #   g  — list of gloss groups, one per JMdict entry; within a group glosses are
 #        joined with ", ", between groups with ";"
-#   pg — (optional) glosses from particle senses only, for words that double as particles
+#   pg — (optional) glosses from particle (prt) and expression (exp) senses
 
 import json, os, glob, zipfile
 import zopfli.gzip  # type: ignore[import-not-found]
@@ -49,11 +49,13 @@ for entry in d['words']:
 
     is_common = any(k.get('common', False) for k in entry['kanji'] + entry['kana'])
 
-    # Collect glosses from all particle-tagged senses in this JMdict entry
+    # Collect glosses from particle (prt) and expression (exp) senses.
+    # exp covers compound particles like により, として that JMdict tags as expressions.
     particle_glosses = []
     seen_pg = set()
     for sense in entry['sense']:
-        if 'prt' in sense.get('partOfSpeech', []):
+        pos = sense.get('partOfSpeech', [])
+        if 'prt' in pos or 'exp' in pos:
             for g in sense['gloss']:
                 if g['lang'] == 'eng' and g['text'] not in seen_pg:
                     particle_glosses.append(g['text'])

@@ -465,7 +465,7 @@
   <header>
     <div class="header-left">
       <div class="logo">語 <span>Reader</span></div>
-      <div class="subtitle">Japanese Reader For Learners · v1.11.0</div>
+      <div class="subtitle">Japanese Reader For Learners · v1.12.0</div>
     </div>
     <button type="button" id="themeBtn" class="toolbar-btn"></button>
   </header>
@@ -613,7 +613,7 @@ let jmdictLoaded = false;
 let jmdictPromise = null;
 
 async function loadJMdict() {
-  const res = await fetch('jmdict-compact.json.gz?v=10');
+  const res = await fetch('jmdict-compact.json.gz?v=11');
   if (!res.ok) throw new Error(`JMdict fetch failed: ${res.status}`);
   if (res.headers.get('Content-Encoding') === 'gzip') {
     // Server decompressed automatically (e.g. local dev server)
@@ -644,7 +644,10 @@ function lookupParticle(token) {
       (token.surface_form === 'て' || token.surface_form === 'で')) {
     return entry.pg2 ? entry.pg2.slice(0, 3).join(', ') : null;
   }
-  return entry.pg ? entry.pg.slice(0, 3).join(', ') : null;
+  if (entry.pg) return entry.pg.slice(0, 3).join(', ');
+  // Single-sense entries (e.g. compound particles tagged exp/suf) have unambiguous g[0]
+  if (entry.g?.length === 1) return entry.g[0].slice(0, 3).join(', ');
+  return null;
 }
 
 function lookupWord(surface, basicForm) {
