@@ -571,6 +571,12 @@
       }
     }
 
+    #welcomeGotIt {
+      background: rgba(37,99,235,0.4);
+      border-color: var(--accent);
+      color: var(--hover-text);
+    }
+
     .overlay-checkbox {
       display: flex;
       align-items: center;
@@ -617,7 +623,7 @@
   <header>
     <div class="header-left">
       <div class="logo">語 <span>Reader</span></div>
-      <div class="subtitle">Japanese Reader For Learners · v1.15.0</div>
+      <div class="subtitle">Japanese Reader For Learners · v1.15.1</div>
     </div>
     <div style="display:flex; gap:8px;">
       <button type="button" id="helpBtn" class="toolbar-btn" title="Help">?</button>
@@ -672,17 +678,19 @@
 <div class="overlay-backdrop hidden" id="welcomeOverlay">
   <div class="overlay" role="dialog" aria-modal="true" aria-labelledby="welcomeTitle">
     <button class="overlay-close" id="welcomeClose" aria-label="Close welcome">✕</button>
-    <h2 class="overlay-title" id="welcomeTitle">Welcome to 語 Reader</h2>
+    <h2 class="overlay-title" id="welcomeTitle">Welcome to 語 Reader<sub>1</sub></h2>
     <div class="overlay-body">
-      <p>A free Japanese reader for advanced learners. <strong>Type or paste</strong> Japanese text from AI tools, websites, or learning materials, then <strong>tap any morpheme</strong> to see its reading and English meaning.</p>
+      <p>A free Japanese reader for advanced learners. <strong>Type or paste</strong> Japanese text from AI tools, websites, or learning materials, then <strong>click or tap any morpheme</strong> to see its reading and English meaning.</p>
       <ul>
         <li><strong>No AI</strong> — Dictionary lookups happen locally in your browser, fast and private</li>
-        <li><strong>Tap/click morphemes</strong> — See readings and translations instantly</li>
         <li><strong>Grammar morphemes</strong> — Toggle dimming for enhanced learning</li>
         <li><strong>Keyboard shortcuts</strong> — Ctrl+K to clear text, Ctrl+V to paste, Alt+D for vertical reading mode</li>
-        <li><strong>Everything stays in your browser</strong> — No login, no server, no ads, no tracking*</li>
+        <li><strong>Everything stays in your browser</strong> — No login, no server, no ads, no tracking²</li>
       </ul>
-      <p style="font-size:11px; color:var(--text-muted); margin-top:8px;">*It just counts users by country so that I can see how much use it is getting.</p>
+      <ol style="font-size:11px; color:var(--text-muted); margin-top:8px; padding-left:20px; margin:0;">
+        <li>When you are speaking English, pronounce the name like the English verb "to go" — "Go Reader".</li>
+        <li>It just counts users by country so that I can see how much use it is getting.</li>
+      </ol>
     </div>
     <div class="overlay-actions">
       <label class="overlay-checkbox">

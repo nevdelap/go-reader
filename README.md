@@ -16,7 +16,7 @@ Everything runs in the browser — no account, no server, no API calls, **no AI*
 
 ## Features
 
-- **Instant morpheme lookup** — tap any morpheme in Japanese text to see its reading and English definition
+- **Instant morpheme lookup** — click or tap any morpheme in Japanese text to see its reading and English definition
 - **Hiragana readings** — see how any word is pronounced
 - **Offline-capable** — works without an internet connection
 - **Light and dark modes** — follows your system preference, or can be set manually
