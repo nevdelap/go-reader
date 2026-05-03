@@ -55,7 +55,7 @@ renderTokens()              — builds clickable <span> elements (display: inlin
                               content words: foreground color
                               grammar/particles: muted color
        │
-       ▼  (tap/click)
+       ▼  (tap or click)
 openPanel()                 — bottom panel shows:
                               • surface form + hiragana reading
                               • part of speech (mapped JP → EN)
@@ -106,7 +106,7 @@ ______________________________________________________________________
 
 ## Lookup Logic
 
-When a token is tapped, `lookupWord(surface_form, basic_form)` tries:
+When a token is tapped or clicked, `lookupWord(surface_form, basic_form)` tries:
 
 1. `basic_form` — the dictionary/base form (e.g. `食べる`), skipped if it equals
    `surface_form` or `*`
@@ -253,8 +253,9 @@ A modal dialog shown on first visit to introduce the app to new users:
   the user has chosen to hide the overlay
 
 The overlay content explains that the app is for advanced learners, that it uses
-local dictionary lookups (no AI), and covers basic usage (tap morphemes, grammar
-dimming toggle, keyboard shortcuts, browser-local processing).
+local dictionary lookups (no AI), and covers basic usage (tap or click
+morphemes, grammar dimming toggle, keyboard shortcuts, browser-local
+processing).
 
 ______________________________________________________________________
 
