@@ -184,7 +184,7 @@ ______________________________________________________________________
 - **Panel height tracking** — a `ResizeObserver` keeps `--panel-height` in sync
   so the token area scrolls far enough to keep the active token visible above
   the bottom panel
-- **Input buttons** — "Clear" clears the textarea, "Clear and paste" clears the
+- **Input buttons** — "CLEAR" clears the textarea, "CLEAR AND PASTE" clears the
   textarea then reads from the clipboard (falls back to an error message on
   permission denial), "Copy URL" / "Share" encodes the current input as a
   compressed URL fragment and copies it to the clipboard (or invokes the native
@@ -240,11 +240,11 @@ A modal dialog shown on first visit to introduce the app to new users:
 
 - **Auto-show** — Appears 500ms after page load on first visit
 - **Dismiss options**:
-  - "Got it" button closes for this session
+  - "GOT IT" button closes for this session
   - "Don't show again" checkbox saves preference to `localStorage` and prevents
     auto-show on future visits
 - **Help button** — The "?" button in the header reopens the overlay at any time
-- **Focus management** — When opening, focus moves to the "Got it" button; when
+- **Focus management** — When opening, focus moves to the "GOT IT" button; when
   closing, focus returns to the triggering element
 - **Escape key** — Closes the overlay
 - **Click outside** — Clicking the backdrop (dark area outside the dialog)
