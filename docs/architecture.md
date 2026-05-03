@@ -225,7 +225,7 @@ ______________________________________________________________________
 | -------- | --------------------------------------------- |
 | `Ctrl+K` | Clear the textarea                            |
 | `Ctrl+V` | Paste from clipboard (Clear and paste button) |
-| `Alt+D`  | Toggle vertical reading mode                  |
+| `Alt+D`  | Toggle reading direction                      |
 | `Escape` | Close welcome overlay or word details panel   |
 | `?`      | Open help (welcome overlay)                   |
 
