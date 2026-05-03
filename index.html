@@ -465,7 +465,7 @@
   <header>
     <div class="header-left">
       <div class="logo">語 <span>Reader</span></div>
-      <div class="subtitle">Japanese Reader For Learners · v1.13.0</div>
+      <div class="subtitle">Japanese Reader For Learners · v1.14.0</div>
     </div>
     <button type="button" id="themeBtn" class="toolbar-btn"></button>
   </header>
@@ -477,6 +477,7 @@
         rows="3"
         aria-label="Japanese text input"></textarea>
       <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:8px;">
+        <button type="button" id="clearBtn" class="toolbar-btn" title="Ctrl+K">Clear</button>
         <button type="button" id="pasteBtn" class="toolbar-btn" title="Ctrl+V">Clear and paste</button>
         <button type="button" id="copyUrlBtn" class="toolbar-btn" title="Share or copy link to this text"></button>
         <button type="button" id="exampleBtn" class="toolbar-btn" title="Load example text to see the app in action without having to find your own Japanese content first">Example</button>
@@ -617,7 +618,7 @@ let jmdictLoaded = false;
 let jmdictPromise = null;
 
 async function loadJMdict() {
-  const res = await fetch('jmdict-compact.json.gz?v=13');
+  const res = await fetch('jmdict-compact.json.gz?v=14');
   if (!res.ok) throw new Error(`JMdict fetch failed: ${res.status}`);
   if (res.headers.get('Content-Encoding') === 'gzip') {
     // Server decompressed automatically (e.g. local dev server)
@@ -985,6 +986,7 @@ $('dimGrammarBtn').addEventListener('click', () => {
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape') closePanel();
   if (e.key === 'd' && e.altKey) { e.preventDefault(); $('verticalBtn').click(); return; }
+  if (e.key === 'k' && e.ctrlKey) { e.preventDefault(); $('clearBtn').click(); return; }
   if (document.activeElement === $('inputText')) return;
   if (e.key === 'v' && e.ctrlKey) { e.preventDefault(); $('pasteBtn').click(); }
 });
@@ -1023,6 +1025,11 @@ const EXAMPLE_TEXT = `「その会社には、三つの"重要なデータベー
 「それがその日、たいへんな事故から学んだ最も重要なことでした。」
 "That was the most important thing learned from that difficult incident."`;
 
+$('clearBtn').addEventListener('click', () => {
+  $('inputText').value = '';
+  $('inputText').dispatchEvent(new Event('input'));
+  $('inputText').focus();
+});
 $('pasteBtn').addEventListener('click', async () => {
   try {
     const text = await navigator.clipboard.readText();
