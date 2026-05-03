@@ -31,3 +31,7 @@ lint: format
 test:
     node test.js
     uv run scripts/test_compact_jmdict.py
+
+# Tag the release and push.
+tag_and_push:
+    scripts/tag_and_push.sh
