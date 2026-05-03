@@ -33,5 +33,5 @@ test:
     uv run scripts/test_compact_jmdict.py
 
 # Tag the release and push.
-tag_and_push:
+tag_and_push: lint
     scripts/tag_and_push.sh
