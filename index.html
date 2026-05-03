@@ -10,17 +10,17 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   <meta name="apple-mobile-web-app-title" content="語 Reader" />
   <meta name="description"
-    content="A Japanese reader for learners. Paste Japanese text and tap or click any word to see its reading and English meaning." />
+    content="A Japanese reader for learners. Paste Japanese text and tap or click any morpheme to see its reading and English meaning." />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://nevdelap.github.io/go-reader/" />
   <meta property="og:title" content="語 Reader — Japanese Reader For Learners" />
   <meta property="og:description"
-    content="Paste Japanese text and tap or click any word to instantly see its reading and English meaning. A free tool for Japanese learners." />
+    content="Paste Japanese text and tap or click any morpheme to instantly see its reading and English meaning. A free tool for Japanese learners." />
   <meta property="og:image" content="https://nevdelap.github.io/go-reader/og-image.png" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="語 Reader — Japanese Reader For Learners" />
   <meta name="twitter:description"
-    content="Paste Japanese text and tap or click any word to instantly see its reading and English meaning. A free tool for Japanese learners." />
+    content="Paste Japanese text and tap or click any morpheme to instantly see its reading and English meaning. A free tool for Japanese learners." />
   <meta name="twitter:image" content="https://nevdelap.github.io/go-reader/og-image.png" />
   <link rel="canonical" href="https://nevdelap.github.io/go-reader/" />
   <link rel="manifest" href="manifest.json" />
@@ -38,7 +38,7 @@
     "@type": "WebApplication",
     "name": "語 Reader",
     "url": "https://nevdelap.github.io/go-reader/",
-    "description": "Paste Japanese text and tap or click any word to instantly see its reading and English meaning. A free tool for Japanese learners.",
+    "description": "Paste Japanese text and tap or click any morpheme to instantly see its reading and English meaning. A free tool for Japanese learners.",
     "applicationCategory": "EducationApplication",
     "operatingSystem": "Any",
     "offers": {
@@ -804,7 +804,7 @@
     <header>
       <div class="header-left">
         <div class="logo">語 <span>Reader</span></div>
-        <div class="subtitle">Japanese Reader For Learners · v1.15.3</div>
+        <div class="subtitle">Japanese Reader For Learners · v1.15.4</div>
       </div>
       <div style="display:flex; gap:8px;">
         <button type="button" id="helpBtn" class="toolbar-btn" title="Help">?</button>
@@ -828,9 +828,9 @@
 
       <div id="tokenView" class="hidden">
         <div class="legend">
-          <span class="legend-hint legend-hint-desktop">Click words, or navigate with Tab/Shift-Tab and press Space, to
+          <span class="legend-hint legend-hint-desktop">Click morphemes, or navigate with Tab/Shift-Tab and press Space, to
             see translations.</span>
-          <span class="legend-hint legend-hint-mobile">tap or click words to see translations.</span>
+          <span class="legend-hint legend-hint-mobile">Tap morphemes to see translations.</span>
           <button type="button" id="verticalBtn" class="toolbar-btn" aria-pressed="false" title="Alt+D"
             style="margin-left:auto;">Read top to bottom</button>
           <button type="button" id="dimGrammarBtn" class="toolbar-btn" aria-pressed="false"></button>
@@ -854,7 +854,7 @@
         Development Group</a>, and are used (with great appreciation!) in conformance with the Group's <a
         href="https://www.edrdg.org/edrdg/licence.html" target="_blank" rel="noopener noreferrer">license</a>.
       <strong>Please note</strong> that translations are matched to individual morphemes and may not always reflect the
-      word's meaning in context.
+      morpheme's meaning in context.
       <br><br>© 2026 Nev Delap. Released under the <a href="https://github.com/nevdelap/go-reader/blob/main/LICENSE"
         target="_blank" rel="noopener noreferrer">MIT license</a>.
     </footer>
