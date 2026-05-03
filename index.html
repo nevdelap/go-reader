@@ -804,7 +804,7 @@
     <header>
       <div class="header-left">
         <div class="logo">語 <span>Reader</span></div>
-        <div class="subtitle">Japanese Reader For Learners · v1.15.5</div>
+        <div class="subtitle">Japanese Reader For Learners · v1.15.6</div>
       </div>
       <div style="display:flex; gap:8px;">
         <button type="button" id="helpBtn" class="toolbar-btn" title="Help">?</button>
@@ -1078,7 +1078,15 @@
     $('themeBtn').addEventListener('click', () => {
       isDark = !isDark;
       applyTheme(isDark);
-      localStorage.setItem('theme', isDark ? 'dark' : 'light');
+
+      // If the new theme matches the system preference, clear the saved setting
+      // so that future system theme changes are respected
+      const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      if (isDark === systemDark) {
+        localStorage.removeItem('theme');
+      } else {
+        localStorage.setItem('theme', isDark ? 'dark' : 'light');
+      }
     });
 
     window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
