@@ -1,7 +1,7 @@
 {
   "name": "語 Reader — Japanese Reader For Learners",
   "short_name": "語 Reader",
-  "description": "A Japanese reader for learners. Paste Japanese text and tap any word to see its reading and English meaning.",
+  "description": "A Japanese reader for learners. Paste Japanese text and tap or click any word to see its reading and English meaning.",
   "start_url": "/go-reader/",
   "scope": "/go-reader/",
   "display": "standalone",

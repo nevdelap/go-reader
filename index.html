@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
@@ -8,15 +9,18 @@
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   <meta name="apple-mobile-web-app-title" content="語 Reader" />
-  <meta name="description" content="A Japanese reader for learners. Paste Japanese text and tap any word to see its reading and English meaning." />
+  <meta name="description"
+    content="A Japanese reader for learners. Paste Japanese text and tap or click any word to see its reading and English meaning." />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://nevdelap.github.io/go-reader/" />
   <meta property="og:title" content="語 Reader — Japanese Reader For Learners" />
-  <meta property="og:description" content="Paste Japanese text and tap any word to instantly see its reading and English meaning. A free tool for Japanese learners." />
+  <meta property="og:description"
+    content="Paste Japanese text and tap or click any word to instantly see its reading and English meaning. A free tool for Japanese learners." />
   <meta property="og:image" content="https://nevdelap.github.io/go-reader/og-image.png" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="語 Reader — Japanese Reader For Learners" />
-  <meta name="twitter:description" content="Paste Japanese text and tap any word to instantly see its reading and English meaning. A free tool for Japanese learners." />
+  <meta name="twitter:description"
+    content="Paste Japanese text and tap or click any word to instantly see its reading and English meaning. A free tool for Japanese learners." />
   <meta name="twitter:image" content="https://nevdelap.github.io/go-reader/og-image.png" />
   <link rel="canonical" href="https://nevdelap.github.io/go-reader/" />
   <link rel="manifest" href="manifest.json" />
@@ -25,14 +29,16 @@
   <title>語 Reader — Japanese Reader For Learners</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;600&family=Inter:wght@300;400;500&display=swap"
+    rel="stylesheet" />
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
     "@type": "WebApplication",
     "name": "語 Reader",
     "url": "https://nevdelap.github.io/go-reader/",
-    "description": "Paste Japanese text and tap any word to instantly see its reading and English meaning. A free tool for Japanese learners.",
+    "description": "Paste Japanese text and tap or click any word to instantly see its reading and English meaning. A free tool for Japanese learners.",
     "applicationCategory": "EducationApplication",
     "operatingSystem": "Any",
     "offers": {
@@ -56,13 +62,13 @@
       document.head.appendChild(script);
 
       window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
+      function gtag() { dataLayer.push(arguments); }
       gtag('js', new Date());
       gtag('config', 'G-G7TXQ86GYJ');
     }
   </script>
   <!-- Set theme before first paint to avoid flash -->
-  <script>!function(){var t=localStorage.getItem('theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.dataset.theme=t;document.getElementById('themeColor').content=t==='dark'?'#000000':'#f5f5f5'}()</script>
+  <script>!function () { var t = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'); document.documentElement.dataset.theme = t; document.getElementById('themeColor').content = t === 'dark' ? '#000000' : '#f5f5f5' }()</script>
   <style>
     :root {
       color-scheme: dark;
@@ -158,9 +164,16 @@
       --error-text: #dc2626;
     }
 
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-    html, body {
+    html,
+    body {
       height: 100%;
       background: var(--bg);
       color: var(--text);
@@ -201,7 +214,10 @@
       color: var(--text);
       letter-spacing: 0.02em;
     }
-    .logo span { color: var(--accent); }
+
+    .logo span {
+      color: var(--accent);
+    }
 
     .subtitle {
       font-family: 'Inter', sans-serif;
@@ -219,7 +235,9 @@
       flex: 1;
     }
 
-    .input-wrap { margin-bottom: 10px; }
+    .input-wrap {
+      margin-bottom: 10px;
+    }
 
     textarea {
       font-family: 'Noto Sans JP', sans-serif;
@@ -242,12 +260,32 @@
       scrollbar-width: auto;
       scrollbar-color: var(--scrollbar-thumb) var(--bg-surface);
     }
-    textarea:focus { border-color: var(--accent); }
-    textarea::placeholder { color: var(--text-muted); }
-    textarea::-webkit-scrollbar { width: 20px; }
-    textarea::-webkit-scrollbar-track { background: var(--bg-surface); border-radius: 3px; }
-    textarea::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border-radius: 3px; }
-    textarea::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
+    textarea:focus {
+      border-color: var(--accent);
+    }
+
+    textarea::placeholder {
+      color: var(--text-muted);
+    }
+
+    textarea::-webkit-scrollbar {
+      width: 20px;
+    }
+
+    textarea::-webkit-scrollbar-track {
+      background: var(--bg-surface);
+      border-radius: 3px;
+    }
+
+    textarea::-webkit-scrollbar-thumb {
+      background: var(--scrollbar-thumb);
+      border-radius: 3px;
+    }
+
+    textarea::-webkit-scrollbar-thumb:hover {
+      background: var(--accent);
+    }
 
     .toolbar-btn {
       background: none;
@@ -265,15 +303,22 @@
       align-items: center;
       justify-content: center;
     }
-    #themeBtn { padding: 7px 9px; border-color: transparent; }
-    .toolbar-btn:focus-visible, .toolbar-btn:active {
-      background: rgba(37,99,235,0.4);
+
+    #themeBtn {
+      padding: 7px 9px;
+      border-color: transparent;
+    }
+
+    .toolbar-btn:focus-visible,
+    .toolbar-btn:active {
+      background: rgba(37, 99, 235, 0.4);
       border-color: var(--accent);
       color: var(--hover-text);
     }
+
     @media (hover: hover) {
       .toolbar-btn:hover {
-        background: rgba(37,99,235,0.4);
+        background: rgba(37, 99, 235, 0.4);
         border-color: var(--accent);
         color: var(--hover-text);
       }
@@ -286,11 +331,13 @@
       font-size: 13px;
       margin-bottom: 14px;
     }
+
     .status-box.info {
       background: var(--bg-surface);
       border: 1px solid var(--accent-dim);
       color: var(--accent-light);
     }
+
     .status-box.error {
       background: var(--bg-surface);
       border: 1px solid var(--error-border);
@@ -316,11 +363,18 @@
       text-wrap: balance;
     }
 
-    .legend-hint-mobile { display: none; }
+    .legend-hint-mobile {
+      display: none;
+    }
 
     @media (max-width: 600px) {
-      .legend-hint-desktop { display: none; }
-      .legend-hint-mobile { display: inline; }
+      .legend-hint-desktop {
+        display: none;
+      }
+
+      .legend-hint-mobile {
+        display: inline;
+      }
     }
 
     .token-area {
@@ -336,6 +390,7 @@
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
     }
+
     .token-area.vertical {
       writing-mode: vertical-rl;
       width: 100%;
@@ -343,11 +398,29 @@
       overflow-x: auto;
       overflow-y: hidden;
     }
-    .token-area.vertical::-webkit-scrollbar { height: 20px; width: 0; }
-    .token-area.vertical::-webkit-scrollbar-track { background: var(--bg-surface); border-radius: 3px; }
-    .token-area.vertical::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border-radius: 3px; }
-    .token-area.vertical::-webkit-scrollbar-thumb:hover { background: var(--accent); }
-    .token-area.vertical .token { scroll-margin-bottom: 0; }
+
+    .token-area.vertical::-webkit-scrollbar {
+      height: 20px;
+      width: 0;
+    }
+
+    .token-area.vertical::-webkit-scrollbar-track {
+      background: var(--bg-surface);
+      border-radius: 3px;
+    }
+
+    .token-area.vertical::-webkit-scrollbar-thumb {
+      background: var(--scrollbar-thumb);
+      border-radius: 3px;
+    }
+
+    .token-area.vertical::-webkit-scrollbar-thumb:hover {
+      background: var(--accent);
+    }
+
+    .token-area.vertical .token {
+      scroll-margin-bottom: 0;
+    }
 
     .token {
       display: inline;
@@ -360,13 +433,30 @@
       touch-action: manipulation;
       scroll-margin-bottom: var(--panel-height, 130px);
     }
+
     @media (hover: hover) {
-      .token:hover { background: rgba(37,99,235,0.4); }
+      .token:hover {
+        background: rgba(37, 99, 235, 0.4);
+      }
     }
-    .token:focus  { outline: 2px solid var(--accent); outline-offset: 1px; }
-    .token.active { background: rgba(37,99,235,0.35) !important; color: var(--hover-text) !important; }
-    .token.grammar { color: var(--text-grammar); }
-    .token-area.uniform .token.grammar { color: var(--text); }
+
+    .token:focus {
+      outline: 2px solid var(--accent);
+      outline-offset: 1px;
+    }
+
+    .token.active {
+      background: rgba(37, 99, 235, 0.35) !important;
+      color: var(--hover-text) !important;
+    }
+
+    .token.grammar {
+      color: var(--text-grammar);
+    }
+
+    .token-area.uniform .token.grammar {
+      color: var(--text);
+    }
 
     .token-count {
       margin-top: 10px;
@@ -376,7 +466,10 @@
       text-align: center;
       letter-spacing: 0.06em;
     }
-    .token-count-content { color: var(--text); }
+
+    .token-count-content {
+      color: var(--text);
+    }
 
     .empty-state {
       text-align: center;
@@ -384,8 +477,19 @@
       color: var(--text-empty);
     }
 
-    .empty-kanji { font-family: 'Noto Sans JP', sans-serif; font-size: 60px; margin-bottom: 14px; }
-    .empty-label { font-family: 'Inter', sans-serif; font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-muted); }
+    .empty-kanji {
+      font-family: 'Noto Sans JP', sans-serif;
+      font-size: 60px;
+      margin-bottom: 14px;
+    }
+
+    .empty-label {
+      font-family: 'Inter', sans-serif;
+      font-size: 10px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
 
     footer {
       padding: 16px 24px;
@@ -397,17 +501,37 @@
       border-top: 1px solid var(--border-faint);
       text-wrap: balance;
     }
-    footer a { color: var(--text-muted); text-decoration: none; }
-    footer .feedback { font-size: 11px; letter-spacing: 0.06em; margin-bottom: 10px; }
-    footer .feedback a { color: var(--accent-light); }
+
+    footer a {
+      color: var(--text-muted);
+      text-decoration: none;
+    }
+
+    footer .feedback {
+      font-size: 11px;
+      letter-spacing: 0.06em;
+      margin-bottom: 10px;
+    }
+
+    footer .feedback a {
+      color: var(--accent-light);
+    }
+
     @media (hover: hover) {
-      footer a:hover { color: var(--text-faint); }
-      footer .feedback a:hover { color: var(--accent-lighter); }
+      footer a:hover {
+        color: var(--text-faint);
+      }
+
+      footer .feedback a:hover {
+        color: var(--accent-lighter);
+      }
     }
 
     .panel {
       position: fixed;
-      bottom: 0; left: 0; right: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
       background: var(--bg);
       border-top: 1px solid var(--accent);
       padding: 18px 24px calc(26px + env(safe-area-inset-bottom));
@@ -415,22 +539,70 @@
       display: flex;
       gap: 16px;
       align-items: center;
-      box-shadow: 0 -12px 40px rgba(37,99,235,0.15);
+      box-shadow: 0 -12px 40px rgba(37, 99, 235, 0.15);
       animation: panelUp 0.2s ease-out both;
     }
 
     @keyframes panelUp {
-      from { transform: translateY(100%); }
-      to   { transform: translateY(0); }
+      from {
+        transform: translateY(100%);
+      }
+
+      to {
+        transform: translateY(0);
+      }
     }
 
-    .panel-word { display: flex; flex-direction: column; gap: 3px; min-width: 70px; }
-    .panel-surface { font-family: 'Noto Sans JP', sans-serif; font-size: 18px; color: var(--text); line-height: 1; }
-    .panel-reading { font-family: 'Noto Sans JP', sans-serif; font-size: 13px; color: var(--accent); letter-spacing: 0.06em; }
-    .panel-divider { width: 1px; align-self: stretch; background: var(--border-subtle); flex-shrink: 0; }
-    .panel-info { display: flex; flex-direction: column; gap: 4px; flex: 1; min-width: 0; }
-    .panel-pos { font-family: 'Inter', sans-serif; font-size: 9px; color: var(--accent); text-transform: uppercase; letter-spacing: 0.12em; }
-    .panel-english { font-family: 'Inter', sans-serif; font-size: 16px; color: var(--text-dim); line-height: 1.4; }
+    .panel-word {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      min-width: 70px;
+    }
+
+    .panel-surface {
+      font-family: 'Noto Sans JP', sans-serif;
+      font-size: 18px;
+      color: var(--text);
+      line-height: 1;
+    }
+
+    .panel-reading {
+      font-family: 'Noto Sans JP', sans-serif;
+      font-size: 13px;
+      color: var(--accent);
+      letter-spacing: 0.06em;
+    }
+
+    .panel-divider {
+      width: 1px;
+      align-self: stretch;
+      background: var(--border-subtle);
+      flex-shrink: 0;
+    }
+
+    .panel-info {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .panel-pos {
+      font-family: 'Inter', sans-serif;
+      font-size: 9px;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+    }
+
+    .panel-english {
+      font-family: 'Inter', sans-serif;
+      font-size: 16px;
+      color: var(--text-dim);
+      line-height: 1.4;
+    }
 
     .panel-close {
       background: none;
@@ -444,20 +616,25 @@
       line-height: 1;
       transition: background 0.2s, border-color 0.2s, color 0.2s;
     }
-    .panel-close:focus-visible, .panel-close:active {
-      background: rgba(37,99,235,0.4);
+
+    .panel-close:focus-visible,
+    .panel-close:active {
+      background: rgba(37, 99, 235, 0.4);
       border-color: var(--accent);
       color: var(--hover-text);
     }
+
     @media (hover: hover) {
       .panel-close:hover {
-        background: rgba(37,99,235,0.4);
+        background: rgba(37, 99, 235, 0.4);
         border-color: var(--accent);
         color: var(--hover-text);
       }
     }
 
-    .hidden { display: none !important; }
+    .hidden {
+      display: none !important;
+    }
 
     .overlay-backdrop {
       position: fixed;
@@ -539,15 +716,16 @@
       color: var(--text);
     }
 
-    .overlay-btn:focus-visible, .overlay-btn:active {
-      background: rgba(37,99,235,0.4);
+    .overlay-btn:focus-visible,
+    .overlay-btn:active {
+      background: rgba(37, 99, 235, 0.4);
       border-color: var(--accent);
       color: var(--hover-text);
     }
 
     @media (hover: hover) {
       .overlay-btn:hover {
-        background: rgba(37,99,235,0.4);
+        background: rgba(37, 99, 235, 0.4);
         border-color: var(--accent);
         color: var(--hover-text);
       }
@@ -559,7 +737,8 @@
       color: #fff;
     }
 
-    .overlay-btn.primary:focus-visible, .overlay-btn.primary:active {
+    .overlay-btn.primary:focus-visible,
+    .overlay-btn.primary:active {
       background: var(--accent-dim);
       border-color: var(--accent-dim);
     }
@@ -572,7 +751,7 @@
     }
 
     #welcomeGotIt {
-      background: rgba(37,99,235,0.4);
+      background: rgba(37, 99, 235, 0.4);
       border-color: var(--accent);
       color: var(--hover-text);
     }
@@ -607,7 +786,8 @@
       transition: color 0.2s;
     }
 
-    .overlay-close:focus-visible, .overlay-close:active {
+    .overlay-close:focus-visible,
+    .overlay-close:active {
       color: var(--text);
     }
 
@@ -618,578 +798,582 @@
     }
   </style>
 </head>
+
 <body>
-<div id="app">
-  <header>
-    <div class="header-left">
-      <div class="logo">語 <span>Reader</span></div>
-      <div class="subtitle">Japanese Reader For Learners · v1.15.1</div>
-    </div>
-    <div style="display:flex; gap:8px;">
-      <button type="button" id="helpBtn" class="toolbar-btn" title="Help">?</button>
-      <button type="button" id="themeBtn" class="toolbar-btn"></button>
-    </div>
-  </header>
-
-  <main>
-    <div class="input-wrap">
-      <textarea id="inputText"
-        placeholder="日本語のテキストを貼り付けてください。"
-        rows="3"
-        aria-label="Japanese text input"></textarea>
-      <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:8px;">
-        <button type="button" id="clearBtn" class="toolbar-btn" title="Ctrl+K">Clear</button>
-        <button type="button" id="pasteBtn" class="toolbar-btn" title="Ctrl+V">Clear and paste</button>
-        <button type="button" id="copyUrlBtn" class="toolbar-btn" title="Share or copy link to this text"></button>
-        <button type="button" id="exampleBtn" class="toolbar-btn" title="Load example text to see the app in action without having to find your own Japanese content first">Example</button>
+  <div id="app">
+    <header>
+      <div class="header-left">
+        <div class="logo">語 <span>Reader</span></div>
+        <div class="subtitle">Japanese Reader For Learners · v1.15.2</div>
       </div>
-    </div>
-
-    <div class="status-box info hidden" id="statusBox" role="status" aria-live="polite"></div>
-
-    <div id="tokenView" class="hidden">
-      <div class="legend">
-        <span class="legend-hint legend-hint-desktop">Click words, or navigate with Tab/Shift-Tab and press Space, to see translations.</span>
-        <span class="legend-hint legend-hint-mobile">Tap words to see translations.</span>
-        <button type="button" id="verticalBtn" class="toolbar-btn" aria-pressed="false" title="Alt+D" style="margin-left:auto;">Read top to bottom</button>
-        <button type="button" id="dimGrammarBtn" class="toolbar-btn" aria-pressed="false"></button>
+      <div style="display:flex; gap:8px;">
+        <button type="button" id="helpBtn" class="toolbar-btn" title="Help">?</button>
+        <button type="button" id="themeBtn" class="toolbar-btn"></button>
       </div>
-      <div class="token-area"
-        id="tokenArea"
-        role="list"
-        aria-label="Analyzed Japanese text"></div>
-      <div class="token-count" id="tokenCount"></div>
-    </div>
+    </header>
 
-    <div class="empty-state" id="emptyState">
-      <div class="empty-kanji">語</div>
-      <div class="empty-label">type or paste japanese text above to begin</div>
-    </div>
-  </main>
+    <main>
+      <div class="input-wrap">
+        <textarea id="inputText" placeholder="日本語のテキストを貼り付けてください。" rows="3" aria-label="Japanese text input"></textarea>
+        <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:8px;">
+          <button type="button" id="clearBtn" class="toolbar-btn" title="Ctrl+K">Clear</button>
+          <button type="button" id="pasteBtn" class="toolbar-btn" title="Ctrl+V">Clear and paste</button>
+          <button type="button" id="copyUrlBtn" class="toolbar-btn" title="Share or copy link to this text"></button>
+          <button type="button" id="exampleBtn" class="toolbar-btn"
+            title="Load example text to see the app in action without having to find your own Japanese content first">Example</button>
+        </div>
+      </div>
 
-  <footer>
-    <div class="feedback">Found a bug or have a suggestion? <a href="https://github.com/nevdelap/go-reader/issues" target="_blank" rel="noopener noreferrer">Open an issue to let me know.</a></div>
-    This site uses the <a href="https://www.edrdg.org/wiki/index.php/JMdict-EDICT_Dictionary_Project" target="_blank" rel="noopener noreferrer">JMdict/EDICT</a> dictionary files. These files are the property of the <a href="https://www.edrdg.org/" target="_blank" rel="noopener noreferrer">Electronic Dictionary Research and Development Group</a>, and are used (with great appreciation!) in conformance with the Group's <a href="https://www.edrdg.org/edrdg/licence.html" target="_blank" rel="noopener noreferrer">license</a>.
-    <strong>Please note</strong> that translations are matched to individual morphemes and may not always reflect the word's meaning in context.
-    <br><br>© 2026 Nev Delap. Released under the <a href="https://github.com/nevdelap/go-reader/blob/main/LICENSE" target="_blank" rel="noopener noreferrer">MIT license</a>.
-  </footer>
-</div>
+      <div class="status-box info hidden" id="statusBox" role="status" aria-live="polite"></div>
 
-<div class="overlay-backdrop hidden" id="welcomeOverlay">
-  <div class="overlay" role="dialog" aria-modal="true" aria-labelledby="welcomeTitle">
-    <button class="overlay-close" id="welcomeClose" aria-label="Close welcome">✕</button>
-    <h2 class="overlay-title" id="welcomeTitle">Welcome to 語 Reader<sub>1</sub></h2>
-    <div class="overlay-body">
-      <p>A free Japanese reader for advanced learners. <strong>Type or paste</strong> Japanese text from AI tools, websites, or learning materials, then <strong>click or tap any morpheme</strong> to see its reading and English meaning.</p>
-      <ul>
-        <li><strong>No AI</strong> — Dictionary lookups happen locally in your browser, fast and private</li>
-        <li><strong>Grammar morphemes</strong> — Toggle dimming for enhanced learning</li>
-        <li><strong>Keyboard shortcuts</strong> — Ctrl+K to clear text, Ctrl+V to paste, Alt+D for vertical reading mode</li>
-        <li><strong>Everything stays in your browser</strong> — No login, no server, no ads, no tracking²</li>
-      </ul>
-      <ol style="font-size:11px; color:var(--text-muted); margin-top:8px; padding-left:20px; margin:0;">
-        <li>When you are speaking English, pronounce the name like the English verb "to go" — "Go Reader".</li>
-        <li>It just counts users by country so that I can see how much use it is getting.</li>
-      </ol>
-    </div>
-    <div class="overlay-actions">
-      <label class="overlay-checkbox">
-        <input type="checkbox" id="dontShowAgain">
-        Don't show again
-      </label>
-      <div class="overlay-buttons">
-        <button type="button" class="overlay-btn" id="welcomeGotIt">Got it</button>
+      <div id="tokenView" class="hidden">
+        <div class="legend">
+          <span class="legend-hint legend-hint-desktop">Click words, or navigate with Tab/Shift-Tab and press Space, to
+            see translations.</span>
+          <span class="legend-hint legend-hint-mobile">tap or click words to see translations.</span>
+          <button type="button" id="verticalBtn" class="toolbar-btn" aria-pressed="false" title="Alt+D"
+            style="margin-left:auto;">Read top to bottom</button>
+          <button type="button" id="dimGrammarBtn" class="toolbar-btn" aria-pressed="false"></button>
+        </div>
+        <div class="token-area" id="tokenArea" role="list" aria-label="Analyzed Japanese text"></div>
+        <div class="token-count" id="tokenCount"></div>
+      </div>
+
+      <div class="empty-state" id="emptyState">
+        <div class="empty-kanji">語</div>
+        <div class="empty-label">type or paste japanese text above to begin</div>
+      </div>
+    </main>
+
+    <footer>
+      <div class="feedback">Found a bug or have a suggestion? <a href="https://github.com/nevdelap/go-reader/issues"
+          target="_blank" rel="noopener noreferrer">Open an issue to let me know.</a></div>
+      This site uses the <a href="https://www.edrdg.org/wiki/index.php/JMdict-EDICT_Dictionary_Project" target="_blank"
+        rel="noopener noreferrer">JMdict/EDICT</a> dictionary files. These files are the property of the <a
+        href="https://www.edrdg.org/" target="_blank" rel="noopener noreferrer">Electronic Dictionary Research and
+        Development Group</a>, and are used (with great appreciation!) in conformance with the Group's <a
+        href="https://www.edrdg.org/edrdg/licence.html" target="_blank" rel="noopener noreferrer">license</a>.
+      <strong>Please note</strong> that translations are matched to individual morphemes and may not always reflect the
+      word's meaning in context.
+      <br><br>© 2026 Nev Delap. Released under the <a href="https://github.com/nevdelap/go-reader/blob/main/LICENSE"
+        target="_blank" rel="noopener noreferrer">MIT license</a>.
+    </footer>
+  </div>
+
+  <div class="overlay-backdrop hidden" id="welcomeOverlay">
+    <div class="overlay" role="dialog" aria-modal="true" aria-labelledby="welcomeTitle">
+      <button class="overlay-close" id="welcomeClose" aria-label="Close welcome">✕</button>
+      <h2 class="overlay-title" id="welcomeTitle">Welcome to 語 Reader<sub>1</sub></h2>
+      <div class="overlay-body">
+        <p>A free Japanese reader for advanced learners. <strong>Type or paste</strong> Japanese text from AI tools,
+          websites, or learning materials, then <strong>tap or click any morpheme</strong> to see its reading
+          and English meaning.</p>
+        <ul>
+          <li><strong>No AI</strong> — Dictionary lookups happen locally in your browser, fast and private</li>
+          <li><strong>Grammar morphemes</strong> — Toggle dimming for enhanced learning</li>
+          <li><strong>Keyboard shortcuts</strong> — Ctrl+K to clear text, Ctrl+V to paste, Alt+D for vertical reading
+            mode</li>
+          <li><strong>Everything stays in your browser</strong> — No login, no server, no ads, no tracking²</li>
+        </ul>
+        <ol style="font-size:11px; color:var(--text-muted); margin-top:8px; padding-left:20px; margin:0;">
+          <li>When you are speaking English, pronounce the name like the English verb "to go" — "Go Reader".</li>
+          <li>It just counts users by country so that I can see how much use it is getting.</li>
+        </ol>
+      </div>
+      <div class="overlay-actions">
+        <label class="overlay-checkbox">
+          <input type="checkbox" id="dontShowAgain">
+          Don't show again
+        </label>
+        <div class="overlay-buttons">
+          <button type="button" class="overlay-btn" id="welcomeGotIt">Got it</button>
+        </div>
       </div>
     </div>
   </div>
-</div>
 
-<div class="panel hidden"
-  id="panel"
-  role="dialog"
-  aria-modal="false"
-  aria-label="Word details">
-  <div class="panel-word">
-    <div class="panel-surface" id="panelSurface" lang="ja"></div>
-    <div class="panel-reading hidden" id="panelReading" lang="ja"></div>
+  <div class="panel hidden" id="panel" role="dialog" aria-modal="false" aria-label="Word details">
+    <div class="panel-word">
+      <div class="panel-surface" id="panelSurface" lang="ja"></div>
+      <div class="panel-reading hidden" id="panelReading" lang="ja"></div>
+    </div>
+    <div class="panel-divider"></div>
+    <div class="panel-info">
+      <div class="panel-pos" id="panelPos"></div>
+      <div class="panel-english" id="panelEnglish"></div>
+    </div>
+    <button class="panel-close" id="panelClose" aria-label="Close word details" title="Close (Esc)">✕</button>
   </div>
-  <div class="panel-divider"></div>
-  <div class="panel-info">
-    <div class="panel-pos" id="panelPos"></div>
-    <div class="panel-english" id="panelEnglish"></div>
-  </div>
-  <button class="panel-close" id="panelClose" aria-label="Close word details" title="Close (Esc)">✕</button>
-</div>
 
-<script src="kuromoji.js"></script>
-<script>
-// ── Katakana → Hiragana ──────────────────────────────────────────────────────
-function toHiragana(str) {
-  return (str || '').replace(/[ァ-ヺ]/g, c =>
-    String.fromCharCode(c.charCodeAt(0) - 0x60)
-  );
-}
-
-// ── POS mapping (Japanese → English) ────────────────────────────────────────
-const POS_MAP = {
-  '名詞':   'noun',
-  '動詞':   'verb',
-  '形容詞': 'adjective',
-  '形容動詞': 'adjective',
-  '副詞':   'adverb',
-  '連体詞': 'pre-noun adjectival',
-  '接続詞': 'conjunction',
-  '感動詞': 'interjection',
-  '助詞':   'particle',
-  '助動詞': 'auxiliary verb',
-  '接頭詞': 'prefix',
-  '接尾辞': 'suffix',
-  '記号':   'symbol',
-  '補助記号': 'punctuation',
-  'フィラー': 'filler',
-  '空白':   'whitespace',
-  'その他': 'other',
-};
-
-const GRAMMAR_POS = new Set(['助詞', '助動詞', '記号', '補助記号', '空白', 'フィラー']);
-
-function getPOS(token) {
-  return POS_MAP[token.pos] || token.pos || 'unknown';
-}
-
-function isGrammar(token) {
-  return GRAMMAR_POS.has(token.pos);
-}
-
-function resolvedForm(token) {
-  return (token.basic_form && token.basic_form !== '*') ? token.basic_form : token.surface_form;
-}
-
-// ── JMdict POS mapping ───────────────────────────────────────────────────────
-const JMDICT_POS_MAP = {
-  'n': 'noun', 'n-pref': 'prefix', 'n-suf': 'suffix',
-  'adv': 'adverb', 'adv-to': 'adverb',
-  'prt': 'particle',
-  'conj': 'conjunction',
-  'int': 'interjection',
-  'pref': 'prefix',
-  'suf': 'suffix',
-  'aux': 'auxiliary', 'aux-v': 'auxiliary verb', 'aux-adj': 'auxiliary adjective',
-  'ctr': 'counter',
-  'pn': 'pronoun',
-  'num': 'numeral',
-  'exp': 'expression',
-  'cop': 'copula',
-};
-
-function jmdictPOS(tags) {
-  if (!tags || !tags.length) return [];
-  const seen = new Set();
-  const labels = [];
-  for (const tag of tags) {
-    let label;
-    if (tag.startsWith('v')) label = 'verb';
-    else if (tag.startsWith('adj')) label = 'adjective';
-    else label = JMDICT_POS_MAP[tag] || null;
-    if (label && !seen.has(label)) { seen.add(label); labels.push(label); }
-  }
-  return labels;
-}
-
-// ── Strip non-Japanese ───────────────────────────────────────────────────────
-function stripNonJapanese(text) {
-  return text
-    .replace(/[^　-〿぀-ゟ゠-ヿ一-鿿㐀-䶿＀-￯―—\n]/g, '').trim();
-}
-
-// ── JMdict lookup ────────────────────────────────────────────────────────────
-let jmdict = null;
-let jmdictLoaded = false;
-let jmdictPromise = null;
-
-async function loadJMdict() {
-  const res = await fetch('jmdict-compact.json.gz?v=15');
-  if (!res.ok) throw new Error(`JMdict fetch failed: ${res.status}`);
-  if (res.headers.get('Content-Encoding') === 'gzip') {
-    // Server decompressed automatically (e.g. local dev server)
-    jmdict = await res.json();
-  } else {
-    // Raw gzip bytes — decompress manually (e.g. GitHub Pages)
-    const buf = await res.arrayBuffer();
-    const ds = new DecompressionStream('gzip');
-    const decompressed = new Response(new Blob([buf]).stream().pipeThrough(ds));
-    jmdict = JSON.parse(await decompressed.text());
-  }
-  jmdictLoaded = true;
-}
-
-// Kuromoji sometimes misanalyses godan imperatives as a form of the potential verb
-// (e.g. 払え → basic_form: 払える, 作れ → basic_form: 作れる). Neither potential form
-// is in the compact dict, so we fall back to deriving the dict form from the surface.
-const IMPERATIVE_E_TO_U = {え:'う',け:'く',げ:'ぐ',せ:'す',て:'つ',ね:'ぬ',べ:'ぶ',め:'む',れ:'る'};
-
-function lookupParticle(token) {
-  if (!jmdict) return null;
-  const base = resolvedForm(token);
-  const entry = jmdict[base] || jmdict[token.surface_form];
-  if (!entry) return null;
-  // When a conjunctive particle has pg2, the common JMdict entry covers a different
-  // sense (e.g. て/で: common entry is quoting/って; pg2 holds the conjunctive glosses).
-  if (token.pos_detail_1 === '接続助詞' && entry.pg2) {
-    return entry.pg2.slice(0, 3).join(', ');
-  }
-  if (entry.pg) return entry.pg.slice(0, 3).join(', ');
-  return entry.g?.[0]?.slice(0, 3).join(', ') ?? null;
-}
-
-function lookupWord(surface, basicForm) {
-  if (!jmdict) return null;
-  const candidates = (basicForm && basicForm !== '*' && basicForm !== surface)
-    ? [basicForm, surface]
-    : [surface];
-  if (!candidates.some(w => jmdict[w])) {
-    const dictKana = IMPERATIVE_E_TO_U[surface.slice(-1)];
-    if (dictKana) candidates.push(surface.slice(0, -1) + dictKana);
-  }
-  const engParts = [];
-  const posLabels = new Set();
-  for (const word of candidates) {
-    const entry = jmdict[word];
-    if (!entry) continue;
-    engParts.push(entry.g.map(group => group.join(', ')).join('; '));
-    for (const label of jmdictPOS(entry.p)) posLabels.add(label);
-  }
-  if (!engParts.length) return null;
-  return { eng: engParts.join('; '), pos: [...posLabels].join('; ') || null };
-}
-
-// ── DOM helpers ──────────────────────────────────────────────────────────────
-const $ = id => document.getElementById(id);
-function show(el) { el.classList.remove('hidden'); }
-function hide(el) { el.classList.add('hidden'); }
-
-function setStatus(msg, type) {
-  const box = $('statusBox');
-  if (!type) { hide(box); return; }
-  box.textContent = msg;
-  box.className = `status-box ${type}`;
-  show(box);
-}
-
-// ── Theme ────────────────────────────────────────────────────────────────────
-const ICON_SUN = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>`;
-const ICON_MOON = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>`;
-
-function applyTheme(dark) {
-  document.documentElement.dataset.theme = dark ? 'dark' : 'light';
-  $('themeBtn').innerHTML = dark ? ICON_SUN : ICON_MOON;
-  $('themeBtn').setAttribute('aria-label', dark ? 'Switch to light theme' : 'Switch to dark theme');
-  $('themeColor').content = dark ? '#000000' : '#f5f5f5';
-}
-
-let isDark = document.documentElement.dataset.theme !== 'light';
-applyTheme(isDark);
-
-$('themeBtn').addEventListener('click', () => {
-  isDark = !isDark;
-  applyTheme(isDark);
-  localStorage.setItem('theme', isDark ? 'dark' : 'light');
-});
-
-window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
-  if (!localStorage.getItem('theme')) {
-    isDark = e.matches;
-    applyTheme(isDark);
-  }
-});
-
-// ── Panel height tracking via ResizeObserver ─────────────────────────────────
-function setPanelHeightVar() {
-  const h = $('panel').offsetHeight;
-  if (h > 0) document.documentElement.style.setProperty('--panel-height', h + 'px');
-}
-
-const panelResizeObserver = new ResizeObserver(setPanelHeightVar);
-
-// ── State ────────────────────────────────────────────────────────────────────
-let tokens = [];
-let selectedIndex = null;
-let tokenizer = null;
-let lastRawInput = null;
-
-// ── Init — track kuromoji and JMdict independently ───────────────────────────
-const MAX_RETRIES = 5;
-
-async function initWithRetry(attempt = 1) {
-  try {
-    setStatus(
-      attempt === 1 ? 'Loading dictionaries…' : `Loading dictionaries… (attempt ${attempt}/${MAX_RETRIES})`,
-      'info'
-    );
-    hide($('emptyState'));
-
-    // Only reload what hasn't succeeded yet
-    const kuromojiTask = tokenizer
-      ? Promise.resolve(tokenizer)
-      : new Promise((resolve, reject) => {
-          kuromoji.builder({ dicPath: 'dict/' }).build((err, t) => {
-            if (err) { console.error('kuromoji error:', err); reject(err); }
-            else resolve(t);
-          });
-        });
-
-    if (!jmdictLoaded && !jmdictPromise) {
-      jmdictPromise = loadJMdict();
+  <script src="kuromoji.js"></script>
+  <script>
+    // ── Katakana → Hiragana ──────────────────────────────────────────────────────
+    function toHiragana(str) {
+      return (str || '').replace(/[ァ-ヺ]/g, c =>
+        String.fromCharCode(c.charCodeAt(0) - 0x60)
+      );
     }
-    const jmdictTask = jmdictLoaded ? Promise.resolve() : jmdictPromise;
 
-    const [t] = await Promise.all([kuromojiTask, jmdictTask]);
-    tokenizer = t;
-
-    setStatus(null);
-    show($('emptyState'));
-    if ($('inputText').value.trim()) analyze();
-
-  } catch (e) {
-    // Reset failed jmdictPromise so next retry can re-fetch
-    if (!jmdictLoaded) jmdictPromise = null;
-
-    if (attempt < MAX_RETRIES) {
-      const delay = attempt * 2000;
-      setStatus(`Load failed. Retrying in ${delay / 1000}s… (${attempt}/${MAX_RETRIES})`, 'error');
-      setTimeout(() => initWithRetry(attempt + 1), delay);
-    } else {
-      setStatus('Failed to load dictionaries. Please refresh the page.', 'error');
-      show($('emptyState'));
-    }
-  }
-}
-
-initWithRetry();
-
-// ── Panel ────────────────────────────────────────────────────────────────────
-function closePanel() {
-  selectedIndex = null;
-  hide($('panel'));
-  panelResizeObserver.disconnect();
-  $('tokenArea').querySelectorAll('.token').forEach(t => t.classList.remove('active'));
-}
-
-function openPanel(token, index) {
-  selectedIndex = index;
-
-  $('panelSurface').textContent = token.surface_form;
-
-  const reading = $('panelReading');
-  const hira = toHiragana(token.reading || '');
-  if (hira && hira !== token.surface_form) {
-    reading.textContent = hira;
-    show(reading);
-  } else {
-    hide(reading);
-  }
-
-  const eng = $('panelEnglish');
-  if (isGrammar(token)) {
-    $('panelPos').textContent = getPOS(token);
-    eng.textContent = lookupParticle(token) || POS_MAP[token.pos] || token.pos;
-  } else {
-    const result = lookupWord(token.surface_form, token.basic_form);
-    $('panelPos').textContent = (result && result.pos) || getPOS(token);
-    eng.textContent = result ? result.eng : resolvedForm(token);
-  }
-
-  // Measure height synchronously before showing to avoid jump on first open
-  show($('panel'));
-  setPanelHeightVar();
-  // Watch for subsequent height changes (font load, reflow, resize)
-  panelResizeObserver.observe($('panel'));
-
-  // Scroll active token into view (essential in vertical mode)
-  $('tokenArea').querySelector('.token.active')?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
-}
-
-// ── Render tokens ────────────────────────────────────────────────────────────
-function renderTokens() {
-  const area = $('tokenArea');
-  // Replace with a clone to drop all previously stacked event listeners
-  const fresh = area.cloneNode(false);
-  area.parentNode.replaceChild(fresh, area);
-
-  tokens.forEach((token, i) => {
-    const span = document.createElement('span');
-    span.className = 'token' + (isGrammar(token) ? ' grammar' : '');
-    span.textContent = token.surface_form;
-    span.setAttribute('role', 'listitem');
-    span.setAttribute('tabindex', '0');
-    span.setAttribute('lang', 'ja');
-    span.setAttribute('aria-label', `${token.surface_form}, ${getPOS(token)}`);
-
-    const activate = () => {
-      if (selectedIndex === i) {
-        closePanel();
-      } else {
-        $('tokenArea').querySelectorAll('.token').forEach(t => t.classList.remove('active'));
-        span.classList.add('active');
-        openPanel(token, i);
-      }
+    // ── POS mapping (Japanese → English) ────────────────────────────────────────
+    const POS_MAP = {
+      '名詞': 'noun',
+      '動詞': 'verb',
+      '形容詞': 'adjective',
+      '形容動詞': 'adjective',
+      '副詞': 'adverb',
+      '連体詞': 'pre-noun adjectival',
+      '接続詞': 'conjunction',
+      '感動詞': 'interjection',
+      '助詞': 'particle',
+      '助動詞': 'auxiliary verb',
+      '接頭詞': 'prefix',
+      '接尾辞': 'suffix',
+      '記号': 'symbol',
+      '補助記号': 'punctuation',
+      'フィラー': 'filler',
+      '空白': 'whitespace',
+      'その他': 'other',
     };
 
-    span.addEventListener('click', e => { e.stopPropagation(); activate(); });
-    span.addEventListener('keydown', e => {
-      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); activate(); }
+    const GRAMMAR_POS = new Set(['助詞', '助動詞', '記号', '補助記号', '空白', 'フィラー']);
+
+    function getPOS(token) {
+      return POS_MAP[token.pos] || token.pos || 'unknown';
+    }
+
+    function isGrammar(token) {
+      return GRAMMAR_POS.has(token.pos);
+    }
+
+    function resolvedForm(token) {
+      return (token.basic_form && token.basic_form !== '*') ? token.basic_form : token.surface_form;
+    }
+
+    // ── JMdict POS mapping ───────────────────────────────────────────────────────
+    const JMDICT_POS_MAP = {
+      'n': 'noun', 'n-pref': 'prefix', 'n-suf': 'suffix',
+      'adv': 'adverb', 'adv-to': 'adverb',
+      'prt': 'particle',
+      'conj': 'conjunction',
+      'int': 'interjection',
+      'pref': 'prefix',
+      'suf': 'suffix',
+      'aux': 'auxiliary', 'aux-v': 'auxiliary verb', 'aux-adj': 'auxiliary adjective',
+      'ctr': 'counter',
+      'pn': 'pronoun',
+      'num': 'numeral',
+      'exp': 'expression',
+      'cop': 'copula',
+    };
+
+    function jmdictPOS(tags) {
+      if (!tags || !tags.length) return [];
+      const seen = new Set();
+      const labels = [];
+      for (const tag of tags) {
+        let label;
+        if (tag.startsWith('v')) label = 'verb';
+        else if (tag.startsWith('adj')) label = 'adjective';
+        else label = JMDICT_POS_MAP[tag] || null;
+        if (label && !seen.has(label)) { seen.add(label); labels.push(label); }
+      }
+      return labels;
+    }
+
+    // ── Strip non-Japanese ───────────────────────────────────────────────────────
+    function stripNonJapanese(text) {
+      return text
+        .replace(/[^　-〿぀-ゟ゠-ヿ一-鿿㐀-䶿＀-￯―—\n]/g, '').trim();
+    }
+
+    // ── JMdict lookup ────────────────────────────────────────────────────────────
+    let jmdict = null;
+    let jmdictLoaded = false;
+    let jmdictPromise = null;
+
+    async function loadJMdict() {
+      const res = await fetch('jmdict-compact.json.gz?v=15');
+      if (!res.ok) throw new Error(`JMdict fetch failed: ${res.status}`);
+      if (res.headers.get('Content-Encoding') === 'gzip') {
+        // Server decompressed automatically (e.g. local dev server)
+        jmdict = await res.json();
+      } else {
+        // Raw gzip bytes — decompress manually (e.g. GitHub Pages)
+        const buf = await res.arrayBuffer();
+        const ds = new DecompressionStream('gzip');
+        const decompressed = new Response(new Blob([buf]).stream().pipeThrough(ds));
+        jmdict = JSON.parse(await decompressed.text());
+      }
+      jmdictLoaded = true;
+    }
+
+    // Kuromoji sometimes misanalyses godan imperatives as a form of the potential verb
+    // (e.g. 払え → basic_form: 払える, 作れ → basic_form: 作れる). Neither potential form
+    // is in the compact dict, so we fall back to deriving the dict form from the surface.
+    const IMPERATIVE_E_TO_U = { え: 'う', け: 'く', げ: 'ぐ', せ: 'す', て: 'つ', ね: 'ぬ', べ: 'ぶ', め: 'む', れ: 'る' };
+
+    function lookupParticle(token) {
+      if (!jmdict) return null;
+      const base = resolvedForm(token);
+      const entry = jmdict[base] || jmdict[token.surface_form];
+      if (!entry) return null;
+      // When a conjunctive particle has pg2, the common JMdict entry covers a different
+      // sense (e.g. て/で: common entry is quoting/って; pg2 holds the conjunctive glosses).
+      if (token.pos_detail_1 === '接続助詞' && entry.pg2) {
+        return entry.pg2.slice(0, 3).join(', ');
+      }
+      if (entry.pg) return entry.pg.slice(0, 3).join(', ');
+      return entry.g?.[0]?.slice(0, 3).join(', ') ?? null;
+    }
+
+    function lookupWord(surface, basicForm) {
+      if (!jmdict) return null;
+      const candidates = (basicForm && basicForm !== '*' && basicForm !== surface)
+        ? [basicForm, surface]
+        : [surface];
+      if (!candidates.some(w => jmdict[w])) {
+        const dictKana = IMPERATIVE_E_TO_U[surface.slice(-1)];
+        if (dictKana) candidates.push(surface.slice(0, -1) + dictKana);
+      }
+      const engParts = [];
+      const posLabels = new Set();
+      for (const word of candidates) {
+        const entry = jmdict[word];
+        if (!entry) continue;
+        engParts.push(entry.g.map(group => group.join(', ')).join('; '));
+        for (const label of jmdictPOS(entry.p)) posLabels.add(label);
+      }
+      if (!engParts.length) return null;
+      return { eng: engParts.join('; '), pos: [...posLabels].join('; ') || null };
+    }
+
+    // ── DOM helpers ──────────────────────────────────────────────────────────────
+    const $ = id => document.getElementById(id);
+    function show(el) { el.classList.remove('hidden'); }
+    function hide(el) { el.classList.add('hidden'); }
+
+    function setStatus(msg, type) {
+      const box = $('statusBox');
+      if (!type) { hide(box); return; }
+      box.textContent = msg;
+      box.className = `status-box ${type}`;
+      show(box);
+    }
+
+    // ── Theme ────────────────────────────────────────────────────────────────────
+    const ICON_SUN = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>`;
+    const ICON_MOON = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>`;
+
+    function applyTheme(dark) {
+      document.documentElement.dataset.theme = dark ? 'dark' : 'light';
+      $('themeBtn').innerHTML = dark ? ICON_SUN : ICON_MOON;
+      $('themeBtn').setAttribute('aria-label', dark ? 'Switch to light theme' : 'Switch to dark theme');
+      $('themeColor').content = dark ? '#000000' : '#f5f5f5';
+    }
+
+    let isDark = document.documentElement.dataset.theme !== 'light';
+    applyTheme(isDark);
+
+    $('themeBtn').addEventListener('click', () => {
+      isDark = !isDark;
+      applyTheme(isDark);
+      localStorage.setItem('theme', isDark ? 'dark' : 'light');
     });
 
-    fresh.appendChild(span);
-  });
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+      if (!localStorage.getItem('theme')) {
+        isDark = e.matches;
+        applyTheme(isDark);
+      }
+    });
 
-  const content = tokens.filter(t => !isGrammar(t)).length;
-  $('tokenCount').innerHTML = `${tokens.length} total morphemes · <span class="token-count-content">${content} content morphemes</span>`;
-  fresh.addEventListener('click', closePanel);
-  if (isVertical) requestAnimationFrame(() => { fresh.scrollLeft = fresh.scrollWidth; });
-}
-
-// ── Analyze ──────────────────────────────────────────────────────────────────
-function analyze() {
-  if (!tokenizer) return;
-
-  const raw = $('inputText').value;
-  const text = stripNonJapanese(raw);
-
-  if (!text) {
-    hide($('tokenView'));
-    show($('emptyState'));
-    closePanel();
-    lastRawInput = null;
-    tokens = [];
-    return;
-  }
-
-  // Skip re-tokenizing if the raw input hasn't changed
-  if (raw === lastRawInput) {
-    show($('tokenView'));
-    return;
-  }
-
-  hide($('emptyState'));
-
-  try {
-    tokens = tokenizer.tokenize(text).filter(t => t.surface_form.trim() !== '');
-    lastRawInput = raw;
-    closePanel();
-    renderTokens();
-    show($('tokenView'));
-  } catch (e) {
-    console.error('Tokenization error:', e);
-    tokens = [];
-    lastRawInput = null;
-    setStatus('Analysis failed. Please try again.', 'error');
-    show($('emptyState'));
-  }
-}
-
-// ── URL sharing ──────────────────────────────────────────────────────────────
-async function textToHash(text) {
-  const bytes = new TextEncoder().encode(text);
-  const cs = new CompressionStream('deflate-raw');
-  const writer = cs.writable.getWriter();
-  writer.write(bytes);
-  writer.close();
-  const buf = await new Response(cs.readable).arrayBuffer();
-  const binary = Array.from(new Uint8Array(buf), b => String.fromCharCode(b)).join('');
-  return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
-}
-
-async function hashToText(encoded) {
-  const binary = atob(encoded.replace(/-/g, '+').replace(/_/g, '/'));
-  const bytes = new Uint8Array(binary.length);
-  for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
-  const ds = new DecompressionStream('deflate-raw');
-  const writer = ds.writable.getWriter();
-  writer.write(bytes);
-  writer.close();
-  return new Response(ds.readable).text();
-}
-
-async function loadFromHash() {
-  if (!location.hash.startsWith('#t=')) return;
-  try {
-    const text = await hashToText(location.hash.slice(3));
-    $('inputText').value = text;
-    $('inputText').dispatchEvent(new Event('input'));
-  } catch (e) {
-    console.error('Failed to load text from URL:', e);
-  }
-}
-
-// ── Events ───────────────────────────────────────────────────────────────────
-let debounceTimer = null;
-
-$('inputText').addEventListener('input', () => {
-  localStorage.setItem('inputText', $('inputText').value);
-  clearTimeout(debounceTimer);
-  debounceTimer = setTimeout(analyze, 300);
-});
-
-document.addEventListener('visibilitychange', () => {
-  if (document.hidden) clearTimeout(debounceTimer);
-});
-
-$('panelClose').addEventListener('click', closePanel);
-
-// ── Vertical reading toggle ───────────────────────────────────────────────────
-const savedInputText = localStorage.getItem('inputText');
-if (savedInputText) $('inputText').value = savedInputText;
-loadFromHash();
-window.addEventListener('hashchange', loadFromHash);
-
-let isVertical = localStorage.getItem('readingDirection') === 'vertical';
-if (isVertical) {
-  $('tokenArea').classList.add('vertical');
-  $('verticalBtn').textContent = 'Read left to right';
-  $('verticalBtn').setAttribute('aria-pressed', 'true');
-}
-$('verticalBtn').addEventListener('click', () => {
-  isVertical = !isVertical;
-  const area = $('tokenArea');
-  area.classList.toggle('vertical', isVertical);
-  $('verticalBtn').textContent = isVertical ? 'Read left to right' : 'Read top to bottom';
-  $('verticalBtn').setAttribute('aria-pressed', isVertical ? 'true' : 'false');
-  if (isVertical) requestAnimationFrame(() => { area.scrollLeft = area.scrollWidth; });
-  localStorage.setItem('readingDirection', isVertical ? 'vertical' : 'horizontal');
-});
-
-function applyDimGrammar(dim) {
-  $('tokenArea').classList.toggle('uniform', !dim);
-  $('dimGrammarBtn').textContent = dim ? 'Undim grammar' : 'Dim grammar';
-  $('dimGrammarBtn').setAttribute('aria-pressed', dim ? 'true' : 'false');
-}
-
-let isDimGrammar = localStorage.getItem('dimGrammar') !== 'false';
-applyDimGrammar(isDimGrammar);
-$('dimGrammarBtn').addEventListener('click', () => {
-  isDimGrammar = !isDimGrammar;
-  applyDimGrammar(isDimGrammar);
-  localStorage.setItem('dimGrammar', isDimGrammar ? 'true' : 'false');
-});
-
-document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') {
-    const welcomeOverlay = document.getElementById('welcomeOverlay');
-    if (welcomeOverlay && !welcomeOverlay.classList.contains('hidden')) {
-      hide(welcomeOverlay);
-    } else {
-      closePanel();
+    // ── Panel height tracking via ResizeObserver ─────────────────────────────────
+    function setPanelHeightVar() {
+      const h = $('panel').offsetHeight;
+      if (h > 0) document.documentElement.style.setProperty('--panel-height', h + 'px');
     }
-  }
-  if (e.key === 'd' && e.altKey) { e.preventDefault(); $('verticalBtn').click(); return; }
-  if (e.key === 'k' && e.ctrlKey) { e.preventDefault(); $('clearBtn').click(); return; }
-  if (document.activeElement === $('inputText')) return;
-  if (e.key === 'v' && e.ctrlKey) { e.preventDefault(); $('pasteBtn').click(); }
-});
 
-// ── Example text ─────────────────────────────────────────────────────────────
-const EXAMPLE_TEXT = `「その会社には、三つの"重要なデータベース"がありました。」
+    const panelResizeObserver = new ResizeObserver(setPanelHeightVar);
+
+    // ── State ────────────────────────────────────────────────────────────────────
+    let tokens = [];
+    let selectedIndex = null;
+    let tokenizer = null;
+    let lastRawInput = null;
+
+    // ── Init — track kuromoji and JMdict independently ───────────────────────────
+    const MAX_RETRIES = 5;
+
+    async function initWithRetry(attempt = 1) {
+      try {
+        setStatus(
+          attempt === 1 ? 'Loading dictionaries…' : `Loading dictionaries… (attempt ${attempt}/${MAX_RETRIES})`,
+          'info'
+        );
+        hide($('emptyState'));
+
+        // Only reload what hasn't succeeded yet
+        const kuromojiTask = tokenizer
+          ? Promise.resolve(tokenizer)
+          : new Promise((resolve, reject) => {
+            kuromoji.builder({ dicPath: 'dict/' }).build((err, t) => {
+              if (err) { console.error('kuromoji error:', err); reject(err); }
+              else resolve(t);
+            });
+          });
+
+        if (!jmdictLoaded && !jmdictPromise) {
+          jmdictPromise = loadJMdict();
+        }
+        const jmdictTask = jmdictLoaded ? Promise.resolve() : jmdictPromise;
+
+        const [t] = await Promise.all([kuromojiTask, jmdictTask]);
+        tokenizer = t;
+
+        setStatus(null);
+        show($('emptyState'));
+        if ($('inputText').value.trim()) analyze();
+
+      } catch (e) {
+        // Reset failed jmdictPromise so next retry can re-fetch
+        if (!jmdictLoaded) jmdictPromise = null;
+
+        if (attempt < MAX_RETRIES) {
+          const delay = attempt * 2000;
+          setStatus(`Load failed. Retrying in ${delay / 1000}s… (${attempt}/${MAX_RETRIES})`, 'error');
+          setTimeout(() => initWithRetry(attempt + 1), delay);
+        } else {
+          setStatus('Failed to load dictionaries. Please refresh the page.', 'error');
+          show($('emptyState'));
+        }
+      }
+    }
+
+    initWithRetry();
+
+    // ── Panel ────────────────────────────────────────────────────────────────────
+    function closePanel() {
+      selectedIndex = null;
+      hide($('panel'));
+      panelResizeObserver.disconnect();
+      $('tokenArea').querySelectorAll('.token').forEach(t => t.classList.remove('active'));
+    }
+
+    function openPanel(token, index) {
+      selectedIndex = index;
+
+      $('panelSurface').textContent = token.surface_form;
+
+      const reading = $('panelReading');
+      const hira = toHiragana(token.reading || '');
+      if (hira && hira !== token.surface_form) {
+        reading.textContent = hira;
+        show(reading);
+      } else {
+        hide(reading);
+      }
+
+      const eng = $('panelEnglish');
+      if (isGrammar(token)) {
+        $('panelPos').textContent = getPOS(token);
+        eng.textContent = lookupParticle(token) || POS_MAP[token.pos] || token.pos;
+      } else {
+        const result = lookupWord(token.surface_form, token.basic_form);
+        $('panelPos').textContent = (result && result.pos) || getPOS(token);
+        eng.textContent = result ? result.eng : resolvedForm(token);
+      }
+
+      // Measure height synchronously before showing to avoid jump on first open
+      show($('panel'));
+      setPanelHeightVar();
+      // Watch for subsequent height changes (font load, reflow, resize)
+      panelResizeObserver.observe($('panel'));
+
+      // Scroll active token into view (essential in vertical mode)
+      $('tokenArea').querySelector('.token.active')?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
+    }
+
+    // ── Render tokens ────────────────────────────────────────────────────────────
+    function renderTokens() {
+      const area = $('tokenArea');
+      // Replace with a clone to drop all previously stacked event listeners
+      const fresh = area.cloneNode(false);
+      area.parentNode.replaceChild(fresh, area);
+
+      tokens.forEach((token, i) => {
+        const span = document.createElement('span');
+        span.className = 'token' + (isGrammar(token) ? ' grammar' : '');
+        span.textContent = token.surface_form;
+        span.setAttribute('role', 'listitem');
+        span.setAttribute('tabindex', '0');
+        span.setAttribute('lang', 'ja');
+        span.setAttribute('aria-label', `${token.surface_form}, ${getPOS(token)}`);
+
+        const activate = () => {
+          if (selectedIndex === i) {
+            closePanel();
+          } else {
+            $('tokenArea').querySelectorAll('.token').forEach(t => t.classList.remove('active'));
+            span.classList.add('active');
+            openPanel(token, i);
+          }
+        };
+
+        span.addEventListener('click', e => { e.stopPropagation(); activate(); });
+        span.addEventListener('keydown', e => {
+          if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); activate(); }
+        });
+
+        fresh.appendChild(span);
+      });
+
+      const content = tokens.filter(t => !isGrammar(t)).length;
+      $('tokenCount').innerHTML = `${tokens.length} total morphemes · <span class="token-count-content">${content} content morphemes</span>`;
+      fresh.addEventListener('click', closePanel);
+      if (isVertical) requestAnimationFrame(() => { fresh.scrollLeft = fresh.scrollWidth; });
+    }
+
+    // ── Analyze ──────────────────────────────────────────────────────────────────
+    function analyze() {
+      if (!tokenizer) return;
+
+      const raw = $('inputText').value;
+      const text = stripNonJapanese(raw);
+
+      if (!text) {
+        hide($('tokenView'));
+        show($('emptyState'));
+        closePanel();
+        lastRawInput = null;
+        tokens = [];
+        return;
+      }
+
+      // Skip re-tokenizing if the raw input hasn't changed
+      if (raw === lastRawInput) {
+        show($('tokenView'));
+        return;
+      }
+
+      hide($('emptyState'));
+
+      try {
+        tokens = tokenizer.tokenize(text).filter(t => t.surface_form.trim() !== '');
+        lastRawInput = raw;
+        closePanel();
+        renderTokens();
+        show($('tokenView'));
+      } catch (e) {
+        console.error('Tokenization error:', e);
+        tokens = [];
+        lastRawInput = null;
+        setStatus('Analysis failed. Please try again.', 'error');
+        show($('emptyState'));
+      }
+    }
+
+    // ── URL sharing ──────────────────────────────────────────────────────────────
+    async function textToHash(text) {
+      const bytes = new TextEncoder().encode(text);
+      const cs = new CompressionStream('deflate-raw');
+      const writer = cs.writable.getWriter();
+      writer.write(bytes);
+      writer.close();
+      const buf = await new Response(cs.readable).arrayBuffer();
+      const binary = Array.from(new Uint8Array(buf), b => String.fromCharCode(b)).join('');
+      return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+    }
+
+    async function hashToText(encoded) {
+      const binary = atob(encoded.replace(/-/g, '+').replace(/_/g, '/'));
+      const bytes = new Uint8Array(binary.length);
+      for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+      const ds = new DecompressionStream('deflate-raw');
+      const writer = ds.writable.getWriter();
+      writer.write(bytes);
+      writer.close();
+      return new Response(ds.readable).text();
+    }
+
+    async function loadFromHash() {
+      if (!location.hash.startsWith('#t=')) return;
+      try {
+        const text = await hashToText(location.hash.slice(3));
+        $('inputText').value = text;
+        $('inputText').dispatchEvent(new Event('input'));
+      } catch (e) {
+        console.error('Failed to load text from URL:', e);
+      }
+    }
+
+    // ── Events ───────────────────────────────────────────────────────────────────
+    let debounceTimer = null;
+
+    $('inputText').addEventListener('input', () => {
+      localStorage.setItem('inputText', $('inputText').value);
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(analyze, 300);
+    });
+
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) clearTimeout(debounceTimer);
+    });
+
+    $('panelClose').addEventListener('click', closePanel);
+
+    // ── Vertical reading toggle ───────────────────────────────────────────────────
+    const savedInputText = localStorage.getItem('inputText');
+    if (savedInputText) $('inputText').value = savedInputText;
+    loadFromHash();
+    window.addEventListener('hashchange', loadFromHash);
+
+    let isVertical = localStorage.getItem('readingDirection') === 'vertical';
+    if (isVertical) {
+      $('tokenArea').classList.add('vertical');
+      $('verticalBtn').textContent = 'Read left to right';
+      $('verticalBtn').setAttribute('aria-pressed', 'true');
+    }
+    $('verticalBtn').addEventListener('click', () => {
+      isVertical = !isVertical;
+      const area = $('tokenArea');
+      area.classList.toggle('vertical', isVertical);
+      $('verticalBtn').textContent = isVertical ? 'Read left to right' : 'Read top to bottom';
+      $('verticalBtn').setAttribute('aria-pressed', isVertical ? 'true' : 'false');
+      if (isVertical) requestAnimationFrame(() => { area.scrollLeft = area.scrollWidth; });
+      localStorage.setItem('readingDirection', isVertical ? 'vertical' : 'horizontal');
+    });
+
+    function applyDimGrammar(dim) {
+      $('tokenArea').classList.toggle('uniform', !dim);
+      $('dimGrammarBtn').textContent = dim ? 'Undim grammar' : 'Dim grammar';
+      $('dimGrammarBtn').setAttribute('aria-pressed', dim ? 'true' : 'false');
+    }
+
+    let isDimGrammar = localStorage.getItem('dimGrammar') !== 'false';
+    applyDimGrammar(isDimGrammar);
+    $('dimGrammarBtn').addEventListener('click', () => {
+      isDimGrammar = !isDimGrammar;
+      applyDimGrammar(isDimGrammar);
+      localStorage.setItem('dimGrammar', isDimGrammar ? 'true' : 'false');
+    });
+
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') {
+        const welcomeOverlay = document.getElementById('welcomeOverlay');
+        if (welcomeOverlay && !welcomeOverlay.classList.contains('hidden')) {
+          hide(welcomeOverlay);
+        } else {
+          closePanel();
+        }
+      }
+      if (e.key === 'd' && e.altKey) { e.preventDefault(); $('verticalBtn').click(); return; }
+      if (e.key === 'k' && e.ctrlKey) { e.preventDefault(); $('clearBtn').click(); return; }
+      if (document.activeElement === $('inputText')) return;
+      if (e.key === 'v' && e.ctrlKey) { e.preventDefault(); $('pasteBtn').click(); }
+    });
+
+    // ── Example text ─────────────────────────────────────────────────────────────
+    const EXAMPLE_TEXT = `「その会社には、三つの"重要なデータベース"がありました。」
 "In that company, there were three 'crucial' databases."
 「それは会社の未来を決める、とても重要なシステムでした。」
 "They were systems that would decide the company's future, extremely important in an objective sense."
@@ -1222,141 +1406,142 @@ const EXAMPLE_TEXT = `「その会社には、三つの"重要なデータベー
 「それがその日、たいへんな事故から学んだ最も重要なことでした。」
 "That was the most important thing learned from that difficult incident."`;
 
-$('clearBtn').addEventListener('click', () => {
-  $('inputText').value = '';
-  $('inputText').dispatchEvent(new Event('input'));
-  $('inputText').focus();
-});
-$('pasteBtn').addEventListener('click', async () => {
-  try {
-    const text = await navigator.clipboard.readText();
-    $('inputText').value = text;
-    $('inputText').dispatchEvent(new Event('input'));
-    $('inputText').focus();
-  } catch {
-    $('inputText').value = '';
-    $('inputText').dispatchEvent(new Event('input'));
-    $('inputText').focus();
-    setStatus('Clipboard access denied — use Ctrl+V to paste.', 'info');
-    setTimeout(() => setStatus(null), 3000);
-  }
-});
-$('copyUrlBtn').textContent = (navigator.maxTouchPoints > 0) ? 'Share' : 'Copy URL';
-$('copyUrlBtn').addEventListener('click', async () => {
-  const text = $('inputText').value;
-  if (!text.trim()) return;
-  try {
-    const hash = await textToHash(text);
-    const base = (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
-      ? 'https://nevdelap.github.io/go-reader/'
-      : location.href.split('#')[0];
-    const url = base + '#t=' + hash;
-    if ('share' in navigator) {
-      await navigator.share({ title: '語 Reader', url });
-    } else {
+    $('clearBtn').addEventListener('click', () => {
+      $('inputText').value = '';
+      $('inputText').dispatchEvent(new Event('input'));
+      $('inputText').focus();
+    });
+    $('pasteBtn').addEventListener('click', async () => {
       try {
-        await navigator.clipboard.writeText(url);
+        const text = await navigator.clipboard.readText();
+        $('inputText').value = text;
+        $('inputText').dispatchEvent(new Event('input'));
+        $('inputText').focus();
       } catch {
-        // Fallback for non-secure contexts (e.g. HTTP on LAN)
-        const el = Object.assign(document.createElement('textarea'), { value: url });
-        Object.assign(el.style, { position: 'fixed', opacity: '0' });
-        document.body.appendChild(el);
-        el.select();
-        document.execCommand('copy');
-        document.body.removeChild(el);
-      }
-      const btn = $('copyUrlBtn');
-      const originalLabel = btn.textContent;
-      btn.textContent = 'Copied!';
-      setTimeout(() => { btn.textContent = originalLabel; }, 1500);
-    }
-  } catch (e) {
-    console.error('Copy URL failed:', e);
-  }
-});
-$('exampleBtn').addEventListener('click', () => {
-  $('inputText').value = EXAMPLE_TEXT;
-  $('inputText').dispatchEvent(new Event('input'));
-  $('inputText').focus();
-  $('inputText').setSelectionRange(0, 0);
-  $('inputText').scrollTop = 0;
-});
-
-// ── Welcome overlay ────────────────────────────────────────────────────────────
-{
-  const welcomeOverlay = document.getElementById('welcomeOverlay');
-  const dontShowAgainCheckbox = document.getElementById('dontShowAgain');
-  const gotItBtn = document.getElementById('welcomeGotIt');
-  const welcomeCloseBtn = document.getElementById('welcomeClose');
-  const dontShowAgainLabel = dontShowAgainCheckbox ? dontShowAgainCheckbox.parentElement : null;
-
-  let lastFocusedElement = null;
-
-  const showWelcomeOverlay = () => {
-    lastFocusedElement = document.activeElement;
-    if (welcomeOverlay) show(welcomeOverlay);
-    if (dontShowAgainCheckbox) dontShowAgainCheckbox.checked = false;
-    // Hide "Don't show again" if already dismissed permanently
-    if (localStorage.getItem('welcomeDismissed') && dontShowAgainLabel) {
-      dontShowAgainLabel.style.visibility = 'hidden';
-    } else if (dontShowAgainLabel) {
-      dontShowAgainLabel.style.visibility = '';
-    }
-    // Focus the Got it button
-    if (gotItBtn) gotItBtn.focus();
-  };
-
-  const hideWelcomeOverlay = (savePref = false) => {
-    if (welcomeOverlay) hide(welcomeOverlay);
-    if (savePref) {
-      localStorage.setItem('welcomeDismissed', 'true');
-    }
-    // Return focus to the element that had focus before overlay opened
-    if (lastFocusedElement && lastFocusedElement.focus) {
-      lastFocusedElement.focus();
-    }
-  };
-
-  // Got it button
-  if (gotItBtn) {
-    gotItBtn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      const dontShowAgain = dontShowAgainCheckbox ? dontShowAgainCheckbox.checked : false;
-      hideWelcomeOverlay(dontShowAgain);
-    });
-  }
-
-  // Close button
-  if (welcomeCloseBtn) {
-    welcomeCloseBtn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      hideWelcomeOverlay(false);
-    });
-  }
-
-  // Help button
-  const helpBtn = document.getElementById('helpBtn');
-  if (helpBtn) {
-    helpBtn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      showWelcomeOverlay();
-    });
-  }
-
-  // Click outside to close
-  if (welcomeOverlay) {
-    welcomeOverlay.addEventListener('click', (e) => {
-      if (e.target === welcomeOverlay) {
-        hideWelcomeOverlay(false);
+        $('inputText').value = '';
+        $('inputText').dispatchEvent(new Event('input'));
+        $('inputText').focus();
+        setStatus('Clipboard access denied — use Ctrl+V to paste.', 'info');
+        setTimeout(() => setStatus(null), 3000);
       }
     });
-  }
+    $('copyUrlBtn').textContent = (navigator.maxTouchPoints > 0) ? 'Share' : 'Copy URL';
+    $('copyUrlBtn').addEventListener('click', async () => {
+      const text = $('inputText').value;
+      if (!text.trim()) return;
+      try {
+        const hash = await textToHash(text);
+        const base = (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
+          ? 'https://nevdelap.github.io/go-reader/'
+          : location.href.split('#')[0];
+        const url = base + '#t=' + hash;
+        if ('share' in navigator) {
+          await navigator.share({ title: '語 Reader', url });
+        } else {
+          try {
+            await navigator.clipboard.writeText(url);
+          } catch {
+            // Fallback for non-secure contexts (e.g. HTTP on LAN)
+            const el = Object.assign(document.createElement('textarea'), { value: url });
+            Object.assign(el.style, { position: 'fixed', opacity: '0' });
+            document.body.appendChild(el);
+            el.select();
+            document.execCommand('copy');
+            document.body.removeChild(el);
+          }
+          const btn = $('copyUrlBtn');
+          const originalLabel = btn.textContent;
+          btn.textContent = 'Copied!';
+          setTimeout(() => { btn.textContent = originalLabel; }, 1500);
+        }
+      } catch (e) {
+        console.error('Copy URL failed:', e);
+      }
+    });
+    $('exampleBtn').addEventListener('click', () => {
+      $('inputText').value = EXAMPLE_TEXT;
+      $('inputText').dispatchEvent(new Event('input'));
+      $('inputText').focus();
+      $('inputText').setSelectionRange(0, 0);
+      $('inputText').scrollTop = 0;
+    });
 
-  // Show welcome overlay on first visit
-  if (!localStorage.getItem('welcomeDismissed')) {
-    setTimeout(showWelcomeOverlay, 500);
-  }
-}
-</script>
+    // ── Welcome overlay ────────────────────────────────────────────────────────────
+    {
+      const welcomeOverlay = document.getElementById('welcomeOverlay');
+      const dontShowAgainCheckbox = document.getElementById('dontShowAgain');
+      const gotItBtn = document.getElementById('welcomeGotIt');
+      const welcomeCloseBtn = document.getElementById('welcomeClose');
+      const dontShowAgainLabel = dontShowAgainCheckbox ? dontShowAgainCheckbox.parentElement : null;
+
+      let lastFocusedElement = null;
+
+      const showWelcomeOverlay = () => {
+        lastFocusedElement = document.activeElement;
+        if (welcomeOverlay) show(welcomeOverlay);
+        if (dontShowAgainCheckbox) dontShowAgainCheckbox.checked = false;
+        // Hide "Don't show again" if already dismissed permanently
+        if (localStorage.getItem('welcomeDismissed') && dontShowAgainLabel) {
+          dontShowAgainLabel.style.visibility = 'hidden';
+        } else if (dontShowAgainLabel) {
+          dontShowAgainLabel.style.visibility = '';
+        }
+        // Focus the Got it button
+        if (gotItBtn) gotItBtn.focus();
+      };
+
+      const hideWelcomeOverlay = (savePref = false) => {
+        if (welcomeOverlay) hide(welcomeOverlay);
+        if (savePref) {
+          localStorage.setItem('welcomeDismissed', 'true');
+        }
+        // Return focus to the element that had focus before overlay opened
+        if (lastFocusedElement && lastFocusedElement.focus) {
+          lastFocusedElement.focus();
+        }
+      };
+
+      // Got it button
+      if (gotItBtn) {
+        gotItBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const dontShowAgain = dontShowAgainCheckbox ? dontShowAgainCheckbox.checked : false;
+          hideWelcomeOverlay(dontShowAgain);
+        });
+      }
+
+      // Close button
+      if (welcomeCloseBtn) {
+        welcomeCloseBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          hideWelcomeOverlay(false);
+        });
+      }
+
+      // Help button
+      const helpBtn = document.getElementById('helpBtn');
+      if (helpBtn) {
+        helpBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          showWelcomeOverlay();
+        });
+      }
+
+      // Click outside to close
+      if (welcomeOverlay) {
+        welcomeOverlay.addEventListener('click', (e) => {
+          if (e.target === welcomeOverlay) {
+            hideWelcomeOverlay(false);
+          }
+        });
+      }
+
+      // Show welcome overlay on first visit
+      if (!localStorage.getItem('welcomeDismissed')) {
+        setTimeout(showWelcomeOverlay, 500);
+      }
+    }
+  </script>
 </body>
+
 </html>
