@@ -54,9 +54,12 @@ See [docs/architecture.md](docs/architecture.md) for a detailed breakdown.
 ## Local development
 
 ```bash
-just serve    # serve locally and open in browser
-just format   # format Markdown
-just lint     # format then lint
+just install-hooks # install git hooks
+just serve         # serve locally and open in browser
+just format        # format Markdown
+just lint          # format then lint
+just test          # run tests
+just tag_and_push  # tag the release and push
 ```
 
 ## Maintaining the repository
