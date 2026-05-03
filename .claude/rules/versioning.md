@@ -1,5 +1,5 @@
 ---
-description: Check git tags to decide if version bump is needed
+description: Version bump rules for the app
 ---
 
 # Versioning
@@ -28,3 +28,14 @@ When bumping, look at everything that has changed since the latest tag and apply
 The result is always `tag_version + one bump`. Never accumulate multiple bumps
 (e.g. if the tag is v1.2.0 and there is already a feature bump to v1.3.0 in
 `index.html`, a subsequent bug fix leaves it at v1.3.0 — do not bump to v1.3.1).
+
+## Cache busting
+
+When bumping the version in `index.html`, also update the cache bust parameter in
+the dictionary URL to match:
+
+```javascript
+const res = await fetch('jmdict-compact.json.gz?v=13');  // Match version number
+```
+
+This ensures users get the new dictionary data instead of a cached copy.
