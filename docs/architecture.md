@@ -127,6 +127,52 @@ from kuromoji.
 Katakana readings from kuromoji are converted to hiragana for display
 (`toHiragana()`).
 
+### Particle and Auxiliary Verb Glosses (`pg` field)
+
+Words that function as particles or auxiliary verbs often have a primary JMdict
+entry that describes their non-grammatical meaning (e.g., て as a quoting particle,
+って). To ensure correct glosses in grammar contexts, the compact dictionary
+includes a `pg` field containing glosses from grammar-related senses:
+
+- **Source senses**: JMdict entries tagged as particle (`prt`), expression
+  (`exp`), or auxiliary (`aux`, `aux-v`, `aux-adj`)
+- **Usage**: `lookupParticle()` returns `pg` for grammar tokens; falls back to
+  `g[0]` (first gloss group) if `pg` is absent
+
+### Competing Senses (`pg2` field)
+
+Some particles have multiple common senses where neither is clearly "primary."
+For て and で:
+
+- The **common** JMdict entry describes the quoting sense (って)
+- The **conjunctive** sense (and/then, as in 食べて) is in a separate entry
+
+Both are needed in context. The dictionary stores the conjunctive glosses in
+`pg2`, and `lookupParticle()` selects between them based on kuromoji's
+`pos_detail_1`:
+
+```javascript
+if (token.pos_detail_1 === '接続助詞' && entry.pg2) {
+    return entry.pg2.slice(0, 3).join(', ');
+}
+```
+
+This is currently the only case requiring `pg2`; other particles use `pg`
+directly.
+
+### Grammar POS Sets
+
+Two separate sets define "grammar" for different purposes:
+
+| Location            | Set                                         | Purpose                                  |
+| ------------------- | ------------------------------------------- | ---------------------------------------- |
+| `compact_jmdict.py` | `{'prt', 'exp', 'aux', 'aux-v', 'aux-adj'}` | Selects which JMdict senses go into `pg` |
+| `index.html`        | `['助詞', '助動詞', '記号', ...]`           | Determines which tokens get gray styling |
+
+These map between different tag systems (JMdict English tags vs kuromoji
+Japanese tags) and are not duplicated — they serve different roles in the
+pipeline.
+
 ______________________________________________________________________
 
 ## UI Details

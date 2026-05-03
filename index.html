@@ -617,7 +617,7 @@ let jmdictLoaded = false;
 let jmdictPromise = null;
 
 async function loadJMdict() {
-  const res = await fetch('jmdict-compact.json.gz?v=12');
+  const res = await fetch('jmdict-compact.json.gz?v=13');
   if (!res.ok) throw new Error(`JMdict fetch failed: ${res.status}`);
   if (res.headers.get('Content-Encoding') === 'gzip') {
     // Server decompressed automatically (e.g. local dev server)
