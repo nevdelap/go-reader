@@ -804,7 +804,7 @@
     <header>
       <div class="header-left">
         <div class="logo">語 <span>Reader</span></div>
-        <div class="subtitle">Japanese Reader For Learners · v1.15.4</div>
+        <div class="subtitle">Japanese Reader For Learners · v1.15.5</div>
       </div>
       <div style="display:flex; gap:8px;">
         <button type="button" id="helpBtn" class="toolbar-btn" title="Help">?</button>
@@ -828,7 +828,8 @@
 
       <div id="tokenView" class="hidden">
         <div class="legend">
-          <span class="legend-hint legend-hint-desktop">Click morphemes, or navigate with Tab/Shift-Tab and press Space, to
+          <span class="legend-hint legend-hint-desktop">Click morphemes, or navigate with Tab/Shift-Tab and press Space,
+            to
             see translations.</span>
           <span class="legend-hint legend-hint-mobile">Tap morphemes to see translations.</span>
           <button type="button" id="verticalBtn" class="toolbar-btn" aria-pressed="false" title="Alt+D"
@@ -871,7 +872,8 @@
         <ul>
           <li><strong>No AI</strong> — Dictionary lookups happen locally in your browser, fast and private</li>
           <li><strong>Grammar morphemes</strong> — Toggle dimming for enhanced learning</li>
-          <li><strong>Keyboard shortcuts</strong> — Ctrl+K to clear text, Ctrl+V to paste, Alt+D to toggle reading direction</li>
+          <li><strong>Keyboard shortcuts</strong> — Ctrl+K to clear text, Ctrl+V to paste, Alt+D to toggle reading
+            direction</li>
           <li><strong>Everything stays in your browser</strong> — No login, no server, no ads, no tracking²</li>
         </ul>
         <ol style="font-size:11px; color:var(--text-muted); margin-top:8px; padding-left:20px; margin:0;">
@@ -1375,20 +1377,20 @@
     const EXAMPLE_TEXT = `「その会社には、三つの"重要なデータベース"がありました。」
 "In that company, there were three 'crucial' databases."
 「それは会社の未来を決める、とても重要なシステムでした。」
-"They were systems that would decide the company's future, extremely important in an objective sense."
+"They were systems that could decide the company's future, extremely important in an objective sense."
 「しかしある日、たいへんな事故が起きました。」
 "But one day, a serious incident occurred."
 「サーバールームにコーヒーを持ち込んだ新人が、全部にこぼしてしまったのです。」
 "A new employee brought coffee into the server room and spilled it everywhere."
 「"これはたいへんなことになった…"と皆が叫びました。」
-"Everyone shouted, 'This has become a terrible situation…'"
+"Everyone shouted, 'This is really bad…'"
 「一方で、社長は落ち着いて言いました。」
-"Meanwhile, the director calmly said:"
+"Meanwhile, the company president calmly said:"
 「"そのデータは会社にとって重要な資産だ。すぐに復旧しなさい。"」
 "'That data is a critical asset for the company. Restore it immediately.'"
 「その時、システム担当のエンジニアは、自分の大事なノートを見つめていました。」
-"At that moment, the system engineer was staring at his personal notebook."
-「そこには、大事な（だいじな）設定メモが全部書いてあったのです。」
+"At that moment, the system engineer was staring at his important notebook."
+「そこには、大事な設定メモが全部書いてあったのです。」
 "All his personally important configuration notes were written in it."
 「彼は心の中で思いました。」
 "He thought to himself:"
@@ -1399,11 +1401,11 @@
 「たいへんなのはサーバーだけではなく、自分の人生の整理も同じくらい大変だと。」
 "The problem wasn't just the server—it was that organising his own life was just as difficult."
 「その後、会社は復旧し、誰もが重要な教訓を得ました。」
-"Afterwards, the company recovered, and everyone gained an important lesson."
+"Afterwards, the company recovered, and everyone learned an important lesson."
 「コーヒーはサーバーに持ち込まない。そして、大事なノートは二重バックアップする。」
 "Don't bring coffee into the server room. And always back up what matters to you personally."
 「それがその日、たいへんな事故から学んだ最も重要なことでした。」
-"That was the most important thing learned from that difficult incident."`;
+"That was the most important thing learned from that serious incident."`;
 
     $('clearBtn').addEventListener('click', () => {
       $('inputText').value = '';
