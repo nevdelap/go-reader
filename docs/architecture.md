@@ -52,7 +52,7 @@ kuromoji.tokenize()         — produces morpheme tokens:
        │
        ▼
 renderTokens()              — builds clickable <span> elements (display: inline)
-                              content words: foreground color
+                              content morphemes: foreground color
                               grammar/particles: muted color
        │
        ▼  (tap or click)

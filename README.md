@@ -19,7 +19,7 @@ Everything runs in the browser — no account, no server, no API calls, **no AI*
 
 - **Instant morpheme lookup** — tap or click any morpheme in Japanese text to
   see its reading and English definition
-- **Hiragana readings** — see how any word is pronounced
+- **Hiragana readings** — see how any morpheme is pronounced
 - **Offline-capable** — works without an internet connection
 - **Light and dark modes** — follows your system preference, or can be set
   manually
