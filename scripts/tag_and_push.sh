@@ -34,6 +34,8 @@ fi
 # Create tag and push
 echo "Creating tag $VERSION..."
 git tag -a "$VERSION" -m "Release $VERSION"
-echo "Pushing HEAD:main and tags..."
-git push origin HEAD:main --tags --force
+echo "Pushing HEAD:main (triggers Pages build)..."
+git push origin HEAD:main --force
+echo "Pushing tags..."
+git push origin --tags --no-verify
 echo "Done! Released $VERSION"

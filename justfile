@@ -9,7 +9,7 @@ RESET := '\033[0m'
     just --list
 
 # Install git hooks.
-install-hooks:
+install_hooks:
     ln -sf ../../scripts/pre-push .git/hooks/pre-push
 
 # Serve locally and open in browser.
