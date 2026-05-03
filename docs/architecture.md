@@ -8,7 +8,7 @@ A single-file static Japanese reader. No server, no build step — deploys anywh
 | ------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
 | `index.html`                                | Entire app — HTML, CSS, and JavaScript                                                                                 |
 | `kuromoji.js`                               | Japanese morphological analyzer (runs in the browser)                                                                  |
-| `jmdict-compact.json.gz`                    | Compact gzipped dictionary (word → English glosses)                                                                    |
+| `jmdict-compact.json.gz`                    | Compact gzipped dictionary (morpheme → English glosses)                                                                |
 | `dict/`                                     | Binary dictionary files loaded by kuromoji at runtime                                                                  |
 | `scripts/compact_jmdict.py`                 | Build script: preprocesses full JMdict JSON into compact form                                                          |
 | `scripts/update_jmdict_and_compact_repo.sh` | Checks for a new JMdict release, downloads it, rebuilds the compact dict, and rewrites git history to remove old blobs |
@@ -130,9 +130,9 @@ Katakana readings from kuromoji are converted to hiragana for display
 ### Particle and Auxiliary Verb Glosses (`pg` field)
 
 Words that function as particles or auxiliary verbs often have a primary JMdict
-entry that describes their non-grammatical meaning (e.g., て as a quoting particle,
-って). To ensure correct glosses in grammar contexts, the compact dictionary
-includes a `pg` field containing glosses from grammar-related senses:
+entry that describes their non-grammatical meaning (e.g., て as a quoting
+particle,って). To ensure correct glosses in grammar contexts, the compact
+dictionary includes a `pg` field containing glosses from grammar-related senses:
 
 - **Source senses**: JMdict entries tagged as particle (`prt`), expression
   (`exp`), or auxiliary (`aux`, `aux-v`, `aux-adj`)
@@ -184,11 +184,14 @@ ______________________________________________________________________
 - **Panel height tracking** — a `ResizeObserver` keeps `--panel-height` in sync
   so the token area scrolls far enough to keep the active token visible above
   the bottom panel
-- **Input buttons** — "Clear and paste" clears the textarea then reads from the
-  clipboard (falls back to an error message on permission denial), "Copy URL" /
-  "Share" encodes the current input as a compressed URL fragment and copies it
-  to the clipboard (or invokes the native share sheet on touch devices),
-  "Example" loads a sample text; all return focus to the textarea
+- **Input buttons** — "Clear" clears the textarea, "Clear and paste" clears the
+  textarea then reads from the clipboard (falls back to an error message on
+  permission denial), "Copy URL" / "Share" encodes the current input as a
+  compressed URL fragment and copies it to the clipboard (or invokes the native
+  share sheet on touch devices), "Example" loads a sample text; all return focus
+  to the textarea
+- **Help button** — a "?" button in the header reopens the welcome overlay
+- **Keyboard shortcuts** — see dedicated section below
 - **Input deduplication** — if the raw input hasn't changed since last
   tokenization, rendering is skipped
 - **Debounce** — 300ms after last keypress before `analyze()` fires
@@ -210,8 +213,48 @@ ______________________________________________________________________
   dimmed grammar tokens (default, `--text-grammar` color) and uniform coloring.
   The button label reflects the current state: "Dim grammar" / "Undim grammar".
   Preference is stored in `localStorage` (`dimGrammar`).
-- **Persistence** — theme choice, reading direction, dim-grammar preference, and
-  the raw textarea input are all stored in `localStorage` and restored on load.
+- **Persistence** — theme choice, reading direction, dim-grammar preference,
+  welcome overlay dismissal, and the raw textarea input are all stored in
+  `localStorage` and restored on load.
+
+______________________________________________________________________
+
+## Keyboard Shortcuts
+
+| Shortcut | Action                                        |
+| -------- | --------------------------------------------- |
+| `Ctrl+K` | Clear the textarea                            |
+| `Ctrl+V` | Paste from clipboard (Clear and paste button) |
+| `Alt+D`  | Toggle vertical reading mode                  |
+| `Escape` | Close welcome overlay or word details panel   |
+| `?`      | Open help (welcome overlay)                   |
+
+Shortcuts are blocked when focus is in the textarea (except Ctrl+V, which is
+handled natively).
+
+______________________________________________________________________
+
+## Welcome Overlay
+
+A modal dialog shown on first visit to introduce the app to new users:
+
+- **Auto-show** — Appears 500ms after page load on first visit
+- **Dismiss options**:
+  - "Got it" button closes for this session
+  - "Don't show again" checkbox saves preference to `localStorage` and prevents
+    auto-show on future visits
+- **Help button** — The "?" button in the header reopens the overlay at any time
+- **Focus management** — When opening, focus moves to the "Got it" button; when
+  closing, focus returns to the triggering element
+- **Escape key** — Closes the overlay
+- **Click outside** — Clicking the backdrop (dark area outside the dialog)
+  closes the overlay
+- **Persistence** — `localStorage.getItem('welcomeDismissed')` tracks whether
+  the user has chosen to hide the overlay
+
+The overlay content explains that the app is for advanced learners, that it uses
+local dictionary lookups (no AI), and covers basic usage (tap morphemes, grammar
+dimming toggle, keyboard shortcuts, browser-local processing).
 
 ______________________________________________________________________
 

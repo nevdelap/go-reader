@@ -457,7 +457,159 @@
       }
     }
 
-    .hidden { display: none; }
+    .hidden { display: none !important; }
+
+    .overlay-backdrop {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: clamp(12px, 5vw, 20px);
+    }
+
+    .overlay {
+      position: relative;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      max-width: 480px;
+      width: 100%;
+      padding: 28px 24px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    }
+
+    .overlay-title {
+      font-family: 'Inter', sans-serif;
+      font-size: 20px;
+      font-weight: 500;
+      color: var(--text);
+      margin-bottom: 12px;
+    }
+
+    .overlay-body {
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      color: var(--text-dim);
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+
+    .overlay-body ul {
+      margin: 12px 0;
+      padding-left: 20px;
+    }
+
+    .overlay-body li {
+      margin-bottom: 8px;
+    }
+
+    .overlay-body strong {
+      color: var(--text);
+    }
+
+    .overlay-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .overlay-buttons {
+      display: flex;
+      gap: 10px;
+    }
+
+    .overlay-btn {
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      cursor: pointer;
+      padding: 8px 14px;
+      border-radius: 4px;
+      transition: background 0.2s, border-color 0.2s, color 0.2s;
+      border: 1px solid var(--border-mid);
+      background: var(--bg-surface);
+      color: var(--text);
+    }
+
+    .overlay-btn:focus-visible, .overlay-btn:active {
+      background: rgba(37,99,235,0.4);
+      border-color: var(--accent);
+      color: var(--hover-text);
+    }
+
+    @media (hover: hover) {
+      .overlay-btn:hover {
+        background: rgba(37,99,235,0.4);
+        border-color: var(--accent);
+        color: var(--hover-text);
+      }
+    }
+
+    .overlay-btn.primary {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+
+    .overlay-btn.primary:focus-visible, .overlay-btn.primary:active {
+      background: var(--accent-dim);
+      border-color: var(--accent-dim);
+    }
+
+    @media (hover: hover) {
+      .overlay-btn.primary:hover {
+        background: var(--accent-dim);
+        border-color: var(--accent-dim);
+      }
+    }
+
+    .overlay-checkbox {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      color: var(--text-muted);
+      cursor: pointer;
+    }
+
+    .overlay-checkbox input {
+      cursor: pointer;
+      width: 16px;
+      height: 16px;
+    }
+
+    .overlay-close {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: none;
+      border: none;
+      color: var(--text-faint);
+      font-size: 18px;
+      cursor: pointer;
+      padding: 4px 8px;
+      line-height: 1;
+      transition: color 0.2s;
+    }
+
+    .overlay-close:focus-visible, .overlay-close:active {
+      color: var(--text);
+    }
+
+    @media (hover: hover) {
+      .overlay-close:hover {
+        color: var(--text);
+      }
+    }
   </style>
 </head>
 <body>
@@ -465,9 +617,12 @@
   <header>
     <div class="header-left">
       <div class="logo">語 <span>Reader</span></div>
-      <div class="subtitle">Japanese Reader For Learners · v1.14.0</div>
+      <div class="subtitle">Japanese Reader For Learners · v1.15.0</div>
     </div>
-    <button type="button" id="themeBtn" class="toolbar-btn"></button>
+    <div style="display:flex; gap:8px;">
+      <button type="button" id="helpBtn" class="toolbar-btn" title="Help">?</button>
+      <button type="button" id="themeBtn" class="toolbar-btn"></button>
+    </div>
   </header>
 
   <main>
@@ -512,6 +667,33 @@
     <strong>Please note</strong> that translations are matched to individual morphemes and may not always reflect the word's meaning in context.
     <br><br>© 2026 Nev Delap. Released under the <a href="https://github.com/nevdelap/go-reader/blob/main/LICENSE" target="_blank" rel="noopener noreferrer">MIT license</a>.
   </footer>
+</div>
+
+<div class="overlay-backdrop hidden" id="welcomeOverlay">
+  <div class="overlay" role="dialog" aria-modal="true" aria-labelledby="welcomeTitle">
+    <button class="overlay-close" id="welcomeClose" aria-label="Close welcome">✕</button>
+    <h2 class="overlay-title" id="welcomeTitle">Welcome to 語 Reader</h2>
+    <div class="overlay-body">
+      <p>A free Japanese reader for advanced learners. <strong>Type or paste</strong> Japanese text from AI tools, websites, or learning materials, then <strong>tap any morpheme</strong> to see its reading and English meaning.</p>
+      <ul>
+        <li><strong>No AI</strong> — Dictionary lookups happen locally in your browser, fast and private</li>
+        <li><strong>Tap/click morphemes</strong> — See readings and translations instantly</li>
+        <li><strong>Grammar morphemes</strong> — Toggle dimming for enhanced learning</li>
+        <li><strong>Keyboard shortcuts</strong> — Ctrl+K to clear text, Ctrl+V to paste, Alt+D for vertical reading mode</li>
+        <li><strong>Everything stays in your browser</strong> — No login, no server, no ads, no tracking*</li>
+      </ul>
+      <p style="font-size:11px; color:var(--text-muted); margin-top:8px;">*It just counts users by country so that I can see how much use it is getting.</p>
+    </div>
+    <div class="overlay-actions">
+      <label class="overlay-checkbox">
+        <input type="checkbox" id="dontShowAgain">
+        Don't show again
+      </label>
+      <div class="overlay-buttons">
+        <button type="button" class="overlay-btn" id="welcomeGotIt">Got it</button>
+      </div>
+    </div>
+  </div>
 </div>
 
 <div class="panel hidden"
@@ -618,7 +800,7 @@ let jmdictLoaded = false;
 let jmdictPromise = null;
 
 async function loadJMdict() {
-  const res = await fetch('jmdict-compact.json.gz?v=14');
+  const res = await fetch('jmdict-compact.json.gz?v=15');
   if (!res.ok) throw new Error(`JMdict fetch failed: ${res.status}`);
   if (res.headers.get('Content-Encoding') === 'gzip') {
     // Server decompressed automatically (e.g. local dev server)
@@ -984,7 +1166,14 @@ $('dimGrammarBtn').addEventListener('click', () => {
 });
 
 document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') closePanel();
+  if (e.key === 'Escape') {
+    const welcomeOverlay = document.getElementById('welcomeOverlay');
+    if (welcomeOverlay && !welcomeOverlay.classList.contains('hidden')) {
+      hide(welcomeOverlay);
+    } else {
+      closePanel();
+    }
+  }
   if (e.key === 'd' && e.altKey) { e.preventDefault(); $('verticalBtn').click(); return; }
   if (e.key === 'k' && e.ctrlKey) { e.preventDefault(); $('clearBtn').click(); return; }
   if (document.activeElement === $('inputText')) return;
@@ -1084,6 +1273,82 @@ $('exampleBtn').addEventListener('click', () => {
   $('inputText').setSelectionRange(0, 0);
   $('inputText').scrollTop = 0;
 });
+
+// ── Welcome overlay ────────────────────────────────────────────────────────────
+{
+  const welcomeOverlay = document.getElementById('welcomeOverlay');
+  const dontShowAgainCheckbox = document.getElementById('dontShowAgain');
+  const gotItBtn = document.getElementById('welcomeGotIt');
+  const welcomeCloseBtn = document.getElementById('welcomeClose');
+  const dontShowAgainLabel = dontShowAgainCheckbox ? dontShowAgainCheckbox.parentElement : null;
+
+  let lastFocusedElement = null;
+
+  const showWelcomeOverlay = () => {
+    lastFocusedElement = document.activeElement;
+    if (welcomeOverlay) show(welcomeOverlay);
+    if (dontShowAgainCheckbox) dontShowAgainCheckbox.checked = false;
+    // Hide "Don't show again" if already dismissed permanently
+    if (localStorage.getItem('welcomeDismissed') && dontShowAgainLabel) {
+      dontShowAgainLabel.style.visibility = 'hidden';
+    } else if (dontShowAgainLabel) {
+      dontShowAgainLabel.style.visibility = '';
+    }
+    // Focus the Got it button
+    if (gotItBtn) gotItBtn.focus();
+  };
+
+  const hideWelcomeOverlay = (savePref = false) => {
+    if (welcomeOverlay) hide(welcomeOverlay);
+    if (savePref) {
+      localStorage.setItem('welcomeDismissed', 'true');
+    }
+    // Return focus to the element that had focus before overlay opened
+    if (lastFocusedElement && lastFocusedElement.focus) {
+      lastFocusedElement.focus();
+    }
+  };
+
+  // Got it button
+  if (gotItBtn) {
+    gotItBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const dontShowAgain = dontShowAgainCheckbox ? dontShowAgainCheckbox.checked : false;
+      hideWelcomeOverlay(dontShowAgain);
+    });
+  }
+
+  // Close button
+  if (welcomeCloseBtn) {
+    welcomeCloseBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      hideWelcomeOverlay(false);
+    });
+  }
+
+  // Help button
+  const helpBtn = document.getElementById('helpBtn');
+  if (helpBtn) {
+    helpBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      showWelcomeOverlay();
+    });
+  }
+
+  // Click outside to close
+  if (welcomeOverlay) {
+    welcomeOverlay.addEventListener('click', (e) => {
+      if (e.target === welcomeOverlay) {
+        hideWelcomeOverlay(false);
+      }
+    });
+  }
+
+  // Show welcome overlay on first visit
+  if (!localStorage.getItem('welcomeDismissed')) {
+    setTimeout(showWelcomeOverlay, 500);
+  }
+}
 </script>
 </body>
 </html>

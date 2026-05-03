@@ -1,7 +1,7 @@
 # 語 Reader — Japanese Reader For Learners
 
-A free Japanese reading tool for learners. Type or paste Japanese text and tap
-any word to instantly see its hiragana reading and English meaning.
+A free Japanese reading tool for advanced learners. Type or paste Japanese text and tap
+any morpheme to instantly see its hiragana reading and English meaning.
 Look up kanji, vocabulary, and grammar while reading native Japanese content.
 
 <img src="phone-image.png" width="400" alt="語 Reader on mobile"><br>
@@ -16,12 +16,15 @@ Everything runs in the browser — no account, no server, no API calls, **no AI*
 
 ## Features
 
-- **Instant word lookup** — tap any word in Japanese text to see its reading and English definition
+- **Instant morpheme lookup** — tap any morpheme in Japanese text to see its reading and English definition
 - **Hiragana readings** — see how any word is pronounced
 - **Offline-capable** — works without an internet connection
 - **Light and dark modes** — follows your system preference, or can be set manually
 - **Mobile-friendly** — works on phones and tablets
-- **Free and open source** — no sign-up, no ads, no tracking beyond basic analytics
+- **Welcome overlay** — introduction for first-time visitors
+- **Free and open source** — no sign-up, no server, no ads, no tracking\*
+
+*\*Counts users by country so I can see how much use it is getting.*
 
 ## How it works
 
