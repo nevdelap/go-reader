@@ -367,12 +367,28 @@
       display: none;
     }
 
+    .overlay-desktop {
+      display: inline;
+    }
+
+    .overlay-mobile {
+      display: none;
+    }
+
     @media (max-width: 600px) {
       .legend-hint-desktop {
         display: none;
       }
 
       .legend-hint-mobile {
+        display: inline;
+      }
+
+      .overlay-desktop {
+        display: none;
+      }
+
+      .overlay-mobile {
         display: inline;
       }
     }
@@ -657,8 +673,10 @@
       border-radius: 8px;
       max-width: 480px;
       width: 100%;
+      max-height: 80vh;
       padding: 28px 24px;
       box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+      overflow-y: auto;
     }
 
     .overlay-title {
@@ -675,6 +693,10 @@
       color: var(--text-dim);
       line-height: 1.6;
       margin-bottom: 20px;
+    }
+
+    .overlay-body p {
+      text-align: justify;
     }
 
     .overlay-body ul {
@@ -804,7 +826,7 @@
     <header>
       <div class="header-left">
         <div class="logo">語 <span>Reader</span></div>
-        <div class="subtitle">Japanese Reader For Learners · v1.15.6</div>
+        <div class="subtitle">Japanese Reader For Learners · v1.15.7</div>
       </div>
       <div style="display:flex; gap:8px;">
         <button type="button" id="helpBtn" class="toolbar-btn" title="Help">?</button>
@@ -867,8 +889,9 @@
       <h2 class="overlay-title" id="welcomeTitle">Welcome to 語 Reader<sup>1</sup></h2>
       <div class="overlay-body">
         <p>A free Japanese reader for advanced learners. <strong>Type or paste</strong> Japanese text from AI tools,
-          websites, or learning materials, then <strong>tap or click any morpheme</strong> to see its reading
-          and English meaning.</p>
+          websites, or learning materials, then <strong><span class="overlay-desktop">click</span><span class="overlay-mobile">tap</span> any morpheme</strong> to see its reading
+          and English meaning. <strong><span class="overlay-desktop">Click</span><span class="overlay-mobile">Tap</span> the Example button</strong> to try the app with sample text and explore
+          its features.</p>
         <ul>
           <li><strong>No AI</strong> — Dictionary lookups happen locally in your browser, fast and private</li>
           <li><strong>Grammar morphemes</strong> — Toggle dimming for enhanced learning</li>
