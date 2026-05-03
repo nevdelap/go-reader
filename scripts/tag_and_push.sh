@@ -36,6 +36,8 @@ echo "Creating tag $VERSION..."
 git tag -a "$VERSION" -m "Release $VERSION"
 echo "Pushing HEAD:main (triggers Pages build)..."
 git push origin HEAD:main --force
+echo "Waiting for GitHub Pages to register the commit..."
+sleep 5
 echo "Pushing tags..."
 git push origin --tags --no-verify
 echo "Done! Released $VERSION"
