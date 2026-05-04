@@ -127,10 +127,8 @@
       --scrollbar-thumb: #1e3a5f;
       /* toolbar button text on hover/active */
       --hover-text: #fff;
-      /* (unused — reserved) */
-      --dot-content: #fff;
-      /* (unused — reserved) */
-      --dot-grammar: #444;
+      /* hover background for interactive elements */
+      --hover-bg: rgba(37, 99, 235, 0.4);
       /* error status box border */
       --error-border: #7f1d1d;
       /* error status box text */
@@ -173,10 +171,8 @@
       --scrollbar-thumb: #60a5fa;
       /* toolbar button text on hover/active */
       --hover-text: #111;
-      /* (unused — reserved) */
-      --dot-content: #111;
-      /* (unused — reserved) */
-      --dot-grammar: #ccc;
+      /* hover background for interactive elements */
+      --hover-bg: rgba(37, 99, 235, 0.4);
       /* error status box border */
       --error-border: #fca5a5;
       /* error status box text */
@@ -330,7 +326,7 @@
 
     .toolbar-btn:focus-visible,
     .toolbar-btn:active {
-      background: rgba(37, 99, 235, 0.4);
+      background: var(--hover-bg);
       border-color: var(--accent);
       color: var(--hover-text);
     }
@@ -879,7 +875,7 @@
     <header>
       <div class="header-left">
         <div class="logo">語 <span>Reader</span></div>
-        <div class="subtitle">Japanese Reader For Learners · v1.16.0</div>
+        <div class="subtitle">Japanese Reader For Learners · v1.16.1</div>
       </div>
       <div style="display:flex; gap:8px;">
         <button type="button" id="helpBtn" class="toolbar-btn" title="Help">?</button>
@@ -917,7 +913,7 @@
 
       <div class="empty-state" id="emptyState">
         <div class="empty-kanji">語</div>
-        <div class="empty-label">type or paste japanese text above to begin</div>
+        <div class="empty-label">Type or paste Japanese text above to begin</div>
       </div>
     </main>
 
@@ -1069,7 +1065,7 @@
     let jmdictPromise = null;
 
     async function loadJMdict() {
-      if (!('DecompressionStream' in window)) {
+      if (!COMPRESSION_SUPPORTED) {
         throw new Error('DecompressionStream not supported');
       }
       const res = await fetch('dict/jmdict-compact.json.gz?v=16');
@@ -1189,6 +1185,13 @@
     let tokenizer = null;
     let lastRawInput = null;
 
+    // ── Error messages ───────────────────────────────────────────────────────────────
+    const ERRORS = {
+      BROWSER_NOT_SUPPORTED: 'Your browser does not support this app. Please update to Chrome 80+, Firefox 113+, or Safari 16.4+.',
+      COMPRESSION_NOT_SUPPORTED: 'Your browser does not support the compression API needed for URL sharing. Please update your browser to use this feature.',
+      FAILED_TO_LOAD: 'Failed to load dictionaries. Please refresh the page.',
+    };
+
     // ── Browser support check ───────────────────────────────────────────────────────
     const COMPRESSION_SUPPORTED = 'CompressionStream' in window && 'DecompressionStream' in window;
 
@@ -1235,9 +1238,9 @@
           setTimeout(() => initWithRetry(attempt + 1), delay);
         } else {
           if (!COMPRESSION_SUPPORTED || e.message === 'DecompressionStream not supported') {
-            setStatus('Your browser does not support this app. Please update to Chrome 80+, Firefox 113+, or Safari 16.4+.', 'error');
+            setStatus(ERRORS.BROWSER_NOT_SUPPORTED, 'error');
           } else {
-            setStatus('Failed to load dictionaries. Please refresh the page.', 'error');
+            setStatus(ERRORS.FAILED_TO_LOAD, 'error');
           }
           show($('emptyState'));
         }
@@ -1246,7 +1249,7 @@
 
     // Check browser support before attempting to load
     if (!COMPRESSION_SUPPORTED) {
-      setStatus('Your browser does not support this app. Please update to Chrome 80+, Firefox 113+, or Safari 16.4+.', 'error');
+      setStatus(ERRORS.BROWSER_NOT_SUPPORTED, 'error');
       show($('emptyState'));
     } else {
       initWithRetry();
@@ -1377,7 +1380,7 @@
 
     async function textToHash(text) {
       if (!COMPRESSION_SUPPORTED) {
-        throw new Error('Your browser does not support the compression API needed for URL sharing. Please update your browser to use this feature.');
+        throw new Error(ERRORS.COMPRESSION_NOT_SUPPORTED);
       }
       const bytes = new TextEncoder().encode(text);
       const cs = new CompressionStream('deflate-raw');
@@ -1391,7 +1394,7 @@
 
     async function hashToText(encoded) {
       if (!COMPRESSION_SUPPORTED) {
-        throw new Error('Your browser does not support the compression API needed for URL sharing. Please update your browser to use this feature.');
+        throw new Error(ERRORS.COMPRESSION_NOT_SUPPORTED);
       }
       const binary = atob(encoded.replace(/-/g, '+').replace(/_/g, '/'));
       const bytes = new Uint8Array(binary.length);
@@ -1412,7 +1415,7 @@
       } catch (e) {
         console.error('Failed to load text from URL:', e);
         if (!COMPRESSION_SUPPORTED) {
-          setStatus('Your browser does not support this feature. Please update your browser to use shared links.', 'error');
+          setStatus(ERRORS.COMPRESSION_NOT_SUPPORTED, 'error');
           setTimeout(() => setStatus(null), 5000);
         }
       }
@@ -1471,7 +1474,7 @@
 
     document.addEventListener('keydown', e => {
       if (e.key === 'Escape') {
-        const welcomeOverlay = document.getElementById('welcomeOverlay');
+        const welcomeOverlay = $('welcomeOverlay');
         if (welcomeOverlay && !welcomeOverlay.classList.contains('hidden')) {
           hide(welcomeOverlay);
         } else {
@@ -1537,10 +1540,11 @@
         setTimeout(() => setStatus(null), 3000);
       }
     });
-    $('copyUrlBtn').textContent = (navigator.maxTouchPoints > 0) ? 'Share' : 'Copy URL';
     if (!COMPRESSION_SUPPORTED) {
       $('copyUrlBtn').setAttribute('disabled', 'disabled');
       $('copyUrlBtn').title = 'Shareable links require a browser with compression API support (Safari 16.4+, Firefox 113+, Chrome 80+)';
+    } else {
+      $('copyUrlBtn').textContent = (navigator.maxTouchPoints > 0) ? 'Share' : 'Copy URL';
     }
     $('copyUrlBtn').addEventListener('click', async () => {
       const text = $('inputText').value;
@@ -1586,10 +1590,10 @@
 
     // ── Welcome overlay ────────────────────────────────────────────────────────────
     {
-      const welcomeOverlay = document.getElementById('welcomeOverlay');
-      const dontShowAgainCheckbox = document.getElementById('dontShowAgain');
-      const gotItBtn = document.getElementById('welcomeGotIt');
-      const welcomeCloseBtn = document.getElementById('welcomeClose');
+      const welcomeOverlay = $('welcomeOverlay');
+      const dontShowAgainCheckbox = $('dontShowAgain');
+      const gotItBtn = $('welcomeGotIt');
+      const welcomeCloseBtn = $('welcomeClose');
       const dontShowAgainLabel = dontShowAgainCheckbox ? dontShowAgainCheckbox.parentElement : null;
 
       let lastFocusedElement = null;
