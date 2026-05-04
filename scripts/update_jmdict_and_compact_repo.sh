@@ -52,7 +52,6 @@ git diff origin/main HEAD
 
 # ── Rewrite history and rebuild ───────────────────────────────────────────────
 git filter-repo --invert-paths \
-  --path jmdict-compact.json.gz \
   --path dict/jmdict-compact.json.gz \
   --force
 git remote add origin git@github.com:nevdelap/go-reader.git 2>/dev/null ||
