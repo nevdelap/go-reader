@@ -11,7 +11,9 @@ content.
 <img src="og-image.png" alt="語 Reader on desktop"><br>
 *語 Reader on desktop.*
 
-Everything runs in the browser — no account, no server, no API calls, **no AI**.
+Japanese text processing runs in your browser — no account, no server-side text
+analysis, **no AI**. The site does load Google Analytics and Google Fonts; your
+reading text is not sent to them by the app.
 
 **[https://nevdelap.github.io/go-reader/](https://nevdelap.github.io/go-reader/)**
 
@@ -20,14 +22,16 @@ Everything runs in the browser — no account, no server, no API calls, **no AI*
 - **Instant morpheme lookup** — tap or click any morpheme in Japanese text to
   see its reading and English definition
 - **Hiragana readings** — see how any morpheme is pronounced
-- **Offline-capable** — works without an internet connection
+- **Browser-local reading** — once the app and dictionaries are loaded, lookups
+  run locally in your browser and may keep working from the browser cache
 - **Light and dark modes** — follows your system preference, or can be set
   manually
 - **Mobile-friendly** — works on phones and tablets
 - **Welcome overlay** — introduction for first-time visitors
-- **Free and open source** — no sign-up, no server, no ads, no tracking\*
+- **Free and open source** — no sign-up, no server-side text processing, no ads
 
-*\*Counts users by country so I can see how much use it is getting.*
+Google Analytics is used for basic usage stats, such as country-level visitor
+counts, and is skipped when browser Do Not Track is enabled.
 
 ## How it works
 
