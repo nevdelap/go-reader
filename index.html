@@ -341,6 +341,17 @@
         border-color: var(--accent);
         color: var(--hover-text);
       }
+      .toolbar-btn:disabled:hover {
+        background: none;
+        border-color: var(--border-mid);
+        color: var(--text-muted);
+        cursor: not-allowed;
+      }
+    }
+
+    .toolbar-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
     }
 
     .status-box {
@@ -1058,6 +1069,9 @@
     let jmdictPromise = null;
 
     async function loadJMdict() {
+      if (!('DecompressionStream' in window)) {
+        throw new Error('DecompressionStream not supported');
+      }
       const res = await fetch('dict/jmdict-compact.json.gz?v=16');
       if (!res.ok) throw new Error(`JMdict fetch failed: ${res.status}`);
       if (res.headers.get('Content-Encoding') === 'gzip') {
@@ -1175,6 +1189,9 @@
     let tokenizer = null;
     let lastRawInput = null;
 
+    // ── Browser support check ───────────────────────────────────────────────────────
+    const COMPRESSION_SUPPORTED = 'CompressionStream' in window && 'DecompressionStream' in window;
+
     // ── Init — track kuromoji and JMdict independently ───────────────────────────
     const MAX_RETRIES = 5;
 
@@ -1217,13 +1234,23 @@
           setStatus(`Load failed. Retrying in ${delay / 1000}s… (${attempt}/${MAX_RETRIES})`, 'error');
           setTimeout(() => initWithRetry(attempt + 1), delay);
         } else {
-          setStatus('Failed to load dictionaries. Please refresh the page.', 'error');
+          if (!COMPRESSION_SUPPORTED || e.message === 'DecompressionStream not supported') {
+            setStatus('Your browser does not support this app. Please update to Chrome 80+, Firefox 113+, or Safari 16.4+.', 'error');
+          } else {
+            setStatus('Failed to load dictionaries. Please refresh the page.', 'error');
+          }
           show($('emptyState'));
         }
       }
     }
 
-    initWithRetry();
+    // Check browser support before attempting to load
+    if (!COMPRESSION_SUPPORTED) {
+      setStatus('Your browser does not support this app. Please update to Chrome 80+, Firefox 113+, or Safari 16.4+.', 'error');
+      show($('emptyState'));
+    } else {
+      initWithRetry();
+    }
 
     // ── Panel ────────────────────────────────────────────────────────────────────
     function closePanel() {
@@ -1347,7 +1374,11 @@
     }
 
     // ── URL sharing ──────────────────────────────────────────────────────────────
+
     async function textToHash(text) {
+      if (!COMPRESSION_SUPPORTED) {
+        throw new Error('Your browser does not support the compression API needed for URL sharing. Please update your browser to use this feature.');
+      }
       const bytes = new TextEncoder().encode(text);
       const cs = new CompressionStream('deflate-raw');
       const writer = cs.writable.getWriter();
@@ -1359,6 +1390,9 @@
     }
 
     async function hashToText(encoded) {
+      if (!COMPRESSION_SUPPORTED) {
+        throw new Error('Your browser does not support the compression API needed for URL sharing. Please update your browser to use this feature.');
+      }
       const binary = atob(encoded.replace(/-/g, '+').replace(/_/g, '/'));
       const bytes = new Uint8Array(binary.length);
       for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
@@ -1377,6 +1411,10 @@
         $('inputText').dispatchEvent(new Event('input'));
       } catch (e) {
         console.error('Failed to load text from URL:', e);
+        if (!COMPRESSION_SUPPORTED) {
+          setStatus('Your browser does not support this feature. Please update your browser to use shared links.', 'error');
+          setTimeout(() => setStatus(null), 5000);
+        }
       }
     }
 
@@ -1500,6 +1538,10 @@
       }
     });
     $('copyUrlBtn').textContent = (navigator.maxTouchPoints > 0) ? 'Share' : 'Copy URL';
+    if (!COMPRESSION_SUPPORTED) {
+      $('copyUrlBtn').setAttribute('disabled', 'disabled');
+      $('copyUrlBtn').title = 'Shareable links require a browser with compression API support (Safari 16.4+, Firefox 113+, Chrome 80+)';
+    }
     $('copyUrlBtn').addEventListener('click', async () => {
       const text = $('inputText').value;
       if (!text.trim()) return;
@@ -1530,6 +1572,8 @@
         }
       } catch (e) {
         console.error('Copy URL failed:', e);
+        setStatus(e.message || 'Failed to create shareable link. Your browser may not support this feature.', 'error');
+        setTimeout(() => setStatus(null), 5000);
       }
     });
     $('exampleBtn').addEventListener('click', () => {
