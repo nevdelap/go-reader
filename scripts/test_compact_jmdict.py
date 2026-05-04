@@ -4,14 +4,14 @@
 # dependencies = []
 # ///
 #
-# Validates the content of jmdict-compact.json.gz.
+# Validates the content of dict/jmdict-compact.json.gz.
 # Run from the repo root: uv run scripts/test_compact_jmdict.py
 
 import gzip, json, sys, unittest
 from pathlib import Path
 
 ROOT = Path(__file__).parent.parent
-with gzip.open(ROOT / 'jmdict-compact.json.gz') as f:
+with gzip.open(ROOT / 'dict' / 'jmdict-compact.json.gz') as f:
     DICT = json.load(f)
 
 

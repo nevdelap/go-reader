@@ -12,8 +12,8 @@ content.
 *語 Reader on desktop.*
 
 Japanese text processing runs in your browser — no account, no server-side text
-analysis, **no AI**. The site does load Google Analytics and Google Fonts; your
-reading text is not sent to them by the app.
+analysis, **no AI**. The site does load Google Analytics for basic page usage
+stats; your reading text is not sent to it by the app.
 
 **[https://nevdelap.github.io/go-reader/](https://nevdelap.github.io/go-reader/)**
 
@@ -39,7 +39,7 @@ counts, and is skipped when browser Do Not Track is enabled.
   pure JavaScript Japanese morphological analyzer
 - **Dictionary lookups** — [JMdict](https://www.edrdg.org/jmdict/j_jmdict.html),
   the Electronic Dictionary Research and Development Group's Japanese-English
-  dictionary, bundled as a compact gzipped JSON file
+  dictionary, bundled as `dict/jmdict-compact.json.gz`
 
 See [docs/architecture.md](docs/architecture.md) for a detailed breakdown.
 
@@ -54,6 +54,8 @@ See [docs/architecture.md](docs/architecture.md) for a detailed breakdown.
   as required by Apache 2.0, though it covers mecab-ipadic dictionary data, not
   kuromoji
 - Lucide icons: [ISC](LICENSE-LUCIDE)
+- Fonts: Inter ([SIL Open Font License 1.1](LICENSE-INTER)) and Noto Sans JP
+  ([SIL Open Font License 1.1](LICENSE-NOTO-SANS-JP))
 
 ## Local development
 

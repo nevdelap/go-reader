@@ -23,7 +23,7 @@ class GzipAwareHandler(http.server.SimpleHTTPRequestHandler):
             self.send_header('Content-Encoding', 'gzip')
             self.send_header('Content-Type', 'application/json')
         # Cache large static assets aggressively so reloads are instant over LAN
-        if any(path.endswith(ext) for ext in ('.json.gz', '.js', '.dat')):
+        if any(path.endswith(ext) for ext in ('.json.gz', '.js', '.dat.gz', '.woff2')):
             self.send_header('Cache-Control', 'max-age=86400')
         super().end_headers()
 

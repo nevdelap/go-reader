@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Checks for a new JMdict release, downloads it if available, rewrites git
-# history to remove the old jmdict-compact.json.gz blob, rebuilds the compact
+# history to remove old compact dictionary blobs, rebuilds the compact
 # dictionary, and prompts before force-pushing to origin/main.
 #
 # Usage:
@@ -45,15 +45,21 @@ else
   find . -maxdepth 1 -name 'jmdict-eng-*.json.zip' ! -name "jmdict-eng-${latest}.json.zip" -delete
 fi
 
+# Show the remote comparison before filter-repo removes remote-tracking refs.
+git rev-parse --verify --quiet origin/main >/dev/null
+echo "Current diff against origin/main before history rewrite:"
+git diff origin/main HEAD
+
 # ── Rewrite history and rebuild ───────────────────────────────────────────────
-git filter-repo --invert-paths --path jmdict-compact.json.gz --force
+git filter-repo --invert-paths \
+  --path jmdict-compact.json.gz \
+  --path dict/jmdict-compact.json.gz \
+  --force
 git remote add origin git@github.com:nevdelap/go-reader.git 2>/dev/null || \
   git remote set-url origin git@github.com:nevdelap/go-reader.git
 scripts/compact_jmdict.py
-git add jmdict-compact.json.gz
+git add dict/jmdict-compact.json.gz
 git commit -m "Restore current dictionary after history rewrite."
 git gc --aggressive --prune=now
-git fetch origin
-git diff HEAD origin/main
 read -rp "Push force to origin/main? (y/N) " confirm
 [[ "$confirm" == [yY] ]] && git push origin HEAD:main --force || echo "Aborted."

@@ -10,7 +10,7 @@ cd "$(dirname "$0")/.."
 VERSION=$(grep "subtitle.*v" index.html | grep -oP 'v[0-9]+\.[0-9]+\.[0-9]+')
 
 # Extract cache bust version from fetch URL (e.g., "14" from "v=14")
-CACHE_BUST=$(grep -oP 'jmdict-compact\.json\.gz\?v=\K[0-9]+' index.html)
+CACHE_BUST=$(grep -oP 'dict/jmdict-compact\.json\.gz\?v=\K[0-9]+' index.html)
 
 # Extract minor version number (e.g., "14" from "v1.14.0")
 VERSION_MINOR=$(echo "$VERSION" | grep -oP 'v[0-9]+\.\K[0-9]+')

@@ -5,7 +5,7 @@
 # ///
 #
 # Converts a jmdict-eng-*.json.zip (from scriptin/jmdict-simplified) into the
-# compact jmdict-compact.json.gz used by the app at runtime.
+# compact dict/jmdict-compact.json.gz used by the app at runtime.
 #
 # Usage:
 #   scripts/compact_jmdict.py
@@ -22,6 +22,7 @@
 #   pg — (optional) glosses from particle (prt), expression (exp), and auxiliary (aux/aux-v/aux-adj) senses
 
 import json, os, glob, zipfile
+from pathlib import Path
 import zopfli.gzip  # type: ignore[import-not-found]
 
 # JMdict POS tags that signal a grammar/particle sense suitable for pg/pg2.
@@ -101,8 +102,11 @@ for entry in d['words']:
 data = json.dumps(out, ensure_ascii=False, separators=(',', ':'))
 print(f'Entries: {len(out)}, JSON size: {len(data.encode()) / 1024 / 1024:.1f}MB')
 
-with open('jmdict-compact.json.gz', 'wb') as f:
+output = Path('dict') / 'jmdict-compact.json.gz'
+output.parent.mkdir(exist_ok=True)
+
+with output.open('wb') as f:
     f.write(zopfli.gzip.compress(data.encode('utf-8')))
 
-print(f'Gzipped: {os.path.getsize("jmdict-compact.json.gz") / 1024 / 1024:.1f}MB')
-print('Done → jmdict-compact.json.gz')
+print(f'Gzipped: {os.path.getsize(output) / 1024 / 1024:.1f}MB')
+print(f'Done → {output}')

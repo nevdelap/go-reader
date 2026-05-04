@@ -119,7 +119,7 @@ function lookupWord(surface, basicForm) {
 
 // ── Load dict ────────────────────────────────────────────────────────────────
 
-jmdict = JSON.parse(gunzipSync(readFileSync(join(__dirname, 'jmdict-compact.json.gz'))).toString('utf8'));
+jmdict = JSON.parse(gunzipSync(readFileSync(join(__dirname, 'dict/jmdict-compact.json.gz'))).toString('utf8'));
 
 // ── Tests ────────────────────────────────────────────────────────────────────
 

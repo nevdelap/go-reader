@@ -8,7 +8,7 @@ A single-file static Japanese reader. No server, no build step — deploys anywh
 | ------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
 | `index.html`                                | Entire app — HTML, CSS, and JavaScript                                                                                 |
 | `kuromoji.js`                               | Japanese morphological analyzer (runs in the browser)                                                                  |
-| `jmdict-compact.json.gz`                    | Compact gzipped dictionary (morpheme → English glosses)                                                                |
+| `dict/jmdict-compact.json.gz`               | Compact gzipped JMdict lookup data (morpheme → English glosses)                                                        |
 | `dict/`                                     | Binary dictionary files loaded by kuromoji at runtime                                                                  |
 | `scripts/compact_jmdict.py`                 | Build script: preprocesses full JMdict JSON into compact form                                                          |
 | `scripts/update_jmdict_and_compact_repo.sh` | Checks for a new JMdict release, downloads it, rebuilds the compact dict, and rewrites git history to remove old blobs |
@@ -82,7 +82,7 @@ app needs:
 - On key collision (multiple entries share the same kanji/kana form), the common
   entry wins over an uncommon entry; entries of equal priority are merged
   (glosses appended as a new group, POS tags combined)
-- Output: `jmdict-compact.json.gz` (~6.9 MB gzipped)
+- Output: `dict/jmdict-compact.json.gz` (~7.1 MB gzipped)
 
 To regenerate, see [Maintaining the
 repository](../README.md#maintaining-the-repository) in the README.
@@ -92,7 +92,7 @@ ______________________________________________________________________
 ## Dictionary Loading
 
 At startup, kuromoji and JMdict are loaded in parallel. The browser decompresses
-`jmdict-compact.json.gz` using the native `DecompressionStream` API (falls back
+`dict/jmdict-compact.json.gz` using the native `DecompressionStream` API (falls back
 to server-decompressed response when a local dev server handles gzip
 automatically).
 
@@ -280,5 +280,6 @@ ______________________________________________________________________
 ## Deployment
 
 The app is fully static — serve `index.html` and the supporting files from any
-static host. On first load, the browser fetches Google Fonts,
-`jmdict-compact.json.gz`, and the kuromoji binary dictionary files in `dict/`.
+static host. Fonts are vendored in `fonts/`. On first load, the browser fetches
+`dict/jmdict-compact.json.gz`, the local font files, and the kuromoji binary
+dictionary files in `dict/`.
