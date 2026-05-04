@@ -868,7 +868,7 @@
     <header>
       <div class="header-left">
         <div class="logo">語 <span>Reader</span></div>
-        <div class="subtitle">Japanese Reader For Learners · v1.15.9</div>
+        <div class="subtitle">Japanese Reader For Learners · v1.16.0</div>
       </div>
       <div style="display:flex; gap:8px;">
         <button type="button" id="helpBtn" class="toolbar-btn" title="Help">?</button>
@@ -1058,7 +1058,7 @@
     let jmdictPromise = null;
 
     async function loadJMdict() {
-      const res = await fetch('dict/jmdict-compact.json.gz?v=15');
+      const res = await fetch('dict/jmdict-compact.json.gz?v=16');
       if (!res.ok) throw new Error(`JMdict fetch failed: ${res.status}`);
       if (res.headers.get('Content-Encoding') === 'gzip') {
         // Server decompressed automatically (e.g. local dev server)

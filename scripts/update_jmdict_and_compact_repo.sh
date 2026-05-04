@@ -55,11 +55,11 @@ git filter-repo --invert-paths \
   --path jmdict-compact.json.gz \
   --path dict/jmdict-compact.json.gz \
   --force
-git remote add origin git@github.com:nevdelap/go-reader.git 2>/dev/null || \
+git remote add origin git@github.com:nevdelap/go-reader.git 2>/dev/null ||
   git remote set-url origin git@github.com:nevdelap/go-reader.git
 scripts/compact_jmdict.py
 git add dict/jmdict-compact.json.gz
 git commit -m "Restore current dictionary after history rewrite."
 git gc --aggressive --prune=now
 read -rp "Push force to origin/main? (y/N) " confirm
-[[ "$confirm" == [yY] ]] && git push origin HEAD:main --force || echo "Aborted."
+[[ "$confirm" == [yY] ]] && git push origin HEAD:main --force && git push origin --tags --force --no-verify || echo "Aborted."
