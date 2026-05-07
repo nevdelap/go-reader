@@ -214,8 +214,9 @@ ______________________________________________________________________
   The button label reflects the current state: "Dim grammar" / "Undim grammar".
   Preference is stored in `localStorage` (`dimGrammar`).
 - **Persistence** — theme choice, reading direction, dim-grammar preference,
-  welcome overlay dismissal, and the raw textarea input are all stored in
-  `localStorage` and restored on load.
+  welcome overlay dismissal, raw textarea input, and the selected morpheme are
+  all stored in `localStorage` and restored on load. The selected morpheme is
+  tied to the raw textarea value and cleared as soon as the textarea is edited.
 
 ______________________________________________________________________
 

@@ -875,7 +875,7 @@
     <header>
       <div class="header-left">
         <div class="logo">語 <span>Reader</span></div>
-        <div class="subtitle">Japanese Reader For Learners · v1.16.1</div>
+        <div class="subtitle">Japanese Reader For Learners · v1.17.0</div>
       </div>
       <div style="display:flex; gap:8px;">
         <button type="button" id="helpBtn" class="toolbar-btn" title="Help">?</button>
@@ -1068,7 +1068,7 @@
       if (!COMPRESSION_SUPPORTED) {
         throw new Error('DecompressionStream not supported');
       }
-      const res = await fetch('dict/jmdict-compact.json.gz?v=16');
+      const res = await fetch('dict/jmdict-compact.json.gz?v=17');
       if (!res.ok) throw new Error(`JMdict fetch failed: ${res.status}`);
       if (res.headers.get('Content-Encoding') === 'gzip') {
         // Server decompressed automatically (e.g. local dev server)
@@ -1184,6 +1184,46 @@
     let selectedIndex = null;
     let tokenizer = null;
     let lastRawInput = null;
+    const SELECTED_MORPHEME_KEY = 'selectedMorpheme';
+
+    function readSavedSelectedMorpheme() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(SELECTED_MORPHEME_KEY));
+        if (Number.isInteger(saved?.index) && typeof saved.rawInput === 'string') {
+          return saved;
+        }
+      } catch {
+        // Ignore malformed saved state from older or manually edited storage.
+      }
+      return null;
+    }
+
+    let pendingSelectedMorpheme = readSavedSelectedMorpheme();
+    let restoredSelectedMorpheme = false;
+    let selectedMorphemeRestoreChecked = pendingSelectedMorpheme === null;
+
+    function finishSelectedMorphemeRestore(restored) {
+      restoredSelectedMorpheme = restored;
+      selectedMorphemeRestoreChecked = true;
+      document.dispatchEvent(new Event('selectedmorphemerestorechecked'));
+    }
+
+    function saveSelectedMorpheme(index, token) {
+      localStorage.setItem(SELECTED_MORPHEME_KEY, JSON.stringify({
+        rawInput: $('inputText').value,
+        index,
+        surface: token.surface_form,
+      }));
+    }
+
+    function clearSavedSelectedMorpheme() {
+      const hadPendingSelection = pendingSelectedMorpheme !== null;
+      pendingSelectedMorpheme = null;
+      localStorage.removeItem(SELECTED_MORPHEME_KEY);
+      if (hadPendingSelection && !selectedMorphemeRestoreChecked) {
+        finishSelectedMorphemeRestore(false);
+      }
+    }
 
     // ── Error messages ───────────────────────────────────────────────────────────────
     const ERRORS = {
@@ -1226,7 +1266,11 @@
 
         setStatus(null);
         show($('emptyState'));
-        if ($('inputText').value.trim()) analyze();
+        if ($('inputText').value.trim()) {
+          analyze();
+        } else {
+          clearSavedSelectedMorpheme();
+        }
 
       } catch (e) {
         // Reset failed jmdictPromise so next retry can re-fetch
@@ -1242,6 +1286,7 @@
           } else {
             setStatus(ERRORS.FAILED_TO_LOAD, 'error');
           }
+          clearSavedSelectedMorpheme();
           show($('emptyState'));
         }
       }
@@ -1250,21 +1295,24 @@
     // Check browser support before attempting to load
     if (!COMPRESSION_SUPPORTED) {
       setStatus(ERRORS.BROWSER_NOT_SUPPORTED, 'error');
+      clearSavedSelectedMorpheme();
       show($('emptyState'));
     } else {
       initWithRetry();
     }
 
     // ── Panel ────────────────────────────────────────────────────────────────────
-    function closePanel() {
+    function closePanel(preserveSelection = false) {
       selectedIndex = null;
       hide($('panel'));
       panelResizeObserver.disconnect();
       $('tokenArea').querySelectorAll('.token').forEach(t => t.classList.remove('active'));
+      if (!preserveSelection) clearSavedSelectedMorpheme();
     }
 
     function openPanel(token, index) {
       selectedIndex = index;
+      saveSelectedMorpheme(index, token);
 
       $('panelSurface').textContent = token.surface_form;
 
@@ -1295,6 +1343,34 @@
 
       // Scroll active token into view (essential in vertical mode)
       $('tokenArea').querySelector('.token.active')?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
+    }
+
+    function restoreSelectedMorpheme() {
+      const saved = pendingSelectedMorpheme;
+      if (!saved) return false;
+
+      if (
+        saved.rawInput !== $('inputText').value ||
+        saved.index < 0 ||
+        saved.index >= tokens.length ||
+        (typeof saved.surface === 'string' && saved.surface !== tokens[saved.index].surface_form)
+      ) {
+        clearSavedSelectedMorpheme();
+        return false;
+      }
+
+      const tokenEl = $('tokenArea').querySelectorAll('.token')[saved.index];
+      if (!tokenEl) {
+        clearSavedSelectedMorpheme();
+        return false;
+      }
+
+      tokenEl.classList.add('active');
+      openPanel(tokens[saved.index], saved.index);
+      pendingSelectedMorpheme = null;
+      finishSelectedMorphemeRestore(true);
+      requestAnimationFrame(() => tokenEl.focus({ preventScroll: true }));
+      return true;
     }
 
     // ── Render tokens ────────────────────────────────────────────────────────────
@@ -1333,8 +1409,7 @@
 
       const content = tokens.filter(t => !isGrammar(t)).length;
       $('tokenCount').innerHTML = `${tokens.length} total morphemes · <span class="token-count-content">${content} content morphemes</span>`;
-      fresh.addEventListener('click', closePanel);
-      if (isVertical) requestAnimationFrame(() => { fresh.scrollLeft = fresh.scrollWidth; });
+      fresh.addEventListener('click', () => closePanel());
     }
 
     // ── Analyze ──────────────────────────────────────────────────────────────────
@@ -1364,9 +1439,13 @@
       try {
         tokens = tokenizer.tokenize(text).filter(t => t.surface_form.trim() !== '');
         lastRawInput = raw;
-        closePanel();
+        closePanel(true);
         renderTokens();
         show($('tokenView'));
+        const restored = restoreSelectedMorpheme();
+        if (isVertical && !restored) {
+          requestAnimationFrame(() => { $('tokenArea').scrollLeft = $('tokenArea').scrollWidth; });
+        }
       } catch (e) {
         console.error('Tokenization error:', e);
         tokens = [];
@@ -1426,6 +1505,7 @@
 
     $('inputText').addEventListener('input', () => {
       localStorage.setItem('inputText', $('inputText').value);
+      closePanel();
       clearTimeout(debounceTimer);
       debounceTimer = setTimeout(analyze, 300);
     });
@@ -1434,7 +1514,7 @@
       if (document.hidden) clearTimeout(debounceTimer);
     });
 
-    $('panelClose').addEventListener('click', closePanel);
+    $('panelClose').addEventListener('click', () => closePanel());
 
     // ── Vertical reading toggle ───────────────────────────────────────────────────
     const savedInputText = localStorage.getItem('inputText');
@@ -1661,10 +1741,19 @@
         });
       }
 
-      // Show welcome overlay on first visit
-      if (!localStorage.getItem('welcomeDismissed')) {
+      const showInitialWelcomeOverlay = () => {
+        if (localStorage.getItem('welcomeDismissed')) return;
+        if (!selectedMorphemeRestoreChecked) {
+          document.addEventListener('selectedmorphemerestorechecked', showInitialWelcomeOverlay, { once: true });
+          return;
+        }
+        if (restoredSelectedMorpheme) return;
         setTimeout(showWelcomeOverlay, 500);
-      }
+      };
+
+      // Show welcome overlay on first visit, after any saved selection has had a
+      // chance to restore and take focus.
+      showInitialWelcomeOverlay();
     }
   </script>
 </body>
