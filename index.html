@@ -1558,7 +1558,11 @@
         if (welcomeOverlay && !welcomeOverlay.classList.contains('hidden')) {
           hide(welcomeOverlay);
         } else {
+          const wasTokenFocused = document.activeElement?.classList.contains('token');
           closePanel();
+          if (wasTokenFocused) {
+            document.activeElement?.blur();
+          }
         }
       }
       if (e.key === 'd' && e.altKey) { e.preventDefault(); $('verticalBtn').click(); return; }
