@@ -127,8 +127,19 @@
       --scrollbar-thumb: #1e3a5f;
       /* toolbar button text on hover/active */
       --hover-text: #fff;
-      /* hover background for interactive elements */
-      --hover-bg: rgba(37, 99, 235, 0.4);
+      /* accent opacity variants */
+      --accent-subtle: rgba(37, 99, 235, 0.15);
+      --accent-hover: rgba(37, 99, 235, 0.35);
+      --accent-pressed: rgba(37, 99, 235, 0.4);
+      /* overlay colors */
+      --overlay-bg: rgba(0, 0, 0, 0.7);
+      --overlay-shadow: rgba(0, 0, 0, 0.3);
+      /* overlay positioning */
+      --overlay-offset: -12px;
+      /* z-index layers */
+      --z-panel: 100;
+      --z-panel-overlay: 200;
+      --z-modal-backdrop: 1000;
       /* error status box border */
       --error-border: #7f1d1d;
       /* error status box text */
@@ -171,8 +182,15 @@
       --scrollbar-thumb: #60a5fa;
       /* toolbar button text on hover/active */
       --hover-text: #111;
-      /* hover background for interactive elements */
-      --hover-bg: rgba(37, 99, 235, 0.4);
+      /* accent opacity variants */
+      --accent-subtle: rgba(37, 99, 235, 0.15);
+      --accent-hover: rgba(37, 99, 235, 0.35);
+      --accent-pressed: rgba(37, 99, 235, 0.4);
+      /* overlay colors */
+      --overlay-bg: rgba(0, 0, 0, 0.5);
+      --overlay-shadow: rgba(0, 0, 0, 0.2);
+      /* overlay positioning */
+      --overlay-offset: -12px;
       /* error status box border */
       --error-border: #fca5a5;
       /* error status box text */
@@ -326,14 +344,14 @@
 
     .toolbar-btn:focus-visible,
     .toolbar-btn:active {
-      background: var(--hover-bg);
+      background: var(--accent-pressed);
       border-color: var(--accent);
       color: var(--hover-text);
     }
 
     @media (hover: hover) {
       .toolbar-btn:hover {
-        background: rgba(37, 99, 235, 0.4);
+        background: var(--accent-pressed);
         border-color: var(--accent);
         color: var(--hover-text);
       }
@@ -490,7 +508,7 @@
 
     @media (hover: hover) {
       .token:hover {
-        background: rgba(37, 99, 235, 0.4);
+        background: var(--accent-pressed);
       }
     }
 
@@ -500,7 +518,7 @@
     }
 
     .token.active {
-      background: rgba(37, 99, 235, 0.35) !important;
+      background: var(--accent-hover) !important;
       color: var(--hover-text) !important;
     }
 
@@ -589,11 +607,11 @@
       background: var(--bg);
       border-top: 1px solid var(--accent);
       padding: 18px 24px calc(26px + env(safe-area-inset-bottom));
-      z-index: 9999;
+      z-index: var(--z-panel);
       display: flex;
       gap: 16px;
       align-items: center;
-      box-shadow: 0 -12px 40px rgba(37, 99, 235, 0.15);
+      box-shadow: 0 -12px 40px var(--accent-subtle);
       animation: panelUp 0.2s ease-out both;
     }
 
@@ -612,6 +630,7 @@
       flex-direction: column;
       gap: 3px;
       min-width: 70px;
+      cursor: pointer;
     }
 
     .panel-surface {
@@ -673,17 +692,70 @@
 
     .panel-close:focus-visible,
     .panel-close:active {
-      background: rgba(37, 99, 235, 0.4);
+      background: var(--accent-pressed);
       border-color: var(--accent);
       color: var(--hover-text);
     }
 
     @media (hover: hover) {
       .panel-close:hover {
-        background: rgba(37, 99, 235, 0.4);
+        background: var(--accent-pressed);
         border-color: var(--accent);
         color: var(--hover-text);
       }
+    }
+
+    .panel-word-overlay {
+      position: fixed;
+      z-index: var(--z-panel-overlay);
+      background: var(--bg);
+      border: 1px solid var(--accent);
+      border-radius: 6px;
+      padding: 16px 20px;
+      margin-bottom: var(--overlay-offset);
+      left: 10vw;
+      opacity: 0;
+      transform: scale(0.8);
+      transform-origin: bottom left;
+      transition: opacity 250ms ease-out, transform 250ms ease-out;
+      box-shadow:
+        0 0 0 1px var(--accent),
+        0 4px 20px var(--accent-subtle),
+        0 8px 40px var(--overlay-shadow);
+      pointer-events: none;
+    }
+
+    .panel-word-overlay.active {
+      opacity: 1;
+      transform: scale(1);
+      pointer-events: auto;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .panel-word-overlay {
+        transition: none;
+      }
+    }
+
+    .panel-word-overlay-content {
+      overflow-x: auto;
+      overflow-y: hidden;
+      white-space: nowrap;
+      max-width: 80vw;
+      scrollbar-width: none;
+    }
+
+    .panel-word-overlay-content::-webkit-scrollbar {
+      display: none;
+    }
+
+    .panel-word-overlay .panel-surface {
+      font-size: 36px;
+      line-height: 1;
+    }
+
+    .panel-word-overlay .panel-reading {
+      font-size: 26px;
     }
 
     .hidden {
@@ -696,11 +768,11 @@
       left: 0;
       right: 0;
       bottom: 0;
-      background: rgba(0, 0, 0, 0.7);
+      background: var(--overlay-bg);
       display: flex;
       align-items: center;
       justify-content: center;
-      z-index: 1000;
+      z-index: var(--z-modal-backdrop);
       padding: clamp(12px, 5vw, 20px);
     }
 
@@ -713,7 +785,7 @@
       width: 100%;
       max-height: 80vh;
       padding: 28px 24px;
-      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 10px 40px var(--overlay-shadow);
       overflow-y: auto;
     }
 
@@ -789,14 +861,14 @@
 
     .overlay-btn:focus-visible,
     .overlay-btn:active {
-      background: rgba(37, 99, 235, 0.4);
+      background: var(--accent-pressed);
       border-color: var(--accent);
       color: var(--hover-text);
     }
 
     @media (hover: hover) {
       .overlay-btn:hover {
-        background: rgba(37, 99, 235, 0.4);
+        background: var(--accent-pressed);
         border-color: var(--accent);
         color: var(--hover-text);
       }
@@ -822,7 +894,7 @@
     }
 
     #welcomeGotIt {
-      background: rgba(37, 99, 235, 0.4);
+      background: var(--accent-pressed);
       border-color: var(--accent);
       color: var(--hover-text);
     }
@@ -875,7 +947,7 @@
     <header>
       <div class="header-left">
         <div class="logo">語 <span>Reader</span></div>
-        <div class="subtitle">Japanese Reader For Learners · v1.17.1</div>
+        <div class="subtitle">Japanese Reader For Learners · v1.18.0</div>
       </div>
       <div style="display:flex; gap:8px;">
         <button type="button" id="helpBtn" class="toolbar-btn" title="Help">?</button>
@@ -945,7 +1017,7 @@
           <li><strong>No AI</strong> — Dictionary lookups happen locally in your browser, fast and private</li>
           <li><strong>Grammar morphemes</strong> — Toggle dimming for enhanced learning</li>
           <li class="overlay-desktop-only"><strong>Keyboard shortcuts</strong> — Ctrl+K to clear text, Ctrl+V to paste, Alt+D to toggle reading
-            direction</li>
+            direction, Enter in panel to enlarge morpheme to clearly see kanji form and distinguish dakuten and handakuten</li>
           <li><strong>Everything stays in your browser</strong> — No login, no server, no ads, no tracking <sup>2</sup></li>
         </ul>
         <ol style="font-size:11px; color:var(--text-muted); margin-top:8px; padding-left:20px; margin:0;">
@@ -976,6 +1048,13 @@
       <div class="panel-english" id="panelEnglish"></div>
     </div>
     <button class="panel-close" id="panelClose" aria-label="Close word details" title="Close (Esc)">✕</button>
+  </div>
+
+  <div class="panel-word-overlay hidden" id="panelWordOverlay" tabindex="-1" role="region" aria-label="Enlarged morpheme view">
+    <div class="panel-word-overlay-content">
+      <div class="panel-surface" id="overlaySurface" lang="ja"></div>
+      <div class="panel-reading hidden" id="overlayReading" lang="ja"></div>
+    </div>
   </div>
 
   <script src="kuromoji.js"></script>
@@ -1068,7 +1147,7 @@
       if (!COMPRESSION_SUPPORTED) {
         throw new Error('DecompressionStream not supported');
       }
-      const res = await fetch('dict/jmdict-compact.json.gz?v=17');
+      const res = await fetch('dict/jmdict-compact.json.gz?v=18');
       if (!res.ok) throw new Error(`JMdict fetch failed: ${res.status}`);
       if (res.headers.get('Content-Encoding') === 'gzip') {
         // Server decompressed automatically (e.g. local dev server)
@@ -1308,11 +1387,102 @@
       panelResizeObserver.disconnect();
       $('tokenArea').querySelectorAll('.token').forEach(t => t.classList.remove('active'));
       if (!preserveSelection) clearSavedSelectedMorpheme();
+      // Close overlay if open
+      hideOverlay();
+    }
+
+    // ── Panel-word overlay ────────────────────────────────────────────────────────
+    const panelWord = document.querySelector('.panel-word');
+    const OVERLAY_TRANSITION_DURATION = 250;
+    let overlayTimeout = null;
+
+    function updatePanelWordAria(isExpanded) {
+      if (!panelWord) return;
+      panelWord.setAttribute('aria-expanded', isExpanded);
+      panelWord.setAttribute('aria-label', isExpanded
+        ? 'Shrink morpheme'
+        : 'Enlarge morpheme');
+    }
+
+    function showOverlay() {
+      const overlay = $('panelWordOverlay');
+      if (overlay.classList.contains('active')) return;
+      if (!panelWord) return;
+
+      // Clear any pending hide timeout and willChange cleanup
+      clearTimeout(overlayTimeout);
+
+      const overlaySurface = $('overlaySurface');
+      const overlayReading = $('overlayReading');
+      const panelSurface = $('panelSurface');
+      const panelReading = $('panelReading');
+
+      // Copy content from panel to overlay
+      overlaySurface.textContent = panelSurface.textContent;
+      if (panelReading.classList.contains('hidden')) {
+        overlayReading.classList.add('hidden');
+      } else {
+        overlayReading.textContent = panelReading.textContent;
+        overlayReading.classList.remove('hidden');
+      }
+
+      // Position overlay: keep bottom anchored to panel-word (left is handled by CSS)
+      const rect = panelWord.getBoundingClientRect();
+      overlay.style.bottom = (window.innerHeight - rect.bottom) + 'px';
+
+      // Show overlay and force reflow to ensure transition works
+      overlay.classList.remove('hidden');
+      overlay.style.willChange = 'transform, opacity';
+
+      // Force browser reflow to register initial state
+      void overlay.offsetWidth;
+
+      requestAnimationFrame(() => {
+        overlay.classList.add('active');
+        overlay.focus();
+      });
+
+      setTimeout(() => {
+        overlay.style.willChange = 'auto';
+      }, OVERLAY_TRANSITION_DURATION);
+    }
+
+    function handleOverlayResize() {
+      const overlay = $('panelWordOverlay');
+      if (overlay.classList.contains('active') && panelWord) {
+        const rect = panelWord.getBoundingClientRect();
+        overlay.style.bottom = (window.innerHeight - rect.bottom) + 'px';
+      }
+    }
+
+    function hideOverlay() {
+      const overlay = $('panelWordOverlay');
+      if (overlay.classList.contains('hidden')) return;
+
+      overlay.classList.remove('active');
+
+      clearTimeout(overlayTimeout);
+      overlayTimeout = setTimeout(() => {
+        overlay.classList.add('hidden');
+      }, OVERLAY_TRANSITION_DURATION);
+    }
+
+    function toggleOverlay() {
+      const overlay = $('panelWordOverlay');
+      const isActive = overlay.classList.contains('active');
+      if (isActive) {
+        hideOverlay();
+      } else {
+        showOverlay();
+      }
     }
 
     function openPanel(token, index) {
       selectedIndex = index;
       saveSelectedMorpheme(index, token);
+
+      // Hide overlay when switching tokens
+      hideOverlay();
 
       $('panelSurface').textContent = token.surface_form;
 
@@ -1515,6 +1685,67 @@
     });
 
     $('panelClose').addEventListener('click', () => closePanel());
+
+    // ── Panel-word overlay resize ─────────────────────────────────────────────────────
+    window.addEventListener('resize', handleOverlayResize);
+
+    // ── Panel-word overlay events ────────────────────────────────────────────────────
+    // Make panel-word clickable and keyboard-accessible
+    if (panelWord) {
+      panelWord.setAttribute('tabindex', '0');
+      panelWord.setAttribute('role', 'button');
+      panelWord.setAttribute('aria-label', 'Enlarge morpheme');
+      panelWord.setAttribute('aria-expanded', 'false');
+
+      const toggleOverlayHandler = (e) => {
+        e.preventDefault();
+        toggleOverlay();
+        const isExpanded = $('panelWordOverlay').classList.contains('active');
+        updatePanelWordAria(isExpanded);
+      };
+
+      panelWord.addEventListener('click', toggleOverlayHandler);
+
+      panelWord.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          toggleOverlayHandler(e);
+        }
+      });
+    }
+
+    // Click outside to close overlay
+    document.addEventListener('click', (e) => {
+      const overlay = $('panelWordOverlay');
+      if (!overlay.classList.contains('active')) {
+        return;
+      }
+      if (!overlay.contains(e.target) && e.target !== panelWord) {
+        hideOverlay();
+        updatePanelWordAria(false);
+        panelWord?.focus({ preventScroll: true });
+      }
+    });
+
+    // Click on overlay to shrink it
+    $('panelWordOverlay').addEventListener('click', () => {
+      hideOverlay();
+      updatePanelWordAria(false);
+      panelWord?.focus({ preventScroll: true });
+    });
+
+    // Escape key to close overlay
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        const overlay = $('panelWordOverlay');
+        if (overlay.classList.contains('active')) {
+          e.preventDefault();
+          hideOverlay();
+          updatePanelWordAria(false);
+          panelWord?.focus({ preventScroll: true });
+        }
+      }
+    });
 
     // ── Vertical reading toggle ───────────────────────────────────────────────────
     const savedInputText = localStorage.getItem('inputText');
