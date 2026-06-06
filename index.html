@@ -64,8 +64,6 @@
   </script>
   <!-- Set theme before first paint to avoid flash -->
   <script>!function () { var t = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'); document.documentElement.dataset.theme = t; document.getElementById('themeColor').content = t === 'dark' ? '#000000' : '#f5f5f5' }()</script>
-  <!-- Prefetch selected dictionary before first paint -->
-  <script>!function () { var m = localStorage.getItem('dictionaryMode'); if (m !== 'ultra' && m !== 'full') m = 'full'; var l = document.createElement('link'); l.rel = 'prefetch'; l.href = 'dict/jmdict-' + (m === 'ultra' ? 'ultra-compact' : 'full') + '.json.gz?v=23'; document.head.appendChild(l); }()</script>
   <style>
     @font-face {
       font-family: 'Inter';
@@ -1350,7 +1348,8 @@
     </div>
   </div>
 
-  <script src="kuromoji.js"></script>
+  <script src="jmdict_shim.js"></script>
+  <script src="kuromoji_shim.js"></script>
   <script src="japanese-ranges.js"></script>
   <script>
     // ── Unstable/dev detection ─────────────────────────────────────────────────────
@@ -1447,36 +1446,8 @@
     let jmdictPromise = null;
 
     async function loadJMdict() {
-      if (!COMPRESSION_SUPPORTED) {
-        throw new Error('DecompressionStream not supported');
-      }
-      const mode = activeDictionaryMode;
-      const modeLabel = mode === 'ultra' ? 'ultra-compact' : 'full';
-      const url = jmdictUrlForMode(mode);
-      let res;
-      try {
-        res = await fetch(url);
-      } catch (networkError) {
-        throw new Error(`Failed to fetch ${modeLabel} dictionary. Please check your internet connection and try again.`);
-      }
-      if (!res.ok) {
-        throw new Error(`Dictionary file not found (HTTP ${res.status}). Please try refreshing the page.`);
-      }
-      try {
-        if (res.headers.get('Content-Encoding') === 'gzip') {
-          jmdict = await res.json();
-        } else {
-          const buf = await res.arrayBuffer();
-          const ds = new DecompressionStream('gzip');
-          const decompressed = new Response(new Blob([buf]).stream().pipeThrough(ds));
-          jmdict = JSON.parse(await decompressed.text());
-        }
-      } catch (parseError) {
-        throw new Error(`Failed to parse ${modeLabel} dictionary. The file may be corrupted. Please try clearing your browser cache and refreshing.`);
-      }
-      if (!jmdict || typeof jmdict !== 'object') {
-        throw new Error(`Invalid ${modeLabel} dictionary format. Please try clearing your browser cache and refreshing.`);
-      }
+      jmdict = await window.jmdictReady;
+      console.log('[timing] jmdict usable: ' + performance.now().toFixed(0) + ' ms');
       jmdictLoaded = true;
     }
 
@@ -1558,27 +1529,17 @@
     const ICON_HELP = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`;
     const ICON_CHECK = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#027864" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>`;
 
-    // Polyfill for Object.hasOwn (Chrome 93+, Safari 15.4+, Firefox 92+)
-    const objectHasOwn = Object.hasOwn || ((obj, prop) => Object.prototype.hasOwnProperty.call(obj, prop));
-
     const DICTIONARY_MODE_KEY = 'dictionaryMode';
-    const DICTIONARY_MODES = {
-      ultra: { path: 'dict/jmdict-ultra-compact.json.gz?v=23' },
-      full: { path: 'dict/jmdict-full.json.gz?v=23' },
-    };
+    const DICTIONARY_MODES = ['ultra', 'full'];
 
     function savedDictionaryMode() {
       const mode = localStorage.getItem(DICTIONARY_MODE_KEY);
-      if (objectHasOwn(DICTIONARY_MODES, mode)) return mode;
+      if (DICTIONARY_MODES.includes(mode)) return mode;
       localStorage.removeItem(DICTIONARY_MODE_KEY);
       return 'full';
     }
 
     const activeDictionaryMode = savedDictionaryMode();
-
-    function jmdictUrlForMode(mode) {
-      return DICTIONARY_MODES[objectHasOwn(DICTIONARY_MODES, mode) ? mode : 'full'].path;
-    }
 
     function applyTheme(dark) {
       document.documentElement.dataset.theme = dark ? 'dark' : 'light';

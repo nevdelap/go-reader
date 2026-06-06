@@ -1,0 +1,14 @@
+[package]
+name = "build-dict"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+name = "build-dict"
+path = "src/main.rs"
+
+[dependencies]
+lindera-ipadic-builder = "0.32"
+lindera-core = "0.32"
+flate2 = "1"
+tar = "0.4"

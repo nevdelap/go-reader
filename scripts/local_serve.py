@@ -15,15 +15,34 @@ DIR = Path(__file__).parent.parent
 os.chdir(DIR)
 
 class GzipAwareHandler(http.server.SimpleHTTPRequestHandler):
+    def do_GET(self):
+        # If a .wasm request has a pre-compressed .wasm.gz sidecar, serve it
+        # with correct headers (bypasses SimpleHTTPRequestHandler to avoid
+        # conflicting Content-Type from Python's mime-type guessing).
+        path = self.path.split('?')[0].lstrip('/')
+        if path.endswith('.wasm'):
+            gz_path = Path(path + '.gz')
+            if gz_path.exists():
+                data = gz_path.read_bytes()
+                self.send_response(200)
+                self.send_header('Content-Type', 'application/wasm')
+                self.send_header('Content-Encoding', 'gzip')
+                self.send_header('Content-Length', str(len(data)))
+                self.send_header('Cache-Control', 'max-age=86400')
+                self.end_headers()
+                self.wfile.write(data)
+                return
+        super().do_GET()
+
     def end_headers(self):
-        # Serve .json.gz files with Content-Encoding: gzip so the browser
-        # decompresses them automatically, matching GitHub Pages behaviour
         path = self.path.split('?')[0]
+        # Serve .json.gz with Content-Encoding: gzip so the browser decompresses
+        # automatically, matching GitHub Pages behaviour.
         if path.endswith('.json.gz'):
             self.send_header('Content-Encoding', 'gzip')
             self.send_header('Content-Type', 'application/json')
-        # Cache large static assets aggressively so reloads are instant over LAN
-        if any(path.endswith(ext) for ext in ('.json.gz', '.js', '.dat.gz', '.woff2')):
+        # Cache large static assets aggressively so reloads are instant over LAN.
+        if any(path.endswith(ext) for ext in ('.json.gz', '.js', '.dat.gz', '.woff2', '.wasm')):
             self.send_header('Cache-Control', 'max-age=86400')
         super().end_headers()
 

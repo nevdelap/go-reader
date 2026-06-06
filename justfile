@@ -42,6 +42,42 @@ build-dict:
     {{ UV_CACHE }}; uv run scripts/download_jmdict_source.py
     {{ UV_CACHE }}; uv run scripts/compact_jmdict.py
 
+# Build the WASM tokenizer (requires wasm-pack; run setup-wasm-dict first if pkg/ is missing).
+build-wasm:
+    cd kuromoji-wasm && LINDERA_CACHE={{justfile_directory()}}/kuromoji-wasm/lindera-cache wasm-pack build --target web --release --out-dir ../pkg
+
+# Pre-build the Lindera IPAdic dictionary from a local tarball (run once after cloning).
+# Downloads the MeCab IPAdic tarball from SourceForge, then compiles it.
+setup-wasm-dict:
+    mkdir -p kuromoji-wasm/lindera-cache
+    curl -L "https://sourceforge.net/projects/mecab/files/mecab-ipadic/2.7.0-20070801/mecab-ipadic-2.7.0-20070801.tar.gz/download" -o kuromoji-wasm/lindera-cache/mecab-ipadic-2.7.0-20070801.tar.gz
+    cd kuromoji-wasm/build-dict && cargo build --release
+    kuromoji-wasm/build-dict/target/release/build-dict kuromoji-wasm/lindera-cache/mecab-ipadic-2.7.0-20070801.tar.gz kuromoji-wasm/lindera-cache/0.32.3/lindera-ipadic
+
+# Run Rust tests for the WASM tokenizer (native, not in browser).
+test-wasm:
+    cd kuromoji-wasm && LINDERA_CACHE={{justfile_directory()}}/kuromoji-wasm/lindera-cache cargo test
+
+# Build the ultra-compact JMdict WASM binary.
+build-jmdict-wasm-ultra:
+    cd jmdict-wasm && wasm-pack build --target web --release --out-dir ../pkg --out-name jmdict_ultra_wasm -- --features ultra
+
+# Build the full JMdict WASM binary.
+build-jmdict-wasm-full:
+    cd jmdict-wasm && wasm-pack build --target web --release --out-dir ../pkg --out-name jmdict_full_wasm -- --features full
+
+# Build both JMdict WASM binaries and compress them.
+build-jmdict-wasm: build-jmdict-wasm-ultra build-jmdict-wasm-full compress-wasm
+
+# Pre-compress WASM binaries for local serving (local_serve.py uses the .gz sidecars).
+compress-wasm:
+    gzip -kf pkg/jmdict_ultra_wasm_bg.wasm
+    gzip -kf pkg/jmdict_full_wasm_bg.wasm
+    gzip -kf pkg/kuromoji_wasm_bg.wasm
+
+# Run all tests (JS + Python + Rust).
+test-all: test test-wasm
+
 # Push to unstable (origin).
 push_unstable *args:
     git push origin HEAD:main --force {{ args }}

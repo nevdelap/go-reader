@@ -1,0 +1,23 @@
+[package]
+name = "kuromoji-wasm"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+wasm-bindgen       = "0.2"
+js-sys             = "0.3"
+serde              = { version = "1", features = ["derive"] }
+serde-wasm-bindgen = "0.6"
+lindera-core       = "0.32"
+lindera-dictionary = { version = "0.32", features = ["ipadic"] }
+lindera-tokenizer  = { version = "0.32", features = ["ipadic"] }
+
+[dev-dependencies]
+wasm-bindgen-test = "0.3"
+
+[profile.release]
+opt-level = "z"
+lto = true
